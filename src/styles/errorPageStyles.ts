@@ -1,17 +1,33 @@
 import * as stylex from "@stylexjs/stylex";
+import { colors, fonts, borderRadius, shadows } from "./theme.stylex";
 
 const styles = stylex.create({
-  main: {
-    padding: 16,
-    display: "grid",
-    gap: 8,
+  container: {
+    backgroundColor: colors.backgroundLight,
+    color: colors.textMain,
+    fontFamily: fonts.body,
   },
-  title: {
-    fontSize: 24,
-    fontWeight: 700,
+
+  containerDark: {
+    backgroundColor: colors.backgroundDark,
+    color: colors.textLight,
   },
-  message: {
-    color: "#4b5563",
+
+  primaryButton: {
+    backgroundColor: colors.primary,
+    color: colors.textLight,
+    borderRadius: borderRadius.default,
+    boxShadow: shadows.soft,
+  },
+
+  card: {
+    backgroundColor: colors.cardLight,
+    borderRadius: borderRadius.default,
+    boxShadow: shadows.soft,
+  },
+
+  cardDark: {
+    backgroundColor: colors.cardDark,
   },
 });
 

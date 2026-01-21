@@ -4,7 +4,7 @@ export default defineConfig({
   // Whether to use css reset
   preflight: true,
 
-  include: ["./src/**/*.{js,jsx,ts,tsx}", "./pages/**/*.{js,jsx,ts,tsx}"],
+  include: ["./src/**/*.{js,jsx,ts,tsx}"],
 
   exclude: [],
 

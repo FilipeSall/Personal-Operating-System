@@ -142,7 +142,7 @@ export function TodoDetailModal({ todo: initialTodo, onClose }: TodoDetailModalP
           {currentTodo.completed && (
             <span
               className={detailBadge}
-              style={{ backgroundColor: '#10B98120', color: '#10B981' }}
+              style={{ backgroundColor: '#A7AA2920', color: '#A7AA29' }}
             >
               <MdCheck size={14} />
               Concluída
@@ -151,7 +151,7 @@ export function TodoDetailModal({ todo: initialTodo, onClose }: TodoDetailModalP
           {hasRepeat && (
             <span
               className={detailBadge}
-              style={{ backgroundColor: '#6366F120', color: '#6366F1' }}
+              style={{ backgroundColor: '#FA950020', color: '#FA9500' }}
             >
               <MdRepeat size={14} />
               Recorrente

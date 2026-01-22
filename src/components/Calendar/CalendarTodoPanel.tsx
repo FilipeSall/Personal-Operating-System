@@ -94,7 +94,7 @@ export function CalendarTodoPanel() {
               <div
                 key={todo.id}
                 className={`${todoItem({ completed: todo.completed })} ${todoItemClickable}`}
-                style={{ borderLeftColor: typeConfig?.color || '#6b7280' }}
+                style={{ borderLeftColor: typeConfig?.color || '#7A7276' }}
                 onClick={() => handleTodoClick(todo)}
               >
                 <button
@@ -103,7 +103,7 @@ export function CalendarTodoPanel() {
                   style={todo.completed ? { backgroundColor: typeConfig?.color, borderColor: typeConfig?.color } : {}}
                   onClick={(e) => handleCheckboxClick(e, todo.id)}
                 >
-                  {todo.completed && <MdCheck size={12} color="#fff" />}
+                  {todo.completed && <MdCheck size={12} color="#FDFFFC" />}
                 </button>
 
                 <span className={todoTime}>

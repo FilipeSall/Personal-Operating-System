@@ -3,17 +3,26 @@ import { css } from '../../styled-system/css';
 
 const homeContainer = css({
   minHeight: '100vh',
-  backgroundColor: '#0f0f1a',
+  backgroundColor: '#FDFFFC',
+  color: '#211A1E',
   padding: '32px',
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'flex-start',
+  display: 'grid',
+  gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+  gridAutoRows: 'minmax(120px, auto)',
+  gap: '24px',
+  alignItems: 'start',
+});
+
+const calendarWidget = css({
+  width: '100%',
 });
 
 function Home() {
   return (
     <section className={homeContainer}>
-      <Calendar />
+      <div className={calendarWidget}>
+        <Calendar />
+      </div>
     </section>
   );
 }

@@ -12,26 +12,29 @@ export default defineConfig({
       tokens: {
         colors: {
           brand: {
-            500: { value: '#3B82F6' },
-            600: { value: '#2563EB' },
+            500: { value: '#D64550' },
+            600: { value: '#BF3A44' },
           },
           surface: {
-            950: { value: '#16162a' },
-            900: { value: '#1a1a2e' },
-            850: { value: '#1e1e3f' },
-            800: { value: '#252550' },
-            700: { value: '#2a2a4e' },
+            950: { value: '#FFFFFF' },
+            900: { value: '#F7F7F3' },
+            850: { value: '#F1F1EC' },
+            800: { value: '#E9E8E2' },
+            700: { value: '#DAD9D2' },
           },
           text: {
-            primary: { value: '#ffffff' },
-            subtle: { value: '#e0e0e0' },
-            muted: { value: '#a0a0a0' },
-            dim: { value: '#6b7280' },
-            faint: { value: '#4b5563' },
-            label: { value: '#9ca3af' },
+            primary: { value: '#211A1E' },
+            subtle: { value: '#3A2F34' },
+            muted: { value: '#5A5257' },
+            dim: { value: '#7A7276' },
+            faint: { value: '#9B9497' },
+            label: { value: '#6D6569' },
           },
           danger: {
-            500: { value: '#EF4444' },
+            500: { value: '#D64550' },
+          },
+          success: {
+            500: { value: '#A7AA29' },
           },
         },
       },

@@ -1,12 +1,14 @@
 import { css, cva } from '../../../../styled-system/css';
 
 export const todoPanel = css({
-  display: 'flex',
-  flexDirection: 'column',
+  display: 'grid',
+  gridTemplateRows: 'auto 1fr auto',
   gap: '16px',
-  padding: '16px',
-  backgroundColor: 'surface.950',
-  borderRadius: '12px',
+  padding: '20px',
+  backgroundColor: 'surface.900',
+  borderRadius: '14px',
+  height: '100%',
+  minHeight: 0,
 });
 
 export const todoPanelHeader = css({
@@ -25,6 +27,9 @@ export const todoList = css({
   display: 'flex',
   flexDirection: 'column',
   gap: '8px',
+  height: '100%',
+  overflowY: 'auto',
+  minHeight: 0,
 });
 
 export const todoItem = cva({
@@ -32,16 +37,18 @@ export const todoItem = cva({
     display: 'flex',
     alignItems: 'center',
     gap: '12px',
-    padding: '10px 12px',
-    backgroundColor: 'surface.850',
-    borderRadius: '8px',
+    padding: '12px 14px',
+    backgroundColor: 'surface.950',
+    borderRadius: '10px',
     borderLeft: '3px solid',
-    transition: 'all 0.2s',
+    transition: 'all 0.15s ease',
+    boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)',
   },
   variants: {
     completed: {
       true: {
-        opacity: 0.5,
+        opacity: 0.6,
+        backgroundColor: 'surface.850',
       },
     },
   },
@@ -50,18 +57,18 @@ export const todoItem = cva({
 export const todoCheckbox = css({
   width: '18px',
   height: '18px',
-  borderRadius: '4px',
+  borderRadius: '5px',
   border: '2px solid',
-  borderColor: 'text.faint',
+  borderColor: 'surface.700',
   backgroundColor: 'transparent',
   cursor: 'pointer',
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
-  transition: 'all 0.2s',
+  transition: 'all 0.15s ease',
   flexShrink: 0,
   _hover: {
-    borderColor: 'text.dim',
+    borderColor: 'brand.500',
   },
 });
 
@@ -85,16 +92,16 @@ export const todoDeleteButton = css({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
-  width: '24px',
-  height: '24px',
+  width: '26px',
+  height: '26px',
   backgroundColor: 'transparent',
   border: 'none',
-  borderRadius: '4px',
+  borderRadius: '6px',
   color: 'text.dim',
   cursor: 'pointer',
-  transition: 'all 0.2s',
+  transition: 'all 0.15s ease',
   _hover: {
-    backgroundColor: 'surface.700',
+    backgroundColor: 'surface.850',
     color: 'danger.500',
   },
 });
@@ -112,20 +119,21 @@ export const addTodoInputRow = css({
 
 export const addTodoInput = css({
   flex: 1,
-  padding: '10px 12px',
-  backgroundColor: 'surface.850',
+  padding: '10px 14px',
+  backgroundColor: 'surface.950',
   border: '1px solid',
   borderColor: 'surface.700',
-  borderRadius: '8px',
+  borderRadius: '10px',
   color: 'text.primary',
   fontSize: '14px',
   outline: 'none',
-  transition: 'all 0.2s',
+  transition: 'all 0.15s ease',
   _placeholder: {
     color: 'text.dim',
   },
   _focus: {
     borderColor: 'brand.500',
+    boxShadow: '0 0 0 3px rgba(214, 69, 80, 0.15)',
   },
 });
 
@@ -137,12 +145,13 @@ export const addTodoButton = css({
   height: '40px',
   backgroundColor: 'brand.500',
   border: 'none',
-  borderRadius: '8px',
-  color: 'text.primary',
+  borderRadius: '10px',
+  color: 'surface.950',
   cursor: 'pointer',
-  transition: 'all 0.2s',
+  transition: 'all 0.15s ease',
   _hover: {
     backgroundColor: 'brand.600',
+    transform: 'translateY(-1px)',
   },
   _disabled: {
     opacity: 0.5,
@@ -162,23 +171,25 @@ export const typeButton = cva({
     alignItems: 'center',
     gap: '4px',
     padding: '6px 10px',
-    backgroundColor: 'surface.850',
+    backgroundColor: 'surface.950',
     border: '1px solid',
     borderColor: 'surface.700',
-    borderRadius: '6px',
+    borderRadius: '8px',
     color: 'text.muted',
     fontSize: '12px',
     cursor: 'pointer',
-    transition: 'all 0.2s',
+    transition: 'all 0.15s ease',
     _hover: {
-      borderColor: 'text.faint',
+      borderColor: 'surface.700',
+      backgroundColor: 'surface.900',
     },
   },
   variants: {
     isSelected: {
       true: {
-        borderColor: 'currentColor',
-        color: 'text.primary',
+        borderColor: 'brand.500',
+        color: 'brand.500',
+        backgroundColor: 'surface.900',
       },
     },
   },
@@ -193,6 +204,7 @@ export const emptyState = css({
   color: 'text.dim',
   fontSize: '14px',
   textAlign: 'center',
+  height: '100%',
 });
 
 export const addTaskButton = css({
@@ -200,17 +212,18 @@ export const addTaskButton = css({
   alignItems: 'center',
   justifyContent: 'center',
   gap: '6px',
-  padding: '8px 12px',
+  padding: '8px 14px',
   backgroundColor: 'brand.500',
   border: 'none',
-  borderRadius: '8px',
-  color: 'text.primary',
+  borderRadius: '10px',
+  color: 'surface.950',
   fontSize: '13px',
   fontWeight: '500',
   cursor: 'pointer',
-  transition: 'all 0.2s',
+  transition: 'all 0.15s ease',
   _hover: {
     backgroundColor: 'brand.600',
+    transform: 'translateY(-1px)',
   },
 });
 
@@ -229,6 +242,7 @@ export const todoRepeatIcon = css({
 export const todoItemClickable = css({
   cursor: 'pointer',
   _hover: {
-    backgroundColor: 'surface.800',
+    backgroundColor: 'surface.900',
+    boxShadow: '0 2px 6px rgba(0, 0, 0, 0.08)',
   },
 });

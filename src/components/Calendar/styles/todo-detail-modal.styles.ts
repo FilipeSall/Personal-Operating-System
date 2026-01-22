@@ -3,11 +3,12 @@ import { css, cva } from '../../../../styled-system/css';
 export const modalOverlay = css({
   position: 'fixed',
   inset: 0,
-  backgroundColor: 'rgba(0, 0, 0, 0.7)',
+  backgroundColor: 'rgba(0, 0, 0, 0.4)',
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
   zIndex: 1000,
+  backdropFilter: 'blur(4px)',
 });
 
 export const modalCloseButton = css({
@@ -16,27 +17,28 @@ export const modalCloseButton = css({
   justifyContent: 'center',
   width: '32px',
   height: '32px',
-  backgroundColor: 'transparent',
+  backgroundColor: 'surface.900',
   border: 'none',
   borderRadius: '8px',
   color: 'text.dim',
   cursor: 'pointer',
-  transition: 'all 0.2s',
+  transition: 'all 0.15s ease',
   _hover: {
-    backgroundColor: 'surface.700',
+    backgroundColor: 'surface.800',
     color: 'text.primary',
   },
 });
 
 export const detailModalContent = css({
-  backgroundColor: 'surface.900',
-  borderRadius: '16px',
-  padding: '24px',
+  backgroundColor: 'surface.950',
+  borderRadius: '20px',
+  padding: '28px',
   width: '100%',
   maxWidth: '400px',
   display: 'flex',
   flexDirection: 'column',
   gap: '20px',
+  boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.15)',
 });
 
 export const detailHeader = css({
@@ -105,7 +107,7 @@ export const detailTag = css({
   alignItems: 'center',
   gap: '4px',
   padding: '4px 10px',
-  backgroundColor: 'surface.950',
+  backgroundColor: 'surface.900',
   borderRadius: '20px',
   fontSize: '12px',
   color: 'text.label',
@@ -128,34 +130,35 @@ export const detailActionButton = cva({
     justifyContent: 'center',
     gap: '8px',
     padding: '12px',
-    borderRadius: '8px',
+    borderRadius: '10px',
     fontSize: '14px',
     fontWeight: '500',
     cursor: 'pointer',
-    transition: 'all 0.2s',
+    transition: 'all 0.15s ease',
     border: 'none',
   },
   variants: {
     variant: {
       primary: {
         backgroundColor: 'brand.500',
-        color: 'text.primary',
+        color: 'surface.950',
         _hover: {
           backgroundColor: 'brand.600',
+          transform: 'translateY(-1px)',
         },
       },
       danger: {
-        backgroundColor: 'surface.850',
+        backgroundColor: 'surface.900',
         color: 'danger.500',
         _hover: {
-          backgroundColor: 'surface.700',
+          backgroundColor: 'surface.800',
         },
       },
       secondary: {
-        backgroundColor: 'surface.850',
+        backgroundColor: 'surface.900',
         color: 'text.subtle',
         _hover: {
-          backgroundColor: 'surface.700',
+          backgroundColor: 'surface.800',
         },
       },
     },
@@ -163,14 +166,15 @@ export const detailActionButton = cva({
 });
 
 export const confirmModalContent = css({
-  backgroundColor: 'surface.900',
-  borderRadius: '14px',
-  padding: '20px',
+  backgroundColor: 'surface.950',
+  borderRadius: '16px',
+  padding: '24px',
   width: '100%',
   maxWidth: '360px',
   display: 'flex',
   flexDirection: 'column',
   gap: '16px',
+  boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.15)',
 });
 
 export const confirmHeader = css({
@@ -199,17 +203,17 @@ export const confirmOptionButton = cva({
     alignItems: 'center',
     justifyContent: 'center',
     padding: '10px 12px',
-    borderRadius: '8px',
+    borderRadius: '10px',
     border: '1px solid',
     borderColor: 'surface.700',
-    backgroundColor: 'surface.850',
+    backgroundColor: 'surface.900',
     color: 'text.subtle',
     fontSize: '13px',
     fontWeight: '500',
     cursor: 'pointer',
-    transition: 'all 0.2s',
+    transition: 'all 0.15s ease',
     _hover: {
-      backgroundColor: 'surface.700',
+      backgroundColor: 'surface.800',
       color: 'text.primary',
     },
   },
@@ -219,7 +223,7 @@ export const confirmOptionButton = cva({
         color: 'danger.500',
         borderColor: 'surface.700',
         _hover: {
-          backgroundColor: 'surface.700',
+          backgroundColor: 'surface.800',
           color: 'danger.500',
         },
       },

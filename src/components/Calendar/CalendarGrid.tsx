@@ -18,6 +18,7 @@ import {
   navButton,
   calendarGrid,
   weekdayHeader,
+  calendarSection,
 } from './styles/calendar-base.styles';
 
 const WEEKDAYS = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
@@ -46,7 +47,7 @@ export function CalendarGrid() {
   };
 
   return (
-    <div>
+    <div className={calendarSection}>
       <div className={calendarHeader}>
         <button className={navButton} onClick={handlePrevMonth} type="button">
           <MdChevronLeft size={20} />

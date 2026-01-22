@@ -1,63 +1,85 @@
 import { css, cva } from '../../../../styled-system/css';
 
 export const calendarContainer = css({
+  display: 'grid',
+  gridTemplateRows: '40% 60%',
+  gap: '24px',
+  padding: '28px',
+  backgroundColor: 'surface.950',
+  borderRadius: '20px',
+  width: '40%',
+  minWidth: '320px',
+  height: '100dvh',
+  overflow: 'hidden',
+  fontFamily: 'system-ui, -apple-system, sans-serif',
+  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05)',
+  border: '1px solid',
+  borderColor: 'surface.700',
+});
+
+export const calendarSection = css({
   display: 'flex',
   flexDirection: 'column',
-  gap: '24px',
-  padding: '24px',
-  backgroundColor: 'surface.900',
-  borderRadius: '16px',
-  maxWidth: '400px',
-  fontFamily: 'system-ui, sans-serif',
+  height: '100%',
+  minHeight: 0,
 });
 
 export const calendarHeader = css({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'space-between',
-  marginBottom: '8px',
+  marginBottom: '12px',
+  paddingBottom: '16px',
+  borderBottom: '1px solid',
+  borderColor: 'surface.700',
 });
 
 export const calendarTitle = css({
-  fontSize: '18px',
+  fontSize: '20px',
   fontWeight: '600',
   color: 'text.primary',
   textTransform: 'capitalize',
+  letterSpacing: '-0.01em',
 });
 
 export const navButton = css({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
-  width: '32px',
-  height: '32px',
-  backgroundColor: 'transparent',
+  width: '36px',
+  height: '36px',
+  backgroundColor: 'surface.900',
   border: 'none',
-  borderRadius: '8px',
+  borderRadius: '10px',
   color: 'text.muted',
   cursor: 'pointer',
-  transition: 'all 0.2s',
+  transition: 'all 0.2s ease',
   _hover: {
-    backgroundColor: 'surface.700',
-    color: 'text.primary',
+    backgroundColor: 'surface.800',
+    color: 'brand.500',
   },
 });
 
 export const calendarGrid = css({
   display: 'grid',
   gridTemplateColumns: 'repeat(7, 1fr)',
-  gap: '4px',
+  gridTemplateRows: 'auto repeat(6, 1fr)',
+  gap: '6px',
+  flex: 1,
+  height: '100%',
+  minHeight: 0,
 });
 
 export const weekdayHeader = css({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
-  height: '32px',
-  fontSize: '12px',
-  fontWeight: '500',
+  height: '36px',
+  fontSize: '11px',
+  fontWeight: '600',
   color: 'text.dim',
   textTransform: 'uppercase',
+  letterSpacing: '0.05em',
 });
 
 export const dayCell = cva({
@@ -66,13 +88,12 @@ export const dayCell = cva({
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
-    width: '40px',
-    height: '40px',
+    height: '100%',
     fontSize: '14px',
     fontWeight: '500',
-    borderRadius: '8px',
+    borderRadius: '12px',
     cursor: 'pointer',
-    transition: 'all 0.2s',
+    transition: 'all 0.15s ease',
     position: 'relative',
     border: 'none',
     backgroundColor: 'transparent',
@@ -82,13 +103,16 @@ export const dayCell = cva({
     isSelected: {
       true: {
         backgroundColor: 'brand.500',
-        color: 'text.primary',
+        color: 'surface.950',
+        fontWeight: '600',
+        boxShadow: '0 2px 8px rgba(214, 69, 80, 0.35)',
       },
     },
     isToday: {
       true: {
-        border: '2px solid',
-        borderColor: 'brand.500',
+        backgroundColor: 'surface.900',
+        color: 'brand.500',
+        fontWeight: '600',
       },
     },
     isOutsideMonth: {
@@ -107,8 +131,16 @@ export const dayCell = cva({
       isOutsideMonth: false,
       css: {
         _hover: {
-          backgroundColor: 'surface.700',
+          backgroundColor: 'surface.900',
         },
+      },
+    },
+    {
+      isSelected: true,
+      isToday: true,
+      css: {
+        backgroundColor: 'brand.500',
+        color: 'surface.950',
       },
     },
   ],

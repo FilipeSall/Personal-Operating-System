@@ -4,3 +4,8 @@ export { CalendarTodoPanel } from './CalendarTodoPanel';
 export { CalendarDayCell } from './CalendarDayCell';
 export { AddTodoModal } from './AddTodoModal';
 export { TodoDetailModal } from './TodoDetailModal';
+export { TodoDetailActions } from './TodoDetailModal/TodoDetailActions';
+export { TodoDetailDeleteModal } from './TodoDetailModal/TodoDetailDeleteModal';
+export { TodoDetailHeader } from './TodoDetailModal/TodoDetailHeader';
+export { TodoDetailMetaSection } from './TodoDetailModal/TodoDetailMetaSection';
+export { TodoDetailTags } from './TodoDetailModal/TodoDetailTags';

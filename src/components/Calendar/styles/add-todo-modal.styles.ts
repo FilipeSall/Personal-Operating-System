@@ -121,8 +121,10 @@ export const addTodoModalRecipe = sva({
       },
       _focus: {
         borderColor: 'brand.500',
-        boxShadow: '0 0 0 4px rgba(214, 69, 80, 0.15)',
         transform: 'translateY(-1px)',
+      },
+      _active: {
+        transform: 'translateY(0)',
       },
     },
     typeGrid: {
@@ -161,8 +163,10 @@ export const addTodoModalRecipe = sva({
       boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)',
       _focus: {
         borderColor: 'brand.500',
-        boxShadow: '0 0 0 4px rgba(214, 69, 80, 0.15)',
         transform: 'translateY(-1px)',
+      },
+      _active: {
+        transform: 'translateY(0)',
       },
     },
     timeError: {
@@ -196,8 +200,10 @@ export const addTodoModalRecipe = sva({
       },
       _focus: {
         borderColor: 'brand.500',
-        boxShadow: '0 0 0 4px rgba(214, 69, 80, 0.15)',
         transform: 'translateY(-1px)',
+      },
+      _active: {
+        transform: 'translateY(0)',
       },
     },
     repeatSection: {
@@ -258,6 +264,10 @@ export const modalTypeButton = cva({
       transform: 'translateY(-1px)',
       boxShadow: '0 2px 6px rgba(0, 0, 0, 0.1)',
     },
+    _active: {
+      transform: 'translateY(0)',
+      boxShadow: '0 1px 3px rgba(0, 0, 0, 0.08)',
+    },
   },
   variants: {
     isSelected: {
@@ -287,6 +297,10 @@ export const modalSubmitButton = css({
     transform: 'translateY(-2px)',
     boxShadow: '0 6px 16px rgba(214, 69, 80, 0.35)',
   },
+  _active: {
+    transform: 'translateY(0)',
+    boxShadow: '0 3px 10px rgba(214, 69, 80, 0.25)',
+  },
   _disabled: {
     opacity: 0.5,
     cursor: 'not-allowed',
@@ -312,6 +326,9 @@ export const repeatButton = cva({
       borderColor: 'surface.600',
       backgroundColor: 'surface.900',
       transform: 'translateY(-1px)',
+    },
+    _active: {
+      transform: 'translateY(0)',
     },
   },
   variants: {
@@ -348,6 +365,10 @@ export const weekdayButton = cva({
       transform: 'translateY(-2px)',
       boxShadow: '0 3px 8px rgba(0, 0, 0, 0.12)',
     },
+    _active: {
+      transform: 'translateY(0)',
+      boxShadow: '0 1px 3px rgba(0, 0, 0, 0.08)',
+    },
   },
   variants: {
     isSelected: {
@@ -378,6 +399,9 @@ export const durationButton = cva({
       borderColor: 'surface.600',
       backgroundColor: 'surface.900',
       transform: 'translateY(-1px)',
+    },
+    _active: {
+      transform: 'translateY(0)',
     },
   },
   variants: {

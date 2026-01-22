@@ -126,6 +126,7 @@ export function CalendarTodoPanel() {
       )}
 
       <AddTodoModal
+        key={editingTodo?.id ?? 'new'}
         isOpen={isAddModalOpen || !!editingTodo}
         todo={editingTodo}
         onClose={() => {
@@ -134,6 +135,7 @@ export function CalendarTodoPanel() {
         }}
       />
       <TodoDetailModal
+        key={selectedTodo?.id ?? 'empty'}
         todo={selectedTodo}
         onClose={() => setSelectedTodo(null)}
         onEdit={(todo) => {

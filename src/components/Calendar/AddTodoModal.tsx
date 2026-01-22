@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import {
@@ -22,6 +22,7 @@ import {
   weekdayButton,
   durationButton,
 } from './styles/add-todo-modal.styles';
+import { css } from '../../../styled-system/css';
 
 const ICONS: Record<string, React.ComponentType<{ size?: number; color?: string }>> = {
   MdWork,
@@ -68,14 +69,24 @@ interface AddTodoModalProps {
 
 export function AddTodoModal({ isOpen, onClose, todo }: AddTodoModalProps) {
   const { selectedDate, addTodo, updateTodo } = useCalendarStore();
-  const [text, setText] = useState('');
-  const [selectedType, setSelectedType] = useState<TodoType>('reminder');
-  const [startTime, setStartTime] = useState('09:00');
-  const [endTime, setEndTime] = useState('10:00');
-  const [comments, setComments] = useState('');
-  const [repeatType, setRepeatType] = useState<RepeatType>('none');
-  const [selectedWeekdays, setSelectedWeekdays] = useState<Weekday[]>([]);
-  const [duration, setDuration] = useState<RepeatDuration>('month');
+  const initialRepeatType = todo?.repeat.type ?? 'none';
+  const initialWeekdays =
+    initialRepeatType === 'custom'
+      ? todo?.repeat.weekdays ?? []
+      : initialRepeatType === 'daily'
+        ? ALL_WEEKDAYS
+        : initialRepeatType === 'weekly'
+          ? WORK_WEEKDAYS
+          : [];
+
+  const [text, setText] = useState(todo?.text ?? '');
+  const [selectedType, setSelectedType] = useState<TodoType>(todo?.type ?? 'reminder');
+  const [startTime, setStartTime] = useState(todo?.startTime ?? '09:00');
+  const [endTime, setEndTime] = useState(todo?.endTime ?? '10:00');
+  const [comments, setComments] = useState(todo?.comments ?? '');
+  const [repeatType, setRepeatType] = useState<RepeatType>(initialRepeatType);
+  const [selectedWeekdays, setSelectedWeekdays] = useState<Weekday[]>(initialWeekdays);
+  const [duration, setDuration] = useState<RepeatDuration>(todo?.repeat.duration ?? 'month');
 
   const modalSlots = addTodoModalRecipe();
   const dateKey = todo ? todo.date : format(selectedDate, 'yyyy-MM-dd');
@@ -92,26 +103,6 @@ export function AddTodoModal({ isOpen, onClose, todo }: AddTodoModalProps) {
     if (type === 'custom') return customDays;
     return [];
   };
-
-  useEffect(() => {
-    if (!isOpen) return;
-    if (!todo) {
-      resetForm();
-      return;
-    }
-    setText(todo.text);
-    setSelectedType(todo.type);
-    setStartTime(todo.startTime);
-    setEndTime(todo.endTime);
-    setComments(todo.comments ?? '');
-    setRepeatType(todo.repeat.type);
-    setDuration(todo.repeat.duration ?? 'month');
-    if (todo.repeat.type === 'custom') {
-      setSelectedWeekdays(todo.repeat.weekdays ?? []);
-    } else {
-      setSelectedWeekdays(getRepeatWeekdays(todo.repeat.type, []));
-    }
-  }, [isOpen, todo]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -199,7 +190,12 @@ export function AddTodoModal({ isOpen, onClose, todo }: AddTodoModalProps) {
             className={modalSlots.input}
             placeholder="Descreva sua tarefa..."
             value={text}
-            onChange={(e) => setText(e.target.value)}
+            onChange={(e) => {
+              if (e.target.value.length <= 50) {
+                setText(e.target.value);
+              }
+            }}
+            maxLength={50}
             autoFocus
           />
 
@@ -209,8 +205,16 @@ export function AddTodoModal({ isOpen, onClose, todo }: AddTodoModalProps) {
               className={modalSlots.commentInput}
               placeholder="Adicione detalhes ou observações..."
               value={comments}
-              onChange={(e) => setComments(e.target.value)}
+              onChange={(e) => {
+                if (e.target.value.length <= 500) {
+                  setComments(e.target.value);
+                }
+              }}
+              maxLength={500}
             />
+            <div className={css({ fontSize: '11px', color: 'text.dim', textAlign: 'right', marginTop: '-4px' })}>
+              {comments.length}/500
+            </div>
           </div>
 
           <div className={modalSlots.timeRow}>

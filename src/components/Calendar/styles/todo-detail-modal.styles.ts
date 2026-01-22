@@ -9,6 +9,8 @@ export const modalOverlay = css({
   justifyContent: 'center',
   zIndex: 1000,
   backdropFilter: 'blur(4px)',
+  padding: '20px',
+  overflow: 'hidden',
 });
 
 export const modalCloseButton = css({
@@ -35,10 +37,28 @@ export const detailModalContent = css({
   padding: '28px',
   width: '100%',
   maxWidth: '400px',
+  maxHeight: '90vh',
+  overflowY: 'auto',
   display: 'flex',
   flexDirection: 'column',
   gap: '20px',
   boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.15)',
+  scrollbarWidth: 'none',
+  '&::-webkit-scrollbar': {
+    width: '8px',
+  },
+  '&::-webkit-scrollbar-track': {
+    background: 'surface.800',
+    borderRadius: '10px',
+    margin: '4px',
+  },
+  '&::-webkit-scrollbar-thumb': {
+    background: 'surface.600',
+    borderRadius: '10px',
+    '&:hover': {
+      background: 'surface.500',
+    },
+  },
 });
 
 export const detailHeader = css({
@@ -54,6 +74,11 @@ export const detailTitle = css({
   color: 'text.primary',
   lineHeight: '1.4',
   flex: 1,
+  wordWrap: 'break-word',
+  wordBreak: 'break-word',
+  overflowWrap: 'break-word',
+  whiteSpace: 'normal',
+  maxWidth: 'calc(100% - 40px)',
 });
 
 export const detailBadge = css({
@@ -74,13 +99,14 @@ export const detailSection = css({
 
 export const detailRow = css({
   display: 'flex',
-  alignItems: 'center',
+  alignItems: 'flex-start',
   gap: '12px',
 });
 
 export const detailIcon = css({
   color: 'text.dim',
   flexShrink: 0,
+  marginTop: '2px',
 });
 
 export const detailLabel = css({
@@ -94,6 +120,21 @@ export const detailValue = css({
   fontSize: '14px',
   color: 'text.subtle',
 });
+
+export const detailCommentContainer = css({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '8px',
+  flex: 1,
+});
+
+export const detailCommentText = css({
+  fontSize: '14px',
+  color: 'text.subtle',
+  lineHeight: '1.5',
+  wordBreak: 'break-word',
+});
+
 
 export const detailTags = css({
   display: 'flex',

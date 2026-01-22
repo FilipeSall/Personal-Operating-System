@@ -6,7 +6,6 @@ import {
   MdRepeat,
   MdCalendarToday,
   MdDelete,
-  MdCheck,
   MdNotes,
   MdEdit,
   MdWork,
@@ -41,6 +40,8 @@ import {
   confirmTitle,
   confirmOptions,
   confirmOptionButton,
+  detailCommentContainer,
+  detailCommentText,
 } from './styles/todo-detail-modal.styles';
 
 const ICONS: Record<string, React.ComponentType<{ size?: number; color?: string }>> = {
@@ -94,6 +95,7 @@ export function TodoDetailModal({ todo: initialTodo, onClose, onEdit }: TodoDeta
   const typeConfig = TODO_TYPES.find((t) => t.id === currentTodo.type);
   const Icon = typeConfig ? ICONS[typeConfig.icon] : null;
   const hasRepeat = currentTodo.repeat.type !== 'none';
+  const shouldTruncateTitle = currentTodo.text.length > 50;
 
   const handleEdit = () => {
     onEdit(currentTodo);
@@ -117,12 +119,9 @@ export function TodoDetailModal({ todo: initialTodo, onClose, onEdit }: TodoDeta
     <div className={modalOverlay} onClick={handleOverlayClick}>
       <div className={detailModalContent}>
         <div className={detailHeader}>
-          <span
+          <span 
             className={detailTitle}
-            style={{
-              textDecoration: currentTodo.completed ? 'line-through' : 'none',
-              opacity: currentTodo.completed ? 0.6 : 1,
-            }}
+            title={shouldTruncateTitle ? currentTodo.text : undefined}
           >
             {currentTodo.text}
           </span>
@@ -139,15 +138,6 @@ export function TodoDetailModal({ todo: initialTodo, onClose, onEdit }: TodoDeta
             >
               {Icon && <Icon size={14} color={typeConfig.color} />}
               {typeConfig.label}
-            </span>
-          )}
-          {currentTodo.completed && (
-            <span
-              className={detailBadge}
-              style={{ backgroundColor: '#A7AA2920', color: '#A7AA29' }}
-            >
-              <MdCheck size={14} />
-              Concluída
             </span>
           )}
           {hasRepeat && (
@@ -188,7 +178,11 @@ export function TodoDetailModal({ todo: initialTodo, onClose, onEdit }: TodoDeta
                 <MdNotes size={18} />
               </span>
               <span className={detailLabel}>Comentários</span>
-              <span className={detailValue}>{currentTodo.comments}</span>
+              <div className={detailCommentContainer}>
+                <span className={detailCommentText}>
+                  {currentTodo.comments}
+                </span>
+              </div>
             </div>
           )}
 

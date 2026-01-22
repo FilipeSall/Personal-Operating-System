@@ -13,7 +13,7 @@ import {
 } from 'react-icons/md';
 import { useCalendarStore } from '../../store/useCalendarStore';
 import { TODO_TYPES } from '../../data/todoTypes';
-import type { TodoType } from '../../types/calendar';
+import type { TodoType, RepeatType, Weekday } from '../../types/calendar';
 import {
   modalOverlay,
   modalContent,
@@ -25,6 +25,16 @@ import {
   modalTypeGrid,
   modalTypeButton,
   modalSubmitButton,
+  timeInputRow,
+  timeInputGroup,
+  timeInputLabel,
+  timeInput,
+  repeatSection,
+  repeatLabel,
+  repeatOptions,
+  repeatButton,
+  weekdaySelector,
+  weekdayButton,
 } from './calendar.styles';
 
 const ICONS: Record<string, React.ComponentType<{ size?: number; color?: string }>> = {
@@ -37,6 +47,23 @@ const ICONS: Record<string, React.ComponentType<{ size?: number; color?: string 
   MdAttachMoney,
 };
 
+const WEEKDAYS: { id: Weekday; label: string }[] = [
+  { id: 'sun', label: 'D' },
+  { id: 'mon', label: 'S' },
+  { id: 'tue', label: 'T' },
+  { id: 'wed', label: 'Q' },
+  { id: 'thu', label: 'Q' },
+  { id: 'fri', label: 'S' },
+  { id: 'sat', label: 'S' },
+];
+
+const REPEAT_OPTIONS: { id: RepeatType; label: string }[] = [
+  { id: 'none', label: 'Não repetir' },
+  { id: 'daily', label: 'Todo dia' },
+  { id: 'weekly', label: 'Seg a Sex' },
+  { id: 'custom', label: 'Personalizado' },
+];
+
 interface AddTodoModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -46,6 +73,10 @@ export function AddTodoModal({ isOpen, onClose }: AddTodoModalProps) {
   const { selectedDate, addTodo } = useCalendarStore();
   const [text, setText] = useState('');
   const [selectedType, setSelectedType] = useState<TodoType>('reminder');
+  const [startTime, setStartTime] = useState('09:00');
+  const [endTime, setEndTime] = useState('10:00');
+  const [repeatType, setRepeatType] = useState<RepeatType>('none');
+  const [selectedWeekdays, setSelectedWeekdays] = useState<Weekday[]>([]);
 
   if (!isOpen) return null;
 
@@ -54,17 +85,41 @@ export function AddTodoModal({ isOpen, onClose }: AddTodoModalProps) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (text.trim()) {
-      addTodo(dateKey, text.trim(), selectedType);
-      setText('');
-      setSelectedType('reminder');
+      addTodo({
+        text: text.trim(),
+        date: dateKey,
+        type: selectedType,
+        startTime,
+        endTime,
+        repeat: {
+          type: repeatType,
+          weekdays: repeatType === 'custom' ? selectedWeekdays : undefined,
+        },
+      });
+      resetForm();
       onClose();
     }
+  };
+
+  const resetForm = () => {
+    setText('');
+    setSelectedType('reminder');
+    setStartTime('09:00');
+    setEndTime('10:00');
+    setRepeatType('none');
+    setSelectedWeekdays([]);
   };
 
   const handleOverlayClick = (e: React.MouseEvent) => {
     if (e.target === e.currentTarget) {
       onClose();
     }
+  };
+
+  const toggleWeekday = (day: Weekday) => {
+    setSelectedWeekdays((prev) =>
+      prev.includes(day) ? prev.filter((d) => d !== day) : [...prev, day]
+    );
   };
 
   return (
@@ -89,6 +144,27 @@ export function AddTodoModal({ isOpen, onClose }: AddTodoModalProps) {
             autoFocus
           />
 
+          <div className={timeInputRow}>
+            <div className={timeInputGroup}>
+              <label className={timeInputLabel}>Início</label>
+              <input
+                type="time"
+                className={timeInput}
+                value={startTime}
+                onChange={(e) => setStartTime(e.target.value)}
+              />
+            </div>
+            <div className={timeInputGroup}>
+              <label className={timeInputLabel}>Término</label>
+              <input
+                type="time"
+                className={timeInput}
+                value={endTime}
+                onChange={(e) => setEndTime(e.target.value)}
+              />
+            </div>
+          </div>
+
           <div className={modalTypeGrid}>
             {TODO_TYPES.map((type) => {
               const Icon = ICONS[type.icon];
@@ -108,10 +184,41 @@ export function AddTodoModal({ isOpen, onClose }: AddTodoModalProps) {
             })}
           </div>
 
+          <div className={repeatSection}>
+            <span className={repeatLabel}>Repetir</span>
+            <div className={repeatOptions}>
+              {REPEAT_OPTIONS.map((option) => (
+                <button
+                  key={option.id}
+                  type="button"
+                  className={repeatButton({ isSelected: repeatType === option.id })}
+                  onClick={() => setRepeatType(option.id)}
+                >
+                  {option.label}
+                </button>
+              ))}
+            </div>
+
+            {repeatType === 'custom' && (
+              <div className={weekdaySelector}>
+                {WEEKDAYS.map((day, index) => (
+                  <button
+                    key={`${day.id}-${index}`}
+                    type="button"
+                    className={weekdayButton({ isSelected: selectedWeekdays.includes(day.id) })}
+                    onClick={() => toggleWeekday(day.id)}
+                  >
+                    {day.label}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
           <button
             type="submit"
             className={modalSubmitButton}
-            disabled={!text.trim()}
+            disabled={!text.trim() || (repeatType === 'custom' && selectedWeekdays.length === 0)}
           >
             Adicionar tarefa
           </button>

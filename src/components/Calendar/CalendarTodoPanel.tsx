@@ -28,6 +28,8 @@ import {
   todoDeleteButton,
   addTaskButton,
   emptyState,
+  todoTime,
+  todoRepeatIcon,
 } from './calendar.styles';
 
 const ICONS: Record<string, React.ComponentType<{ size?: number; color?: string }>> = {
@@ -41,11 +43,11 @@ const ICONS: Record<string, React.ComponentType<{ size?: number; color?: string 
 };
 
 export function CalendarTodoPanel() {
-  const { selectedDate, todos, toggleTodo, deleteTodo } = useCalendarStore();
+  const { selectedDate, getTodosForDate, toggleTodo, deleteTodo } = useCalendarStore();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const dateKey = format(selectedDate, 'yyyy-MM-dd');
-  const dayTodos = todos[dateKey] || [];
+  const dayTodos = getTodosForDate(dateKey);
 
   const getTypeConfig = (type: TodoType) => {
     return TODO_TYPES.find((t) => t.id === type);
@@ -76,6 +78,7 @@ export function CalendarTodoPanel() {
           {dayTodos.map((todo) => {
             const typeConfig = getTypeConfig(todo.type);
             const Icon = typeConfig ? ICONS[typeConfig.icon] : null;
+            const hasRepeat = todo.repeat.type !== 'none';
 
             return (
               <div
@@ -92,11 +95,21 @@ export function CalendarTodoPanel() {
                   {todo.completed && <MdCheck size={12} color="#fff" />}
                 </button>
 
+                <span className={todoTime}>
+                  {todo.startTime}
+                </span>
+
                 {Icon && <Icon size={16} color={typeConfig?.color} />}
 
                 <span className={todoText({ completed: todo.completed })}>
                   {todo.text}
                 </span>
+
+                {hasRepeat && (
+                  <span className={todoRepeatIcon}>
+                    <MdRepeat size={14} />
+                  </span>
+                )}
 
                 <button
                   type="button"

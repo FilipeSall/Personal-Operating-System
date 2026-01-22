@@ -465,3 +465,128 @@ export const addTaskButton = css({
     backgroundColor: '#2563EB',
   },
 });
+
+export const timeInputRow = css({
+  display: 'flex',
+  gap: '12px',
+  alignItems: 'center',
+});
+
+export const timeInputGroup = css({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '4px',
+  flex: 1,
+});
+
+export const timeInputLabel = css({
+  fontSize: '12px',
+  color: '#9ca3af',
+  fontWeight: '500',
+});
+
+export const timeInput = css({
+  padding: '10px 12px',
+  backgroundColor: '#16162a',
+  border: '1px solid #2a2a4e',
+  borderRadius: '8px',
+  color: '#ffffff',
+  fontSize: '14px',
+  outline: 'none',
+  transition: 'all 0.2s',
+  width: '100%',
+  _focus: {
+    borderColor: '#3B82F6',
+  },
+});
+
+export const repeatSection = css({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '12px',
+});
+
+export const repeatLabel = css({
+  fontSize: '12px',
+  color: '#9ca3af',
+  fontWeight: '500',
+});
+
+export const repeatOptions = css({
+  display: 'flex',
+  gap: '8px',
+  flexWrap: 'wrap',
+});
+
+export const repeatButton = cva({
+  base: {
+    padding: '8px 12px',
+    backgroundColor: '#16162a',
+    border: '2px solid #2a2a4e',
+    borderRadius: '8px',
+    color: '#a0a0a0',
+    fontSize: '13px',
+    cursor: 'pointer',
+    transition: 'all 0.2s',
+    _hover: {
+      borderColor: '#4b5563',
+    },
+  },
+  variants: {
+    isSelected: {
+      true: {
+        borderColor: '#3B82F6',
+        color: '#ffffff',
+        backgroundColor: '#1e1e3f',
+      },
+    },
+  },
+});
+
+export const weekdaySelector = css({
+  display: 'flex',
+  gap: '6px',
+  justifyContent: 'space-between',
+});
+
+export const weekdayButton = cva({
+  base: {
+    width: '36px',
+    height: '36px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#16162a',
+    border: '2px solid #2a2a4e',
+    borderRadius: '8px',
+    color: '#a0a0a0',
+    fontSize: '12px',
+    fontWeight: '500',
+    cursor: 'pointer',
+    transition: 'all 0.2s',
+    _hover: {
+      borderColor: '#4b5563',
+    },
+  },
+  variants: {
+    isSelected: {
+      true: {
+        borderColor: '#3B82F6',
+        color: '#ffffff',
+        backgroundColor: '#3B82F6',
+      },
+    },
+  },
+});
+
+export const todoTime = css({
+  fontSize: '12px',
+  color: '#9ca3af',
+  fontWeight: '500',
+  whiteSpace: 'nowrap',
+});
+
+export const todoRepeatIcon = css({
+  color: '#6b7280',
+  flexShrink: 0,
+});

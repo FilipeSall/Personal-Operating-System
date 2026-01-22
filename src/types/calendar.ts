@@ -14,12 +14,25 @@ export interface TodoTypeConfig {
   color: string;
 }
 
+export type RepeatType = 'none' | 'daily' | 'weekly' | 'custom';
+
+export type Weekday = 'sun' | 'mon' | 'tue' | 'wed' | 'thu' | 'fri' | 'sat';
+
+export interface RepeatConfig {
+  type: RepeatType;
+  weekdays?: Weekday[];
+}
+
 export interface Todo {
   id: string;
   text: string;
   completed: boolean;
   date: string;
   type: TodoType;
+  startTime: string;
+  endTime: string;
+  repeat: RepeatConfig;
+  originalTodoId?: string;
 }
 
 export interface SpecialDate {
@@ -37,7 +50,8 @@ export interface CalendarState {
 
   setSelectedDate: (date: Date) => void;
   setCurrentMonth: (date: Date) => void;
-  addTodo: (date: string, text: string, type: TodoType) => void;
+  addTodo: (todo: Omit<Todo, 'id' | 'completed' | 'originalTodoId'>) => void;
   toggleTodo: (date: string, todoId: string) => void;
-  deleteTodo: (date: string, todoId: string) => void;
+  deleteTodo: (date: string, todoId: string, deleteAll?: boolean) => void;
+  getTodosForDate: (date: string) => Todo[];
 }

@@ -7,6 +7,7 @@ import {
   MdCalendarToday,
   MdDelete,
   MdCheck,
+  MdNotes,
   MdWork,
   MdNotifications,
   MdPerson,
@@ -15,6 +16,7 @@ import {
   MdAttachMoney,
 } from 'react-icons/md';
 import { MdRepeat as MdRepeatIcon } from 'react-icons/md';
+import { useState } from 'react';
 import { useCalendarStore } from '../../store/useCalendarStore';
 import { TODO_TYPES } from '../../data/todoTypes';
 import type { Todo, RepeatDuration, Weekday } from '../../types/calendar';
@@ -33,7 +35,12 @@ import {
   detailTags,
   detailActions,
   detailActionButton,
-} from './calendar.styles';
+  confirmModalContent,
+  confirmHeader,
+  confirmTitle,
+  confirmOptions,
+  confirmOptionButton,
+} from './styles/todo-detail-modal.styles';
 
 const ICONS: Record<string, React.ComponentType<{ size?: number; color?: string }>> = {
   MdWork,
@@ -76,6 +83,7 @@ interface TodoDetailModalProps {
 
 export function TodoDetailModal({ todo: initialTodo, onClose }: TodoDetailModalProps) {
   const { toggleTodo, deleteTodo, todos } = useCalendarStore();
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   if (!initialTodo) return null;
 
@@ -89,13 +97,9 @@ export function TodoDetailModal({ todo: initialTodo, onClose }: TodoDetailModalP
     toggleTodo(currentTodo.date, currentTodo.id);
   };
 
-  const handleDeleteOne = () => {
-    deleteTodo(currentTodo.date, currentTodo.id, false);
-    onClose();
-  };
-
-  const handleDeleteAll = () => {
-    deleteTodo(currentTodo.date, currentTodo.id, true);
+  const handleDelete = (scope: 'single' | 'week' | 'month' | 'all') => {
+    deleteTodo(currentTodo.date, currentTodo.id, scope);
+    setIsDeleteModalOpen(false);
     onClose();
   };
 
@@ -176,6 +180,16 @@ export function TodoDetailModal({ todo: initialTodo, onClose }: TodoDetailModalP
             </span>
           </div>
 
+          {currentTodo.comments && (
+            <div className={detailRow}>
+              <span className={detailIcon}>
+                <MdNotes size={18} />
+              </span>
+              <span className={detailLabel}>Comentários</span>
+              <span className={detailValue}>{currentTodo.comments}</span>
+            </div>
+          )}
+
           {hasRepeat && (
             <>
               <div className={detailRow}>
@@ -225,39 +239,59 @@ export function TodoDetailModal({ todo: initialTodo, onClose }: TodoDetailModalP
             {currentTodo.completed ? 'Desmarcar' : 'Concluir'}
           </button>
 
-          {hasRepeat ? (
-            <>
-              <button
-                type="button"
-                className={detailActionButton({ variant: 'danger' })}
-                onClick={handleDeleteOne}
-                title="Remover apenas esta ocorrência"
-              >
-                <MdDelete size={18} />
-                Esta
-              </button>
-              <button
-                type="button"
-                className={detailActionButton({ variant: 'danger' })}
-                onClick={handleDeleteAll}
-                title="Remover todas as ocorrências"
-              >
-                <MdDelete size={18} />
-                Todas
-              </button>
-            </>
-          ) : (
-            <button
-              type="button"
-              className={detailActionButton({ variant: 'danger' })}
-              onClick={handleDeleteOne}
-            >
-              <MdDelete size={18} />
-              Remover
-            </button>
-          )}
+          <button
+            type="button"
+            className={detailActionButton({ variant: 'danger' })}
+            onClick={() => setIsDeleteModalOpen(true)}
+          >
+            <MdDelete size={18} />
+            Excluir
+          </button>
         </div>
       </div>
+
+      {isDeleteModalOpen && (
+        <div className={modalOverlay} onClick={(e) => e.currentTarget === e.target && setIsDeleteModalOpen(false)}>
+          <div className={confirmModalContent}>
+            <div className={confirmHeader}>
+              <span className={confirmTitle}>Qual você quer excluir?</span>
+              <button type="button" className={modalCloseButton} onClick={() => setIsDeleteModalOpen(false)}>
+                <MdClose size={18} />
+              </button>
+            </div>
+            <div className={confirmOptions}>
+              <button
+                type="button"
+                className={confirmOptionButton({ variant: 'danger' })}
+                onClick={() => handleDelete('single')}
+              >
+                Apenas esta
+              </button>
+              <button
+                type="button"
+                className={confirmOptionButton({ variant: 'danger' })}
+                onClick={() => handleDelete('week')}
+              >
+                Todas da semana
+              </button>
+              <button
+                type="button"
+                className={confirmOptionButton({ variant: 'danger' })}
+                onClick={() => handleDelete('month')}
+              >
+                Todas do mês
+              </button>
+              <button
+                type="button"
+                className={confirmOptionButton({ variant: 'danger' })}
+                onClick={() => handleDelete('all')}
+              >
+                Todas do calendário
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -30,7 +30,7 @@ import {
   todoTime,
   todoRepeatIcon,
   todoItemClickable,
-} from './calendar.styles';
+} from './styles/todo-panel.styles';
 
 const ICONS: Record<string, React.ComponentType<{ size?: number; color?: string }>> = {
   MdWork,

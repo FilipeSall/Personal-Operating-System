@@ -18,7 +18,7 @@ import {
   navButton,
   calendarGrid,
   weekdayHeader,
-} from './calendar.styles';
+} from './styles/calendar-base.styles';
 
 const WEEKDAYS = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
 

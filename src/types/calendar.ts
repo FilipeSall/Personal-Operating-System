@@ -29,6 +29,7 @@ export interface RepeatConfig {
 export interface Todo {
   id: string;
   text: string;
+  comments?: string;
   completed: boolean;
   date: string;
   type: TodoType;
@@ -56,6 +57,10 @@ export interface CalendarState {
   setCurrentMonth: (date: Date) => void;
   addTodo: (todo: Omit<Todo, 'id' | 'completed' | 'originalTodoId' | 'createdAt'>) => void;
   toggleTodo: (date: string, todoId: string) => void;
-  deleteTodo: (date: string, todoId: string, deleteAll?: boolean) => void;
+  deleteTodo: (
+    date: string,
+    todoId: string,
+    scope?: 'single' | 'week' | 'month' | 'all'
+  ) => void;
   getTodosForDate: (date: string) => Todo[];
 }

@@ -15,30 +15,13 @@ import { useCalendarStore } from '../../store/useCalendarStore';
 import { TODO_TYPES } from '../../data/todoTypes';
 import type { TodoType, RepeatType, RepeatDuration, Weekday } from '../../types/calendar';
 import {
-  modalOverlay,
-  modalContent,
-  modalHeader,
-  modalTitle,
-  modalCloseButton,
-  modalForm,
-  modalInput,
-  modalTypeGrid,
+  addTodoModalRecipe,
   modalTypeButton,
   modalSubmitButton,
-  timeInputRow,
-  timeInputGroup,
-  timeInputLabel,
-  timeInput,
-  repeatSection,
-  repeatLabel,
-  repeatOptions,
   repeatButton,
-  weekdaySelector,
   weekdayButton,
-  durationSection,
-  durationOptions,
   durationButton,
-} from './calendar.styles';
+} from './styles/add-todo-modal.styles';
 
 const ICONS: Record<string, React.ComponentType<{ size?: number; color?: string }>> = {
   MdWork,
@@ -59,6 +42,9 @@ const WEEKDAYS: { id: Weekday; label: string }[] = [
   { id: 'fri', label: 'S' },
   { id: 'sat', label: 'S' },
 ];
+
+const ALL_WEEKDAYS: Weekday[] = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
+const WORK_WEEKDAYS: Weekday[] = ['mon', 'tue', 'wed', 'thu', 'fri'];
 
 const REPEAT_OPTIONS: { id: RepeatType; label: string }[] = [
   { id: 'none', label: 'Não repetir' },
@@ -85,27 +71,48 @@ export function AddTodoModal({ isOpen, onClose }: AddTodoModalProps) {
   const [selectedType, setSelectedType] = useState<TodoType>('reminder');
   const [startTime, setStartTime] = useState('09:00');
   const [endTime, setEndTime] = useState('10:00');
+  const [comments, setComments] = useState('');
   const [repeatType, setRepeatType] = useState<RepeatType>('none');
   const [selectedWeekdays, setSelectedWeekdays] = useState<Weekday[]>([]);
   const [duration, setDuration] = useState<RepeatDuration>('month');
 
   if (!isOpen) return null;
 
+  const modalSlots = addTodoModalRecipe();
   const dateKey = format(selectedDate, 'yyyy-MM-dd');
   const showRepeatOptions = repeatType !== 'none';
+  const isTimeRangeValid = startTime < endTime;
+  const canSubmit =
+    text.trim().length > 0 &&
+    isTimeRangeValid &&
+    (repeatType !== 'custom' || selectedWeekdays.length > 0);
+
+  const getRepeatWeekdays = (type: RepeatType, customDays: Weekday[]) => {
+    if (type === 'daily') return ALL_WEEKDAYS;
+    if (type === 'weekly') return WORK_WEEKDAYS;
+    if (type === 'custom') return customDays;
+    return [];
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!text.trim() || !isTimeRangeValid) return;
+
+    const repeatWeekdays = getRepeatWeekdays(repeatType, selectedWeekdays);
+    if (repeatType === 'custom' && repeatWeekdays.length === 0) return;
+
     if (text.trim()) {
+      const trimmedComments = comments.trim();
       addTodo({
         text: text.trim(),
+        comments: trimmedComments.length > 0 ? trimmedComments : undefined,
         date: dateKey,
         type: selectedType,
         startTime,
         endTime,
         repeat: {
           type: repeatType,
-          weekdays: repeatType === 'custom' ? selectedWeekdays : undefined,
+          weekdays: repeatType !== 'none' ? repeatWeekdays : undefined,
           duration: repeatType !== 'none' ? duration : undefined,
         },
       });
@@ -119,6 +126,7 @@ export function AddTodoModal({ isOpen, onClose }: AddTodoModalProps) {
     setSelectedType('reminder');
     setStartTime('09:00');
     setEndTime('10:00');
+    setComments('');
     setRepeatType('none');
     setSelectedWeekdays([]);
     setDuration('month');
@@ -126,7 +134,7 @@ export function AddTodoModal({ isOpen, onClose }: AddTodoModalProps) {
 
   const handleOverlayClick = (e: React.MouseEvent) => {
     if (e.target === e.currentTarget) {
-      onClose();
+      handleClose();
     }
   };
 
@@ -136,50 +144,76 @@ export function AddTodoModal({ isOpen, onClose }: AddTodoModalProps) {
     );
   };
 
+  const handleRepeatChange = (type: RepeatType) => {
+    setRepeatType(type);
+    if (type === 'custom') return;
+    setSelectedWeekdays(getRepeatWeekdays(type, []));
+  };
+
+  const handleClose = () => {
+    resetForm();
+    onClose();
+  };
+
   return (
-    <div className={modalOverlay} onClick={handleOverlayClick}>
-      <div className={modalContent}>
-        <div className={modalHeader}>
-          <span className={modalTitle}>
+    <div className={modalSlots.overlay} onClick={handleOverlayClick}>
+      <div className={modalSlots.content}>
+        <div className={modalSlots.header}>
+          <span className={modalSlots.title}>
             Nova tarefa - {format(selectedDate, "d 'de' MMM", { locale: ptBR })}
           </span>
-          <button type="button" className={modalCloseButton} onClick={onClose}>
+          <button type="button" className={modalSlots.closeButton} onClick={handleClose}>
             <MdClose size={20} />
           </button>
         </div>
 
-        <form className={modalForm} onSubmit={handleSubmit}>
+        <form className={modalSlots.form} onSubmit={handleSubmit}>
           <input
             type="text"
-            className={modalInput}
+            className={modalSlots.input}
             placeholder="Descreva sua tarefa..."
             value={text}
             onChange={(e) => setText(e.target.value)}
             autoFocus
           />
 
-          <div className={timeInputRow}>
-            <div className={timeInputGroup}>
-              <label className={timeInputLabel}>Início</label>
+          <div className={modalSlots.timeGroup}>
+            <label className={modalSlots.commentLabel}>Comentários (opcional)</label>
+            <textarea
+              className={modalSlots.commentInput}
+              placeholder="Adicione detalhes ou observações..."
+              value={comments}
+              onChange={(e) => setComments(e.target.value)}
+            />
+          </div>
+
+          <div className={modalSlots.timeRow}>
+            <div className={modalSlots.timeGroup}>
+              <label className={modalSlots.timeLabel}>Início</label>
               <input
                 type="time"
-                className={timeInput}
+                className={modalSlots.timeInput}
                 value={startTime}
                 onChange={(e) => setStartTime(e.target.value)}
               />
             </div>
-            <div className={timeInputGroup}>
-              <label className={timeInputLabel}>Término</label>
+            <div className={modalSlots.timeGroup}>
+              <label className={modalSlots.timeLabel}>Término</label>
               <input
                 type="time"
-                className={timeInput}
+                className={modalSlots.timeInput}
                 value={endTime}
                 onChange={(e) => setEndTime(e.target.value)}
               />
             </div>
           </div>
+          {!isTimeRangeValid && (
+            <span className={modalSlots.timeError}>
+              O horário de término deve ser posterior ao horário de início.
+            </span>
+          )}
 
-          <div className={modalTypeGrid}>
+          <div className={modalSlots.typeGrid}>
             {TODO_TYPES.map((type) => {
               const Icon = ICONS[type.icon];
               const isSelected = selectedType === type.id;
@@ -198,15 +232,15 @@ export function AddTodoModal({ isOpen, onClose }: AddTodoModalProps) {
             })}
           </div>
 
-          <div className={repeatSection}>
-            <span className={repeatLabel}>Repetir</span>
-            <div className={repeatOptions}>
+          <div className={modalSlots.repeatSection}>
+            <span className={modalSlots.repeatLabel}>Repetir</span>
+            <div className={modalSlots.repeatOptions}>
               {REPEAT_OPTIONS.map((option) => (
                 <button
                   key={option.id}
                   type="button"
                   className={repeatButton({ isSelected: repeatType === option.id })}
-                  onClick={() => setRepeatType(option.id)}
+                  onClick={() => handleRepeatChange(option.id)}
                 >
                   {option.label}
                 </button>
@@ -214,7 +248,7 @@ export function AddTodoModal({ isOpen, onClose }: AddTodoModalProps) {
             </div>
 
             {repeatType === 'custom' && (
-              <div className={weekdaySelector}>
+              <div className={modalSlots.weekdaySelector}>
                 {WEEKDAYS.map((day, index) => (
                   <button
                     key={`${day.id}-${index}`}
@@ -229,9 +263,9 @@ export function AddTodoModal({ isOpen, onClose }: AddTodoModalProps) {
             )}
 
             {showRepeatOptions && (
-              <div className={durationSection}>
-                <span className={repeatLabel}>Duração</span>
-                <div className={durationOptions}>
+              <div className={modalSlots.durationSection}>
+                <span className={modalSlots.repeatLabel}>Duração</span>
+                <div className={modalSlots.durationOptions}>
                   {DURATION_OPTIONS.map((option) => (
                     <button
                       key={option.id}
@@ -250,7 +284,8 @@ export function AddTodoModal({ isOpen, onClose }: AddTodoModalProps) {
           <button
             type="submit"
             className={modalSubmitButton}
-            disabled={!text.trim() || (repeatType === 'custom' && selectedWeekdays.length === 0)}
+            disabled={!canSubmit}
+            title={!isTimeRangeValid ? 'O horário de término deve ser depois do início.' : undefined}
           >
             Adicionar tarefa
           </button>

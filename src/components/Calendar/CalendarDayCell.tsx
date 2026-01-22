@@ -1,6 +1,6 @@
 import { format, isSameDay, isSameMonth } from 'date-fns';
 import { useCalendarStore } from '../../store/useCalendarStore';
-import { dayCell, eventIndicator, eventDot } from './calendar.styles';
+import { dayCell, eventIndicator, eventDot } from './styles/calendar-base.styles';
 
 interface CalendarDayCellProps {
   date: Date;

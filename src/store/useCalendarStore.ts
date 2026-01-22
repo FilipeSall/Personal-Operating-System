@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { format, addDays } from 'date-fns';
+import { format, addDays, startOfWeek, endOfWeek, startOfMonth, endOfMonth } from 'date-fns';
 import type { CalendarState, Todo, Weekday, RepeatDuration } from '../types/calendar';
 import { SPECIAL_DATES } from '../data/holidays';
 
@@ -49,6 +49,7 @@ export const useCalendarStore = create<CalendarState>((set, get) => ({
       const createTodoForDate = (dateStr: string, isOriginal: boolean): Todo => ({
         id: isOriginal ? todoId : crypto.randomUUID(),
         text: todoData.text,
+        comments: todoData.comments,
         completed: false,
         date: dateStr,
         type: todoData.type,
@@ -116,23 +117,44 @@ export const useCalendarStore = create<CalendarState>((set, get) => ({
       };
     }),
 
-  deleteTodo: (date: string, todoId: string, deleteAll?: boolean) =>
+  deleteTodo: (date: string, todoId: string, scope = 'single') =>
     set((state) => {
       const newTodos = { ...state.todos };
       const todoToDelete = newTodos[date]?.find((t) => t.id === todoId);
 
       if (!todoToDelete) return state;
 
-      if (deleteAll && (todoToDelete.originalTodoId || todoToDelete.repeat.type !== 'none')) {
-        const originalId = todoToDelete.originalTodoId || todoId;
-        Object.keys(newTodos).forEach((dateKey) => {
-          newTodos[dateKey] = newTodos[dateKey].filter(
-            (todo) => todo.id !== originalId && todo.originalTodoId !== originalId
-          );
-        });
-      } else {
+      const originalId = todoToDelete.originalTodoId || todoId;
+      const isSameSeries = (todo: Todo) =>
+        todo.id === originalId || todo.originalTodoId === originalId;
+
+      if (scope === 'single') {
         newTodos[date] = newTodos[date].filter((todo) => todo.id !== todoId);
+        return { todos: newTodos };
       }
+
+      if (scope === 'all') {
+        Object.keys(newTodos).forEach((dateKey) => {
+          newTodos[dateKey] = newTodos[dateKey].filter((todo) => !isSameSeries(todo));
+        });
+        return { todos: newTodos };
+      }
+
+      const baseDate = new Date(`${todoToDelete.date}T00:00:00`);
+      const [rangeStart, rangeEnd] =
+        scope === 'week'
+          ? [
+              startOfWeek(baseDate, { weekStartsOn: 1 }),
+              endOfWeek(baseDate, { weekStartsOn: 1 }),
+            ]
+          : [startOfMonth(baseDate), endOfMonth(baseDate)];
+
+      Object.keys(newTodos).forEach((dateKey) => {
+        const keyDate = new Date(`${dateKey}T00:00:00`);
+        if (keyDate >= rangeStart && keyDate <= rangeEnd) {
+          newTodos[dateKey] = newTodos[dateKey].filter((todo) => !isSameSeries(todo));
+        }
+      });
 
       return { todos: newTodos };
     }),

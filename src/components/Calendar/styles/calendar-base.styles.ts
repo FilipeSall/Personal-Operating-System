@@ -2,16 +2,14 @@ import { css, cva } from '../../../../styled-system/css';
 
 export const calendarContainer = css({
   display: 'grid',
-  gridTemplateRows: '40% 60%',
+  gridTemplateRows: '1fr 1fr',
   gap: '24px',
   padding: '28px',
   backgroundColor: 'surface.950',
   borderRadius: '20px',
-  width: '40%',
-  minWidth: '320px',
-  height: '100dvh',
+  width: '100%',
+  height: '100%',
   overflow: 'hidden',
-  fontFamily: 'system-ui, -apple-system, sans-serif',
   boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05)',
   border: '1px solid',
   borderColor: 'surface.700',
@@ -22,6 +20,7 @@ export const calendarSection = css({
   flexDirection: 'column',
   height: '100%',
   minHeight: 0,
+  overflow: 'hidden',
 });
 
 export const calendarHeader = css({
@@ -68,6 +67,7 @@ export const calendarGrid = css({
   flex: 1,
   height: '100%',
   minHeight: 0,
+  overflow: 'hidden',
 });
 
 export const weekdayHeader = css({

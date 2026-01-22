@@ -30,7 +30,6 @@ export interface Todo {
   id: string;
   text: string;
   comments?: string;
-  completed: boolean;
   date: string;
   type: TodoType;
   startTime: string;
@@ -55,7 +54,8 @@ export interface CalendarState {
 
   setSelectedDate: (date: Date) => void;
   setCurrentMonth: (date: Date) => void;
-  addTodo: (todo: Omit<Todo, 'id' | 'completed' | 'originalTodoId' | 'createdAt'>) => void;
+  addTodo: (todo: Omit<Todo, 'id' | 'originalTodoId' | 'createdAt'>) => void;
+  updateTodo: (date: string, todoId: string, updates: Partial<Omit<Todo, 'id' | 'createdAt'>>) => void;
   toggleTodo: (date: string, todoId: string) => void;
   deleteTodo: (
     date: string,

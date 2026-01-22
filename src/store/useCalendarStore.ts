@@ -50,7 +50,6 @@ export const useCalendarStore = create<CalendarState>((set, get) => ({
         id: isOriginal ? todoId : crypto.randomUUID(),
         text: todoData.text,
         comments: todoData.comments,
-        completed: false,
         date: dateStr,
         type: todoData.type,
         startTime: todoData.startTime,
@@ -102,6 +101,26 @@ export const useCalendarStore = create<CalendarState>((set, get) => ({
       }
 
       return { todos: newTodos };
+    }),
+
+  updateTodo: (date: string, todoId: string, updates) =>
+    set((state) => {
+      const dateTodos = state.todos[date] || [];
+      if (dateTodos.length === 0) return state;
+      return {
+        todos: {
+          ...state.todos,
+          [date]: dateTodos.map((todo) =>
+            todo.id === todoId
+              ? {
+                  ...todo,
+                  ...updates,
+                  repeat: updates.repeat ?? todo.repeat,
+                }
+              : todo
+          ),
+        },
+      };
     }),
 
   toggleTodo: (date: string, todoId: string) =>

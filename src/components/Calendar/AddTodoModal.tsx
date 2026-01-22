@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import {
@@ -13,7 +13,7 @@ import {
 } from 'react-icons/md';
 import { useCalendarStore } from '../../store/useCalendarStore';
 import { TODO_TYPES } from '../../data/todoTypes';
-import type { TodoType, RepeatType, RepeatDuration, Weekday } from '../../types/calendar';
+import type { Todo, TodoType, RepeatType, RepeatDuration, Weekday } from '../../types/calendar';
 import {
   addTodoModalRecipe,
   modalTypeButton,
@@ -63,10 +63,11 @@ const DURATION_OPTIONS: { id: RepeatDuration; label: string }[] = [
 interface AddTodoModalProps {
   isOpen: boolean;
   onClose: () => void;
+  todo?: Todo | null;
 }
 
-export function AddTodoModal({ isOpen, onClose }: AddTodoModalProps) {
-  const { selectedDate, addTodo } = useCalendarStore();
+export function AddTodoModal({ isOpen, onClose, todo }: AddTodoModalProps) {
+  const { selectedDate, addTodo, updateTodo } = useCalendarStore();
   const [text, setText] = useState('');
   const [selectedType, setSelectedType] = useState<TodoType>('reminder');
   const [startTime, setStartTime] = useState('09:00');
@@ -76,10 +77,8 @@ export function AddTodoModal({ isOpen, onClose }: AddTodoModalProps) {
   const [selectedWeekdays, setSelectedWeekdays] = useState<Weekday[]>([]);
   const [duration, setDuration] = useState<RepeatDuration>('month');
 
-  if (!isOpen) return null;
-
   const modalSlots = addTodoModalRecipe();
-  const dateKey = format(selectedDate, 'yyyy-MM-dd');
+  const dateKey = todo ? todo.date : format(selectedDate, 'yyyy-MM-dd');
   const showRepeatOptions = repeatType !== 'none';
   const isTimeRangeValid = startTime < endTime;
   const canSubmit =
@@ -94,6 +93,26 @@ export function AddTodoModal({ isOpen, onClose }: AddTodoModalProps) {
     return [];
   };
 
+  useEffect(() => {
+    if (!isOpen) return;
+    if (!todo) {
+      resetForm();
+      return;
+    }
+    setText(todo.text);
+    setSelectedType(todo.type);
+    setStartTime(todo.startTime);
+    setEndTime(todo.endTime);
+    setComments(todo.comments ?? '');
+    setRepeatType(todo.repeat.type);
+    setDuration(todo.repeat.duration ?? 'month');
+    if (todo.repeat.type === 'custom') {
+      setSelectedWeekdays(todo.repeat.weekdays ?? []);
+    } else {
+      setSelectedWeekdays(getRepeatWeekdays(todo.repeat.type, []));
+    }
+  }, [isOpen, todo]);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!text.trim() || !isTimeRangeValid) return;
@@ -103,7 +122,7 @@ export function AddTodoModal({ isOpen, onClose }: AddTodoModalProps) {
 
     if (text.trim()) {
       const trimmedComments = comments.trim();
-      addTodo({
+      const payload = {
         text: text.trim(),
         comments: trimmedComments.length > 0 ? trimmedComments : undefined,
         date: dateKey,
@@ -115,7 +134,12 @@ export function AddTodoModal({ isOpen, onClose }: AddTodoModalProps) {
           weekdays: repeatType !== 'none' ? repeatWeekdays : undefined,
           duration: repeatType !== 'none' ? duration : undefined,
         },
-      });
+      };
+      if (todo) {
+        updateTodo(todo.date, todo.id, payload);
+      } else {
+        addTodo(payload);
+      }
       resetForm();
       onClose();
     }
@@ -155,12 +179,14 @@ export function AddTodoModal({ isOpen, onClose }: AddTodoModalProps) {
     onClose();
   };
 
+  if (!isOpen) return null;
+
   return (
     <div className={modalSlots.overlay} onClick={handleOverlayClick}>
       <div className={modalSlots.content}>
         <div className={modalSlots.header}>
           <span className={modalSlots.title}>
-            Nova tarefa - {format(selectedDate, "d 'de' MMM", { locale: ptBR })}
+            {todo ? 'Editar tarefa' : 'Nova tarefa'} - {format(new Date(`${dateKey}T00:00:00`), "d 'de' MMM", { locale: ptBR })}
           </span>
           <button type="button" className={modalSlots.closeButton} onClick={handleClose}>
             <MdClose size={20} />
@@ -287,7 +313,7 @@ export function AddTodoModal({ isOpen, onClose }: AddTodoModalProps) {
             disabled={!canSubmit}
             title={!isTimeRangeValid ? 'O horário de término deve ser depois do início.' : undefined}
           >
-            Adicionar tarefa
+            {todo ? 'Salvar alterações' : 'Adicionar tarefa'}
           </button>
         </form>
       </div>

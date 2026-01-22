@@ -8,6 +8,7 @@ import {
   MdDelete,
   MdCheck,
   MdNotes,
+  MdEdit,
   MdWork,
   MdNotifications,
   MdPerson,
@@ -79,10 +80,11 @@ const REPEAT_TYPE_LABELS: Record<string, string> = {
 interface TodoDetailModalProps {
   todo: Todo | null;
   onClose: () => void;
+  onEdit: (todo: Todo) => void;
 }
 
-export function TodoDetailModal({ todo: initialTodo, onClose }: TodoDetailModalProps) {
-  const { toggleTodo, deleteTodo, todos } = useCalendarStore();
+export function TodoDetailModal({ todo: initialTodo, onClose, onEdit }: TodoDetailModalProps) {
+  const { deleteTodo, todos } = useCalendarStore();
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   if (!initialTodo) return null;
@@ -93,8 +95,8 @@ export function TodoDetailModal({ todo: initialTodo, onClose }: TodoDetailModalP
   const Icon = typeConfig ? ICONS[typeConfig.icon] : null;
   const hasRepeat = currentTodo.repeat.type !== 'none';
 
-  const handleToggle = () => {
-    toggleTodo(currentTodo.date, currentTodo.id);
+  const handleEdit = () => {
+    onEdit(currentTodo);
   };
 
   const handleDelete = (scope: 'single' | 'week' | 'month' | 'all') => {
@@ -232,11 +234,11 @@ export function TodoDetailModal({ todo: initialTodo, onClose }: TodoDetailModalP
         <div className={detailActions}>
           <button
             type="button"
-            className={detailActionButton({ variant: currentTodo.completed ? 'secondary' : 'primary' })}
-            onClick={handleToggle}
+            className={detailActionButton({ variant: 'secondary' })}
+            onClick={handleEdit}
           >
-            <MdCheck size={18} />
-            {currentTodo.completed ? 'Desmarcar' : 'Concluir'}
+            <MdEdit size={18} />
+            Editar
           </button>
 
           <button

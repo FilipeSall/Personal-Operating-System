@@ -2,19 +2,21 @@ import { Calendar } from '../components/Calendar';
 import { css } from '../../styled-system/css';
 
 const homeContainer = css({
-  minHeight: '100vh',
+  height: '100vh',
   backgroundColor: '#FDFFFC',
   color: '#211A1E',
   padding: '32px',
-  display: 'grid',
-  gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-  gridAutoRows: 'minmax(120px, auto)',
-  gap: '24px',
-  alignItems: 'start',
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'stretch',
+  overflow: 'hidden',
 });
 
 const calendarWidget = css({
   width: '100%',
+  height: '100%',
+  maxWidth: '500px',
+  margin: '0 auto',
 });
 
 function Home() {

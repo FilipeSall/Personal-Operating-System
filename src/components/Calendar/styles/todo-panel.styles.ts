@@ -3,24 +3,32 @@ import { css, cva } from '../../../../styled-system/css';
 export const todoPanel = css({
   display: 'grid',
   gridTemplateRows: 'auto 1fr auto',
-  gap: '16px',
-  padding: '20px',
+  gap: '20px',
+  padding: '24px',
   backgroundColor: 'surface.900',
-  borderRadius: '14px',
+  borderRadius: '16px',
   height: '100%',
   minHeight: 0,
+  border: '1px solid',
+  borderColor: 'surface.800',
+  boxShadow: 'inset 0 1px 0 rgba(255, 255, 255, 0.05)',
+  overflow: 'hidden',
 });
 
 export const todoPanelHeader = css({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'space-between',
+  paddingBottom: '16px',
+  borderBottom: '1px solid',
+  borderColor: 'surface.800',
 });
 
 export const todoPanelTitle = css({
-  fontSize: '14px',
-  fontWeight: '600',
+  fontSize: '16px',
+  fontWeight: '700',
   color: 'text.primary',
+  letterSpacing: '-0.02em',
 });
 
 export const todoList = css({
@@ -30,62 +38,63 @@ export const todoList = css({
   height: '100%',
   overflowY: 'auto',
   minHeight: 0,
-});
-
-export const todoItem = cva({
-  base: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '12px',
-    padding: '12px 14px',
-    backgroundColor: 'surface.950',
-    borderRadius: '10px',
-    borderLeft: '3px solid',
-    transition: 'all 0.15s ease',
-    boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)',
+  scrollbarWidth: 'thin',
+  scrollbarColor: 'surface.700 surface.800',
+  '&::-webkit-scrollbar': {
+    width: '6px',
   },
-  variants: {
-    completed: {
-      true: {
-        opacity: 0.6,
-        backgroundColor: 'surface.850',
-      },
+  '&::-webkit-scrollbar-track': {
+    background: 'surface.800',
+    borderRadius: '3px',
+  },
+  '&::-webkit-scrollbar-thumb': {
+    background: 'surface.700',
+    borderRadius: '3px',
+    '&:hover': {
+      background: 'surface.600',
     },
   },
 });
 
-export const todoCheckbox = css({
-  width: '18px',
-  height: '18px',
-  borderRadius: '5px',
-  border: '2px solid',
-  borderColor: 'surface.700',
-  backgroundColor: 'transparent',
-  cursor: 'pointer',
+export const todoItem = css({
   display: 'flex',
   alignItems: 'center',
-  justifyContent: 'center',
-  transition: 'all 0.15s ease',
-  flexShrink: 0,
-  _hover: {
-    borderColor: 'brand.500',
+  gap: '14px',
+  padding: '16px 18px',
+  backgroundColor: 'surface.950',
+  borderRadius: '12px',
+  borderLeft: '4px solid',
+  transition: 'all 0.2s ease',
+  boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)',
+  position: 'relative',
+  overflow: 'hidden',
+  '&::before': {
+    content: '""',
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: '1px',
+    background: 'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent)',
   },
 });
 
-export const todoText = cva({
-  base: {
-    flex: 1,
-    fontSize: '14px',
-    color: 'text.subtle',
-  },
-  variants: {
-    completed: {
-      true: {
-        textDecoration: 'line-through',
-        color: 'text.dim',
-      },
-    },
-  },
+export const todoStatusIndicator = css({
+  width: '8px',
+  height: '8px',
+  borderRadius: '50%',
+  backgroundColor: 'surface.700',
+  flexShrink: 0,
+  transition: 'all 0.2s ease',
+  boxShadow: '0 0 8px currentColor',
+});
+
+export const todoText = css({
+  flex: 1,
+  fontSize: '15px',
+  color: 'text.subtle',
+  fontWeight: '500',
+  lineHeight: '1.4',
 });
 
 export const todoDeleteButton = css({
@@ -200,49 +209,67 @@ export const emptyState = css({
   flexDirection: 'column',
   alignItems: 'center',
   justifyContent: 'center',
-  padding: '24px',
+  padding: '32px',
   color: 'text.dim',
-  fontSize: '14px',
+  fontSize: '15px',
   textAlign: 'center',
   height: '100%',
+  backgroundColor: 'surface.950',
+  borderRadius: '12px',
+  border: '2px dashed',
+  borderColor: 'surface.800',
+  gap: '12px',
 });
 
 export const addTaskButton = css({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
-  gap: '6px',
-  padding: '8px 14px',
+  gap: '8px',
+  padding: '10px 16px',
   backgroundColor: 'brand.500',
   border: 'none',
-  borderRadius: '10px',
+  borderRadius: '12px',
   color: 'surface.950',
-  fontSize: '13px',
-  fontWeight: '500',
+  fontSize: '14px',
+  fontWeight: '600',
   cursor: 'pointer',
-  transition: 'all 0.15s ease',
+  transition: 'all 0.2s ease',
+  boxShadow: '0 2px 8px rgba(214, 69, 80, 0.25)',
   _hover: {
     backgroundColor: 'brand.600',
-    transform: 'translateY(-1px)',
+    transform: 'translateY(-2px)',
+    boxShadow: '0 4px 12px rgba(214, 69, 80, 0.35)',
   },
 });
 
 export const todoTime = css({
-  fontSize: '12px',
+  fontSize: '13px',
   color: 'text.label',
-  fontWeight: '500',
+  fontWeight: '600',
   whiteSpace: 'nowrap',
+  backgroundColor: 'surface.900',
+  padding: '4px 8px',
+  borderRadius: '6px',
+  border: '1px solid',
+  borderColor: 'surface.800',
 });
 
 export const todoRepeatIcon = css({
-  color: 'text.dim',
+  color: 'text.label',
   flexShrink: 0,
+  backgroundColor: 'surface.900',
+  padding: '4px',
+  borderRadius: '6px',
+  border: '1px solid',
+  borderColor: 'surface.800',
 });
 
 export const todoItemClickable = css({
   cursor: 'pointer',
   _hover: {
     backgroundColor: 'surface.900',
-    boxShadow: '0 2px 6px rgba(0, 0, 0, 0.08)',
+    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.12)',
+    transform: 'translateY(-1px)',
   },
 });

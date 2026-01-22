@@ -3,7 +3,6 @@ import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import {
   MdAdd,
-  MdCheck,
   MdWork,
   MdRepeat,
   MdNotifications,
@@ -11,6 +10,7 @@ import {
   MdSchool,
   MdFavorite,
   MdAttachMoney,
+  MdEventAvailable,
 } from 'react-icons/md';
 import { useCalendarStore } from '../../store/useCalendarStore';
 import { TODO_TYPES } from '../../data/todoTypes';
@@ -23,7 +23,7 @@ import {
   todoPanelTitle,
   todoList,
   todoItem,
-  todoCheckbox,
+  todoStatusIndicator,
   todoText,
   addTaskButton,
   emptyState,
@@ -43,8 +43,9 @@ const ICONS: Record<string, React.ComponentType<{ size?: number; color?: string 
 };
 
 export function CalendarTodoPanel() {
-  const { selectedDate, getTodosForDate, toggleTodo } = useCalendarStore();
+  const { selectedDate, getTodosForDate } = useCalendarStore();
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [editingTodo, setEditingTodo] = useState<Todo | null>(null);
   const [selectedTodo, setSelectedTodo] = useState<Todo | null>(null);
 
   const dateKey = format(selectedDate, 'yyyy-MM-dd');
@@ -58,10 +59,7 @@ export function CalendarTodoPanel() {
     setSelectedTodo(todo);
   };
 
-  const handleCheckboxClick = (e: React.MouseEvent, todoId: string) => {
-    e.stopPropagation();
-    toggleTodo(dateKey, todoId);
-  };
+  
 
   return (
     <div className={todoPanel}>
@@ -72,7 +70,10 @@ export function CalendarTodoPanel() {
         <button
           type="button"
           className={addTaskButton}
-          onClick={() => setIsAddModalOpen(true)}
+          onClick={() => {
+            setEditingTodo(null);
+            setIsAddModalOpen(true);
+          }}
         >
           <MdAdd size={18} />
           Nova tarefa
@@ -81,7 +82,8 @@ export function CalendarTodoPanel() {
 
       {dayTodos.length === 0 ? (
         <div className={emptyState}>
-          Nenhuma tarefa para este dia
+          <MdEventAvailable size={32} color="text.dim" />
+          <span>Nenhuma tarefa para este dia</span>
         </div>
       ) : (
         <div className={todoList}>
@@ -93,32 +95,28 @@ export function CalendarTodoPanel() {
             return (
               <div
                 key={todo.id}
-                className={`${todoItem({ completed: todo.completed })} ${todoItemClickable}`}
+                className={`${todoItem} ${todoItemClickable}`}
                 style={{ borderLeftColor: typeConfig?.color || '#7A7276' }}
                 onClick={() => handleTodoClick(todo)}
               >
-                <button
-                  type="button"
-                  className={todoCheckbox}
-                  style={todo.completed ? { backgroundColor: typeConfig?.color, borderColor: typeConfig?.color } : {}}
-                  onClick={(e) => handleCheckboxClick(e, todo.id)}
-                >
-                  {todo.completed && <MdCheck size={12} color="#FDFFFC" />}
-                </button>
+                <div
+                  className={todoStatusIndicator}
+                  style={{ backgroundColor: typeConfig?.color }}
+                />
 
                 <span className={todoTime}>
                   {todo.startTime}
                 </span>
 
-                {Icon && <Icon size={16} color={typeConfig?.color} />}
+                {Icon && <Icon size={18} color={typeConfig?.color} />}
 
-                <span className={todoText({ completed: todo.completed })}>
+                <span className={todoText}>
                   {todo.text}
                 </span>
 
                 {hasRepeat && (
                   <span className={todoRepeatIcon}>
-                    <MdRepeat size={14} />
+                    <MdRepeat size={16} />
                   </span>
                 )}
               </div>
@@ -127,8 +125,22 @@ export function CalendarTodoPanel() {
         </div>
       )}
 
-      <AddTodoModal isOpen={isAddModalOpen} onClose={() => setIsAddModalOpen(false)} />
-      <TodoDetailModal todo={selectedTodo} onClose={() => setSelectedTodo(null)} />
+      <AddTodoModal
+        isOpen={isAddModalOpen || !!editingTodo}
+        todo={editingTodo}
+        onClose={() => {
+          setIsAddModalOpen(false);
+          setEditingTodo(null);
+        }}
+      />
+      <TodoDetailModal
+        todo={selectedTodo}
+        onClose={() => setSelectedTodo(null)}
+        onEdit={(todo) => {
+          setSelectedTodo(null);
+          setEditingTodo(todo);
+        }}
+      />
     </div>
   );
 }

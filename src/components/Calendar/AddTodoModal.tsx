@@ -13,7 +13,7 @@ import {
 } from 'react-icons/md';
 import { useCalendarStore } from '../../store/useCalendarStore';
 import { TODO_TYPES } from '../../data/todoTypes';
-import type { TodoType, RepeatType, Weekday } from '../../types/calendar';
+import type { TodoType, RepeatType, RepeatDuration, Weekday } from '../../types/calendar';
 import {
   modalOverlay,
   modalContent,
@@ -35,6 +35,9 @@ import {
   repeatButton,
   weekdaySelector,
   weekdayButton,
+  durationSection,
+  durationOptions,
+  durationButton,
 } from './calendar.styles';
 
 const ICONS: Record<string, React.ComponentType<{ size?: number; color?: string }>> = {
@@ -64,6 +67,13 @@ const REPEAT_OPTIONS: { id: RepeatType; label: string }[] = [
   { id: 'custom', label: 'Personalizado' },
 ];
 
+const DURATION_OPTIONS: { id: RepeatDuration; label: string }[] = [
+  { id: 'month', label: '1 mês' },
+  { id: 'quarter', label: '3 meses' },
+  { id: 'year', label: '1 ano' },
+  { id: 'forever', label: 'Sempre' },
+];
+
 interface AddTodoModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -77,10 +87,12 @@ export function AddTodoModal({ isOpen, onClose }: AddTodoModalProps) {
   const [endTime, setEndTime] = useState('10:00');
   const [repeatType, setRepeatType] = useState<RepeatType>('none');
   const [selectedWeekdays, setSelectedWeekdays] = useState<Weekday[]>([]);
+  const [duration, setDuration] = useState<RepeatDuration>('month');
 
   if (!isOpen) return null;
 
   const dateKey = format(selectedDate, 'yyyy-MM-dd');
+  const showRepeatOptions = repeatType !== 'none';
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -94,6 +106,7 @@ export function AddTodoModal({ isOpen, onClose }: AddTodoModalProps) {
         repeat: {
           type: repeatType,
           weekdays: repeatType === 'custom' ? selectedWeekdays : undefined,
+          duration: repeatType !== 'none' ? duration : undefined,
         },
       });
       resetForm();
@@ -108,6 +121,7 @@ export function AddTodoModal({ isOpen, onClose }: AddTodoModalProps) {
     setEndTime('10:00');
     setRepeatType('none');
     setSelectedWeekdays([]);
+    setDuration('month');
   };
 
   const handleOverlayClick = (e: React.MouseEvent) => {
@@ -211,6 +225,24 @@ export function AddTodoModal({ isOpen, onClose }: AddTodoModalProps) {
                     {day.label}
                   </button>
                 ))}
+              </div>
+            )}
+
+            {showRepeatOptions && (
+              <div className={durationSection}>
+                <span className={repeatLabel}>Duração</span>
+                <div className={durationOptions}>
+                  {DURATION_OPTIONS.map((option) => (
+                    <button
+                      key={option.id}
+                      type="button"
+                      className={durationButton({ isSelected: duration === option.id })}
+                      onClick={() => setDuration(option.id)}
+                    >
+                      {option.label}
+                    </button>
+                  ))}
+                </div>
               </div>
             )}
           </div>

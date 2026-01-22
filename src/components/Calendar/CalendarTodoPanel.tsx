@@ -4,7 +4,6 @@ import { ptBR } from 'date-fns/locale';
 import {
   MdAdd,
   MdCheck,
-  MdClose,
   MdWork,
   MdRepeat,
   MdNotifications,
@@ -15,8 +14,9 @@ import {
 } from 'react-icons/md';
 import { useCalendarStore } from '../../store/useCalendarStore';
 import { TODO_TYPES } from '../../data/todoTypes';
-import type { TodoType } from '../../types/calendar';
+import type { Todo, TodoType } from '../../types/calendar';
 import { AddTodoModal } from './AddTodoModal';
+import { TodoDetailModal } from './TodoDetailModal';
 import {
   todoPanel,
   todoPanelHeader,
@@ -25,11 +25,11 @@ import {
   todoItem,
   todoCheckbox,
   todoText,
-  todoDeleteButton,
   addTaskButton,
   emptyState,
   todoTime,
   todoRepeatIcon,
+  todoItemClickable,
 } from './calendar.styles';
 
 const ICONS: Record<string, React.ComponentType<{ size?: number; color?: string }>> = {
@@ -43,14 +43,24 @@ const ICONS: Record<string, React.ComponentType<{ size?: number; color?: string 
 };
 
 export function CalendarTodoPanel() {
-  const { selectedDate, getTodosForDate, toggleTodo, deleteTodo } = useCalendarStore();
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const { selectedDate, getTodosForDate, toggleTodo } = useCalendarStore();
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [selectedTodo, setSelectedTodo] = useState<Todo | null>(null);
 
   const dateKey = format(selectedDate, 'yyyy-MM-dd');
   const dayTodos = getTodosForDate(dateKey);
 
   const getTypeConfig = (type: TodoType) => {
     return TODO_TYPES.find((t) => t.id === type);
+  };
+
+  const handleTodoClick = (todo: Todo) => {
+    setSelectedTodo(todo);
+  };
+
+  const handleCheckboxClick = (e: React.MouseEvent, todoId: string) => {
+    e.stopPropagation();
+    toggleTodo(dateKey, todoId);
   };
 
   return (
@@ -62,7 +72,7 @@ export function CalendarTodoPanel() {
         <button
           type="button"
           className={addTaskButton}
-          onClick={() => setIsModalOpen(true)}
+          onClick={() => setIsAddModalOpen(true)}
         >
           <MdAdd size={18} />
           Nova tarefa
@@ -83,14 +93,15 @@ export function CalendarTodoPanel() {
             return (
               <div
                 key={todo.id}
-                className={todoItem({ completed: todo.completed })}
+                className={`${todoItem({ completed: todo.completed })} ${todoItemClickable}`}
                 style={{ borderLeftColor: typeConfig?.color || '#6b7280' }}
+                onClick={() => handleTodoClick(todo)}
               >
                 <button
                   type="button"
                   className={todoCheckbox}
                   style={todo.completed ? { backgroundColor: typeConfig?.color, borderColor: typeConfig?.color } : {}}
-                  onClick={() => toggleTodo(dateKey, todo.id)}
+                  onClick={(e) => handleCheckboxClick(e, todo.id)}
                 >
                   {todo.completed && <MdCheck size={12} color="#fff" />}
                 </button>
@@ -110,21 +121,14 @@ export function CalendarTodoPanel() {
                     <MdRepeat size={14} />
                   </span>
                 )}
-
-                <button
-                  type="button"
-                  className={todoDeleteButton}
-                  onClick={() => deleteTodo(dateKey, todo.id)}
-                >
-                  <MdClose size={16} />
-                </button>
               </div>
             );
           })}
         </div>
       )}
 
-      <AddTodoModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+      <AddTodoModal isOpen={isAddModalOpen} onClose={() => setIsAddModalOpen(false)} />
+      <TodoDetailModal todo={selectedTodo} onClose={() => setSelectedTodo(null)} />
     </div>
   );
 }

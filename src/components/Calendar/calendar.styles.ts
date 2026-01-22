@@ -590,3 +590,180 @@ export const todoRepeatIcon = css({
   color: '#6b7280',
   flexShrink: 0,
 });
+
+export const todoItemClickable = css({
+  cursor: 'pointer',
+  _hover: {
+    backgroundColor: '#252550',
+  },
+});
+
+export const detailModalContent = css({
+  backgroundColor: '#1a1a2e',
+  borderRadius: '16px',
+  padding: '24px',
+  width: '100%',
+  maxWidth: '400px',
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '20px',
+});
+
+export const detailHeader = css({
+  display: 'flex',
+  alignItems: 'flex-start',
+  justifyContent: 'space-between',
+  gap: '12px',
+});
+
+export const detailTitle = css({
+  fontSize: '18px',
+  fontWeight: '600',
+  color: '#ffffff',
+  lineHeight: '1.4',
+  flex: 1,
+});
+
+export const detailBadge = css({
+  display: 'inline-flex',
+  alignItems: 'center',
+  gap: '6px',
+  padding: '6px 10px',
+  borderRadius: '6px',
+  fontSize: '12px',
+  fontWeight: '500',
+});
+
+export const detailSection = css({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '12px',
+});
+
+export const detailRow = css({
+  display: 'flex',
+  alignItems: 'center',
+  gap: '12px',
+});
+
+export const detailIcon = css({
+  color: '#6b7280',
+  flexShrink: 0,
+});
+
+export const detailLabel = css({
+  fontSize: '12px',
+  color: '#6b7280',
+  fontWeight: '500',
+  minWidth: '80px',
+});
+
+export const detailValue = css({
+  fontSize: '14px',
+  color: '#e0e0e0',
+});
+
+export const detailTags = css({
+  display: 'flex',
+  flexWrap: 'wrap',
+  gap: '8px',
+  marginTop: '4px',
+});
+
+export const detailTag = css({
+  display: 'inline-flex',
+  alignItems: 'center',
+  gap: '4px',
+  padding: '4px 10px',
+  backgroundColor: '#16162a',
+  borderRadius: '20px',
+  fontSize: '12px',
+  color: '#9ca3af',
+});
+
+export const detailActions = css({
+  display: 'flex',
+  gap: '12px',
+  marginTop: '8px',
+  paddingTop: '16px',
+  borderTop: '1px solid #2a2a4e',
+});
+
+export const detailActionButton = cva({
+  base: {
+    flex: 1,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '8px',
+    padding: '12px',
+    borderRadius: '8px',
+    fontSize: '14px',
+    fontWeight: '500',
+    cursor: 'pointer',
+    transition: 'all 0.2s',
+    border: 'none',
+  },
+  variants: {
+    variant: {
+      primary: {
+        backgroundColor: '#3B82F6',
+        color: '#ffffff',
+        _hover: {
+          backgroundColor: '#2563EB',
+        },
+      },
+      danger: {
+        backgroundColor: '#1e1e3f',
+        color: '#EF4444',
+        _hover: {
+          backgroundColor: '#2a2a4e',
+        },
+      },
+      secondary: {
+        backgroundColor: '#1e1e3f',
+        color: '#e0e0e0',
+        _hover: {
+          backgroundColor: '#2a2a4e',
+        },
+      },
+    },
+  },
+});
+
+export const durationSection = css({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '8px',
+});
+
+export const durationOptions = css({
+  display: 'flex',
+  gap: '8px',
+  flexWrap: 'wrap',
+});
+
+export const durationButton = cva({
+  base: {
+    padding: '6px 12px',
+    backgroundColor: '#16162a',
+    border: '2px solid #2a2a4e',
+    borderRadius: '6px',
+    color: '#a0a0a0',
+    fontSize: '12px',
+    cursor: 'pointer',
+    transition: 'all 0.2s',
+    _hover: {
+      borderColor: '#4b5563',
+    },
+  },
+  variants: {
+    isSelected: {
+      true: {
+        borderColor: '#3B82F6',
+        color: '#ffffff',
+        backgroundColor: '#1e1e3f',
+      },
+    },
+  },
+});

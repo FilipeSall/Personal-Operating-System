@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { format, addDays } from 'date-fns';
-import type { CalendarState, Todo, Weekday } from '../types/calendar';
+import type { CalendarState, Todo, Weekday, RepeatDuration } from '../types/calendar';
 import { SPECIAL_DATES } from '../data/holidays';
 
 const WEEKDAY_MAP: Record<number, Weekday> = {
@@ -11,6 +11,21 @@ const WEEKDAY_MAP: Record<number, Weekday> = {
   4: 'thu',
   5: 'fri',
   6: 'sat',
+};
+
+const getDurationDays = (duration: RepeatDuration): number => {
+  switch (duration) {
+    case 'month':
+      return 30;
+    case 'quarter':
+      return 90;
+    case 'year':
+      return 365;
+    case 'forever':
+      return 365 * 2;
+    default:
+      return 30;
+  }
 };
 
 export const useCalendarStore = create<CalendarState>((set, get) => ({
@@ -27,6 +42,9 @@ export const useCalendarStore = create<CalendarState>((set, get) => ({
     set((state) => {
       const newTodos = { ...state.todos };
       const todoId = crypto.randomUUID();
+      const createdAt = new Date().toISOString();
+      const duration = todoData.repeat.duration || 'month';
+      const durationDays = getDurationDays(duration);
 
       const createTodoForDate = (dateStr: string, isOriginal: boolean): Todo => ({
         id: isOriginal ? todoId : crypto.randomUUID(),
@@ -38,6 +56,7 @@ export const useCalendarStore = create<CalendarState>((set, get) => ({
         endTime: todoData.endTime,
         repeat: todoData.repeat,
         originalTodoId: isOriginal ? undefined : todoId,
+        createdAt,
       });
 
       if (todoData.repeat.type === 'none') {
@@ -45,7 +64,7 @@ export const useCalendarStore = create<CalendarState>((set, get) => ({
         newTodos[todoData.date] = [...dateTodos, createTodoForDate(todoData.date, true)];
       } else if (todoData.repeat.type === 'daily') {
         const startDate = new Date(todoData.date);
-        for (let i = 0; i < 30; i++) {
+        for (let i = 0; i < durationDays; i++) {
           const date = addDays(startDate, i);
           const dateStr = format(date, 'yyyy-MM-dd');
           const dateTodos = newTodos[dateStr] || [];
@@ -54,20 +73,22 @@ export const useCalendarStore = create<CalendarState>((set, get) => ({
       } else if (todoData.repeat.type === 'weekly') {
         const startDate = new Date(todoData.date);
         const weekdays: Weekday[] = ['mon', 'tue', 'wed', 'thu', 'fri'];
-        for (let i = 0; i < 30; i++) {
+        let isFirst = true;
+        for (let i = 0; i < durationDays; i++) {
           const date = addDays(startDate, i);
           const dayOfWeek = WEEKDAY_MAP[date.getDay()];
           if (weekdays.includes(dayOfWeek)) {
             const dateStr = format(date, 'yyyy-MM-dd');
             const dateTodos = newTodos[dateStr] || [];
-            newTodos[dateStr] = [...dateTodos, createTodoForDate(dateStr, i === 0)];
+            newTodos[dateStr] = [...dateTodos, createTodoForDate(dateStr, isFirst)];
+            isFirst = false;
           }
         }
       } else if (todoData.repeat.type === 'custom' && todoData.repeat.weekdays) {
         const startDate = new Date(todoData.date);
         const selectedWeekdays = todoData.repeat.weekdays;
         let isFirst = true;
-        for (let i = 0; i < 30; i++) {
+        for (let i = 0; i < durationDays; i++) {
           const date = addDays(startDate, i);
           const dayOfWeek = WEEKDAY_MAP[date.getDay()];
           if (selectedWeekdays.includes(dayOfWeek)) {

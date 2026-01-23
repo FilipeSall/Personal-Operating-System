@@ -3,7 +3,7 @@ import { css, cva } from '../../../../styled-system/css';
 export const calendarContainer = css({
   display: 'grid',
   gridTemplateRows: '3fr 2fr',
-  gap: '24px',
+  gap: '16px',
   padding: '28px',
   backgroundColor: 'surface.950',
   borderRadius: '20px',
@@ -21,6 +21,14 @@ export const calendarSection = css({
   height: '100%',
   minHeight: 0,
   overflow: 'hidden',
+  position: 'relative',
+  zIndex: 2,
+  backgroundColor: 'surface.950',
+  borderRadius: '16px',
+  padding: '16px',
+  boxShadow: '0 8px 24px -4px rgba(0, 0, 0, 0.12), 0 4px 8px -2px rgba(0, 0, 0, 0.08)',
+  border: '1px solid',
+  borderColor: 'surface.700',
 });
 
 export const calendarHeader = css({

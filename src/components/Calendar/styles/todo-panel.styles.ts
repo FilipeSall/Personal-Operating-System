@@ -3,15 +3,18 @@ import { css, cva } from '../../../../styled-system/css';
 export const todoPanel = css({
   display: 'flex',
   flexDirection: 'column',
-  padding: '16px',
+  padding: '20px 16px 16px',
   backgroundColor: 'surface.900',
   borderRadius: '16px',
   height: '100%',
   minHeight: 0,
   border: '1px solid',
   borderColor: 'surface.800',
-  boxShadow: 'inset 0 1px 0 rgba(255, 255, 255, 0.05)',
+  boxShadow: 'inset 0 2px 4px rgba(0, 0, 0, 0.06)',
   overflow: 'hidden',
+  position: 'relative',
+  zIndex: 1,
+  marginTop: '-8px',
 });
 
 export const todoPanelHeader = css({

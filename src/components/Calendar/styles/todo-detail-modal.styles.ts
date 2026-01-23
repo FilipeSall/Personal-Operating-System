@@ -268,6 +268,14 @@ export const confirmOptionButton = cva({
           color: 'danger.500',
         },
       },
+      secondary: {
+        color: 'text.primary',
+        borderColor: 'surface.700',
+        _hover: {
+          backgroundColor: 'surface.800',
+          color: 'text.primary',
+        },
+      },
     },
   },
 });

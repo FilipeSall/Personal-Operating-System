@@ -29,6 +29,12 @@ export default defineConfig({
             500: { value: '#D64550' },
             600: { value: '#BF3A44' },
           },
+          amber: {
+            200: { value: '#FDE68A' },
+            400: { value: '#FBBF24' },
+            900: { value: '#78350F' },
+            950: { value: '#451A03' },
+          },
           surface: {
             950: { value: '#FFFFFF' },
             900: { value: '#F7F7F3' },

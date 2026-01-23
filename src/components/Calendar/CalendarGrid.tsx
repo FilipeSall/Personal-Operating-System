@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import {
   format,
   startOfMonth,
@@ -6,9 +6,11 @@ import {
   startOfWeek,
   endOfWeek,
   addDays,
+  setMonth,
+  setYear,
 } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { MdAdd, MdChecklist } from 'react-icons/md';
+import { MdAdd, MdChecklist, MdChevronLeft, MdChevronRight } from 'react-icons/md';
 import { useCalendarStore } from '../../store/useCalendarStore';
 import { CalendarDayCell } from './CalendarDayCell';
 import { AddTodoModal } from './AddTodoModal';
@@ -16,9 +18,17 @@ import {
   calendarHeader,
   calendarHeaderTop,
   dateCardWrapper,
-  dateCard,
-  dateCardMonth,
-  dateCardDay,
+  dateCardButton,
+  dateCardButtonMonth,
+  dateCardButtonDay,
+  datePickerDropdown,
+  datePickerSection,
+  datePickerLabel,
+  monthGrid,
+  monthButton,
+  yearSelector,
+  yearButton,
+  yearInput,
   monthInfo,
   calendarTitle,
   calendarPeriod,
@@ -32,10 +42,14 @@ import {
 } from './styles/calendar-base.styles';
 
 const WEEKDAYS = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'];
+const MONTHS = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
 
 export function CalendarGrid() {
-  const { currentMonth } = useCalendarStore();
+  const { currentMonth, setCurrentMonth } = useCalendarStore();
   const [isAddTaskModalOpen, setIsAddTaskModalOpen] = useState(false);
+  const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
+  const [pickerYear, setPickerYear] = useState(currentMonth.getFullYear());
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   const today = new Date();
   const monthStart = startOfMonth(currentMonth);
@@ -50,19 +64,110 @@ export function CalendarGrid() {
     day = addDays(day, 1);
   }
 
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsDatePickerOpen(false);
+      }
+    }
+
+    if (isDatePickerOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [isDatePickerOpen]);
+
+  const handleMonthSelect = (monthIndex: number) => {
+    const newDate = setYear(setMonth(currentMonth, monthIndex), pickerYear);
+    setCurrentMonth(newDate);
+    setIsDatePickerOpen(false);
+  };
+
+  const handleYearChange = (delta: number) => {
+    setPickerYear((prev) => prev + delta);
+  };
+
   return (
     <div className={calendarSection}>
       <div className={calendarHeader}>
         <div className={calendarHeaderTop}>
-          <div className={dateCardWrapper}>
-            <div className={dateCard}>
-              <div className={dateCardMonth}>
+          <div className={dateCardWrapper} ref={dropdownRef}>
+            <button
+              type="button"
+              className={dateCardButton}
+              onClick={() => {
+                setPickerYear(currentMonth.getFullYear());
+                setIsDatePickerOpen(!isDatePickerOpen);
+              }}
+            >
+              <div className={dateCardButtonMonth}>
                 {format(today, 'MMM', { locale: ptBR })}
               </div>
-              <div className={dateCardDay}>
+              <div className={dateCardButtonDay}>
                 {format(today, 'd')}
               </div>
-            </div>
+            </button>
+
+            {isDatePickerOpen && (
+              <div className={datePickerDropdown}>
+                <div className={datePickerSection}>
+                  <span className={datePickerLabel}>Ano</span>
+                  <div className={yearSelector}>
+                    <button
+                      type="button"
+                      className={yearButton}
+                      onClick={() => handleYearChange(-1)}
+                    >
+                      <MdChevronLeft size={18} />
+                    </button>
+                    <input
+                      type="number"
+                      className={yearInput}
+                      value={pickerYear}
+                      onChange={(e) => {
+                        const value = parseInt(e.target.value, 10);
+                        if (!isNaN(value) && value > 0 && value < 10000) {
+                          setPickerYear(value);
+                        }
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          e.currentTarget.blur();
+                        }
+                      }}
+                    />
+                    <button
+                      type="button"
+                      className={yearButton}
+                      onClick={() => handleYearChange(1)}
+                    >
+                      <MdChevronRight size={18} />
+                    </button>
+                  </div>
+                </div>
+
+                <div className={datePickerSection}>
+                  <span className={datePickerLabel}>Mês</span>
+                  <div className={monthGrid}>
+                    {MONTHS.map((month, index) => (
+                      <button
+                        key={month}
+                        type="button"
+                        className={monthButton({
+                          isSelected:
+                            currentMonth.getMonth() === index &&
+                            currentMonth.getFullYear() === pickerYear,
+                        })}
+                        onClick={() => handleMonthSelect(index)}
+                      >
+                        {month}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+
             <div className={monthInfo}>
               <h2 className={calendarTitle}>
                 {format(currentMonth, 'MMMM yyyy', { locale: ptBR })}

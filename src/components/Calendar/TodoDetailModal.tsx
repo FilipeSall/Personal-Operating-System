@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useCalendarStore } from '../../store/useCalendarStore';
 import type { Todo } from '../../types/calendar';
+import { endOfMonth, endOfWeek, startOfMonth, startOfWeek } from 'date-fns';
 import {
   modalOverlay,
   detailModalContent,
@@ -23,11 +24,47 @@ interface TodoDetailModalProps {
 export function TodoDetailModal({ todo: initialTodo, onClose, onEdit }: TodoDetailModalProps) {
   const { deleteTodo, todos } = useCalendarStore();
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const isClient = typeof document !== 'undefined';
 
-  if (!initialTodo) return null;
-  if (typeof document === 'undefined') return null;
+  const currentTodo = useMemo(() => {
+    if (!initialTodo) return null;
+    return todos[initialTodo.date]?.find((t) => t.id === initialTodo.id) || initialTodo;
+  }, [initialTodo, todos]);
 
-  const currentTodo = todos[initialTodo.date]?.find((t) => t.id === initialTodo.id) || initialTodo;
+  const deleteOptions = useMemo(() => {
+    if (!currentTodo) return { mode: 'confirm' as const, scopes: [] as const };
+    const seriesId = currentTodo.originalTodoId ?? currentTodo.id;
+    const isSameSeries = (todo: Todo) =>
+      todo.id === seriesId || todo.originalTodoId === seriesId;
+    const seriesTodos = Object.values(todos)
+      .flat()
+      .filter(isSameSeries);
+
+    if (seriesTodos.length <= 1) return { mode: 'confirm' as const, scopes: [] as const };
+
+    const baseDate = new Date(`${currentTodo.date}T00:00:00`);
+    const weekStart = startOfWeek(baseDate, { weekStartsOn: 1 });
+    const weekEnd = endOfWeek(baseDate, { weekStartsOn: 1 });
+    const monthStart = startOfMonth(baseDate);
+    const monthEnd = endOfMonth(baseDate);
+
+    const isInRange = (dateStr: string, start: Date, end: Date) => {
+      const date = new Date(`${dateStr}T00:00:00`);
+      return date >= start && date <= end;
+    };
+
+    const isOnlyInWeek = seriesTodos.every((todo) => isInRange(todo.date, weekStart, weekEnd));
+    if (isOnlyInWeek) return { mode: 'scope' as const, scopes: ['single', 'week'] as const };
+
+    const isOnlyInMonth = seriesTodos.every((todo) => isInRange(todo.date, monthStart, monthEnd));
+    if (isOnlyInMonth) {
+      return { mode: 'scope' as const, scopes: ['single', 'week', 'month'] as const };
+    }
+
+    return { mode: 'scope' as const, scopes: ['single', 'week', 'month', 'all'] as const };
+  }, [currentTodo, todos]);
+
+  if (!initialTodo || !currentTodo || !isClient) return null;
 
   const typeConfig = getTypeConfig(currentTodo.type);
   const Icon = typeConfig ? ICONS[typeConfig.icon] : null;
@@ -74,6 +111,8 @@ export function TodoDetailModal({ todo: initialTodo, onClose, onEdit }: TodoDeta
         isOpen={isDeleteModalOpen}
         onClose={() => setIsDeleteModalOpen(false)}
         onDelete={handleDelete}
+        mode={deleteOptions.mode}
+        scopes={deleteOptions.scopes}
       />
     </div>
   );

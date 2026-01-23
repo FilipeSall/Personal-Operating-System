@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import {
@@ -171,13 +172,15 @@ export function AddTodoModal({ isOpen, onClose, todo }: AddTodoModalProps) {
   };
 
   if (!isOpen) return null;
+  if (typeof document === 'undefined') return null;
 
-  return (
+  const modal = (
     <div className={modalSlots.overlay} onClick={handleOverlayClick}>
       <div className={modalSlots.content}>
         <div className={modalSlots.header}>
           <span className={modalSlots.title}>
-            {todo ? 'Editar tarefa' : 'Nova tarefa'} - {format(new Date(`${dateKey}T00:00:00`), "d 'de' MMM", { locale: ptBR })}
+            {todo ? 'Editar tarefa' : 'Nova tarefa'} -{' '}
+            {format(new Date(`${dateKey}T00:00:00`), "d 'de' MMM", { locale: ptBR })}
           </span>
           <button type="button" className={modalSlots.closeButton} onClick={handleClose}>
             <MdClose size={20} />
@@ -323,4 +326,6 @@ export function AddTodoModal({ isOpen, onClose, todo }: AddTodoModalProps) {
       </div>
     </div>
   );
+
+  return createPortal(modal, document.body);
 }

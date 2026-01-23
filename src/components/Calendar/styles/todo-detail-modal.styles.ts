@@ -7,7 +7,7 @@ export const modalOverlay = css({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
-  zIndex: 1000,
+  zIndex: 9999,
   backdropFilter: 'blur(4px)',
   padding: '20px',
   overflow: 'hidden',

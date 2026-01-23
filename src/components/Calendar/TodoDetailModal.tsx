@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useCalendarStore } from '../../store/useCalendarStore';
 import type { Todo } from '../../types/calendar';
 import {
@@ -24,6 +25,7 @@ export function TodoDetailModal({ todo: initialTodo, onClose, onEdit }: TodoDeta
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   if (!initialTodo) return null;
+  if (typeof document === 'undefined') return null;
 
   const currentTodo = todos[initialTodo.date]?.find((t) => t.id === initialTodo.id) || initialTodo;
 
@@ -50,7 +52,7 @@ export function TodoDetailModal({ todo: initialTodo, onClose, onEdit }: TodoDeta
 
   const formattedDate = formatTodoDate(currentTodo.date);
 
-  return (
+  const modal = (
     <div className={modalOverlay} onClick={handleOverlayClick}>
       <div className={detailModalContent}>
         <TodoDetailHeader
@@ -75,4 +77,6 @@ export function TodoDetailModal({ todo: initialTodo, onClose, onEdit }: TodoDeta
       />
     </div>
   );
+
+  return createPortal(modal, document.body);
 }

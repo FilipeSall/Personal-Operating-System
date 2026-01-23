@@ -42,8 +42,8 @@ export const addTodoModalRecipe = sva({
       backgroundColor: 'surface.950',
       borderRadius: '20px',
       padding: '32px',
-      width: '45%',
-      maxWidth: '45%',
+      width: '50%',
+      maxWidth: '50%',
       maxHeight: '90vh',
       overflowY: 'auto',
       display: 'flex',
@@ -68,6 +68,14 @@ export const addTodoModalRecipe = sva({
         '&:hover': {
           background: 'surface.500',
         },
+      },
+      '@media (max-width: 799px)': {
+        width: '75%',
+        maxWidth: '75%',
+      },
+      '@media (min-width: 1400px)': {
+        width: '40%',
+        maxWidth: '40%',
       },
     },
     header: {
@@ -223,9 +231,9 @@ export const addTodoModalRecipe = sva({
       flexWrap: 'wrap',
     },
     weekdaySelector: {
-      display: 'flex',
+      display: 'grid',
+      gridTemplateColumns: 'repeat(7, minmax(0, 1fr))',
       gap: '6px',
-      justifyContent: 'space-between',
       animation: 'slideDown 0.3s ease-out',
     },
     durationSection: {
@@ -344,7 +352,7 @@ export const repeatButton = cva({
 
 export const weekdayButton = cva({
   base: {
-    width: '40px',
+    width: '100%',
     height: '40px',
     display: 'flex',
     alignItems: 'center',
@@ -379,6 +387,20 @@ export const weekdayButton = cva({
         transform: 'scale(1.05)',
       },
     },
+  },
+});
+
+export const weekdayLabelLong = css({
+  display: 'inline',
+  '@media (max-width: 799px)': {
+    display: 'none',
+  },
+});
+
+export const weekdayLabelShort = css({
+  display: 'none',
+  '@media (max-width: 799px)': {
+    display: 'inline',
   },
 });
 

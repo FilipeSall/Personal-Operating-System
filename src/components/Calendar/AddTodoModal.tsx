@@ -22,6 +22,8 @@ import {
   repeatButton,
   weekdayButton,
   durationButton,
+  weekdayLabelLong,
+  weekdayLabelShort,
 } from './styles/add-todo-modal.styles';
 import { css } from '../../../styled-system/css';
 
@@ -35,14 +37,14 @@ const ICONS: Record<string, React.ComponentType<{ size?: number; color?: string 
   MdAttachMoney,
 };
 
-const WEEKDAYS: { id: Weekday; label: string }[] = [
-  { id: 'sun', label: 'D' },
-  { id: 'mon', label: 'S' },
-  { id: 'tue', label: 'T' },
-  { id: 'wed', label: 'Q' },
-  { id: 'thu', label: 'Q' },
-  { id: 'fri', label: 'S' },
-  { id: 'sat', label: 'S' },
+const WEEKDAYS: { id: Weekday; short: string; long: string }[] = [
+  { id: 'sun', short: 'D', long: 'Dom' },
+  { id: 'mon', short: 'S', long: 'Seg' },
+  { id: 'tue', short: 'T', long: 'Ter' },
+  { id: 'wed', short: 'Q', long: 'Qua' },
+  { id: 'thu', short: 'Q', long: 'Qui' },
+  { id: 'fri', short: 'S', long: 'Sex' },
+  { id: 'sat', short: 'S', long: 'Sáb' },
 ];
 
 const ALL_WEEKDAYS: Weekday[] = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
@@ -289,7 +291,8 @@ export function AddTodoModal({ isOpen, onClose, todo }: AddTodoModalProps) {
                     className={weekdayButton({ isSelected: selectedWeekdays.includes(day.id) })}
                     onClick={() => toggleWeekday(day.id)}
                   >
-                    {day.label}
+                    <span className={weekdayLabelLong}>{day.long}</span>
+                    <span className={weekdayLabelShort}>{day.short}</span>
                   </button>
                 ))}
               </div>

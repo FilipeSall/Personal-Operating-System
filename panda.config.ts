@@ -15,6 +15,10 @@ export default defineConfig({
 
   theme: {
     extend: {
+      breakpoints: {
+        bp800: '800px',
+        bp1400: '1400px',
+      },
       tokens: {
         fonts: {
           montserrat: { value: 'Montserrat, sans-serif' },

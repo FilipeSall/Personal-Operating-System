@@ -55,6 +55,7 @@ export const useCalendarStore = create<CalendarState>((set, get) => ({
         startTime: todoData.startTime,
         endTime: todoData.endTime,
         repeat: todoData.repeat,
+        completed: false,
         originalTodoId: isOriginal ? undefined : todoId,
         createdAt,
       });

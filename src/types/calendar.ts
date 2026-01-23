@@ -35,6 +35,7 @@ export interface Todo {
   startTime: string;
   endTime: string;
   repeat: RepeatConfig;
+  completed?: boolean;
   originalTodoId?: string;
   createdAt: string;
 }

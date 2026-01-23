@@ -42,8 +42,8 @@ export const addTodoModalRecipe = sva({
       backgroundColor: 'surface.950',
       borderRadius: '20px',
       padding: '32px',
-      width: '50%',
-      maxWidth: '50%',
+      width: { base: '75%', bp800: '50%', bp1400: '40%' },
+      maxWidth: { base: '75%', bp800: '50%', bp1400: '40%' },
       maxHeight: '90vh',
       overflowY: 'auto',
       display: 'flex',
@@ -68,14 +68,6 @@ export const addTodoModalRecipe = sva({
         '&:hover': {
           background: 'surface.500',
         },
-      },
-      '@media (max-width: 799px)': {
-        width: '75%',
-        maxWidth: '75%',
-      },
-      '@media (min-width: 1400px)': {
-        width: '40%',
-        maxWidth: '40%',
       },
     },
     header: {
@@ -391,17 +383,11 @@ export const weekdayButton = cva({
 });
 
 export const weekdayLabelLong = css({
-  display: 'inline',
-  '@media (max-width: 799px)': {
-    display: 'none',
-  },
+  display: { base: 'none', bp800: 'inline' },
 });
 
 export const weekdayLabelShort = css({
-  display: 'none',
-  '@media (max-width: 799px)': {
-    display: 'inline',
-  },
+  display: { base: 'inline', bp800: 'none' },
 });
 
 export const durationButton = cva({

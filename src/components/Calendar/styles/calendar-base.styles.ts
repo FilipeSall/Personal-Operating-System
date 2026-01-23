@@ -2,7 +2,7 @@ import { css, cva } from '../../../../styled-system/css';
 
 export const calendarContainer = css({
   display: 'grid',
-  gridTemplateRows: '1fr 1fr',
+  gridTemplateRows: '1.2fr 1fr',
   gap: '24px',
   padding: '28px',
   backgroundColor: 'surface.950',
@@ -25,20 +25,87 @@ export const calendarSection = css({
 
 export const calendarHeader = css({
   display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'space-between',
-  marginBottom: '12px',
+  flexDirection: 'column',
+  gap: '16px',
   paddingBottom: '16px',
   borderBottom: '1px solid',
   borderColor: 'surface.700',
+  marginBottom: '0',
+});
+
+export const calendarHeaderTop = css({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  gap: '16px',
+});
+
+export const dateCardWrapper = css({
+  display: 'flex',
+  alignItems: 'center',
+  gap: '12px',
+});
+
+export const dateCard = css({
+  border: '1px solid',
+  borderColor: 'surface.700',
+  borderRadius: '10px',
+  padding: '8px 12px',
+  textAlign: 'center',
+  minWidth: '56px',
+  backgroundColor: 'surface.950',
+  boxShadow: '0 1px 2px rgba(0, 0, 0, 0.05)',
+});
+
+export const dateCardMonth = css({
+  fontSize: '10px',
+  color: 'text.muted',
+  textTransform: 'uppercase',
+  fontWeight: '700',
+  letterSpacing: '0.05em',
+});
+
+export const dateCardDay = css({
+  fontSize: '20px',
+  fontWeight: '700',
+  color: 'text.primary',
+  lineHeight: '1.2',
+});
+
+export const monthInfo = css({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '2px',
 });
 
 export const calendarTitle = css({
-  fontSize: '20px',
-  fontWeight: '600',
+  fontSize: '18px',
+  fontWeight: '700',
   color: 'text.primary',
   textTransform: 'capitalize',
   letterSpacing: '-0.01em',
+});
+
+export const calendarPeriod = css({
+  fontSize: '12px',
+  color: 'text.muted',
+});
+
+export const navControls = css({
+  display: 'flex',
+  alignItems: 'center',
+  gap: '8px',
+});
+
+export const navButtonGroup = css({
+  display: 'flex',
+  alignItems: 'center',
+  backgroundColor: 'surface.950',
+  border: '1px solid',
+  borderColor: 'surface.700',
+  borderRadius: '10px',
+  boxShadow: '0 1px 2px rgba(0, 0, 0, 0.05)',
+  overflow: 'hidden',
 });
 
 export const navButton = css({
@@ -47,78 +114,168 @@ export const navButton = css({
   justifyContent: 'center',
   width: '36px',
   height: '36px',
-  backgroundColor: 'surface.900',
+  backgroundColor: 'transparent',
   border: 'none',
-  borderRadius: '10px',
   color: 'text.muted',
   cursor: 'pointer',
-  transition: 'all 0.2s ease',
+  transition: 'all 0.15s ease',
   _hover: {
-    backgroundColor: 'surface.800',
-    color: 'brand.500',
+    backgroundColor: 'surface.900',
+    color: 'text.primary',
   },
 });
 
-export const calendarGrid = css({
+export const navButtonLeft = css({
+  borderRight: '1px solid',
+  borderColor: 'surface.700',
+});
+
+export const navButtonRight = css({
+  borderLeft: '1px solid',
+  borderColor: 'surface.700',
+});
+
+export const todayButton = css({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  padding: '0 16px',
+  height: '36px',
+  backgroundColor: 'transparent',
+  border: 'none',
+  fontSize: '13px',
+  fontWeight: '600',
+  color: 'text.primary',
+  cursor: 'pointer',
+  transition: 'all 0.15s ease',
+  _hover: {
+    backgroundColor: 'surface.900',
+  },
+});
+
+export const viewSelector = css({
+  display: 'flex',
+  alignItems: 'center',
+  gap: '6px',
+  padding: '0 12px',
+  height: '36px',
+  backgroundColor: 'surface.950',
+  border: '1px solid',
+  borderColor: 'surface.700',
+  borderRadius: '10px',
+  fontSize: '13px',
+  fontWeight: '500',
+  color: 'text.primary',
+  cursor: 'pointer',
+  transition: 'all 0.15s ease',
+  boxShadow: '0 1px 2px rgba(0, 0, 0, 0.05)',
+  _hover: {
+    backgroundColor: 'surface.900',
+  },
+});
+
+export const addEventButton = css({
+  display: 'flex',
+  alignItems: 'center',
+  gap: '6px',
+  padding: '0 14px',
+  height: '36px',
+  backgroundColor: 'brand.500',
+  border: 'none',
+  borderRadius: '10px',
+  fontSize: '13px',
+  fontWeight: '600',
+  color: 'white',
+  cursor: 'pointer',
+  transition: 'all 0.15s ease',
+  boxShadow: '0 2px 4px rgba(214, 69, 80, 0.25)',
+  _hover: {
+    backgroundColor: 'brand.600',
+    boxShadow: '0 4px 8px rgba(214, 69, 80, 0.3)',
+  },
+  _active: {
+    transform: 'scale(0.98)',
+  },
+});
+
+export const addTaskButton = css({
+  display: 'flex',
+  alignItems: 'center',
+  gap: '6px',
+  padding: '0 14px',
+  height: '36px',
+  backgroundColor: 'transparent',
+  border: '1px solid',
+  borderColor: 'text.primary',
+  borderRadius: '10px',
+  fontSize: '13px',
+  fontWeight: '600',
+  color: 'text.primary',
+  cursor: 'pointer',
+  transition: 'all 0.15s ease',
+  _hover: {
+    backgroundColor: 'text.primary',
+    color: 'white',
+  },
+  _active: {
+    transform: 'scale(0.98)',
+  },
+});
+
+export const weekdaysRow = css({
   display: 'grid',
   gridTemplateColumns: 'repeat(7, 1fr)',
-  gridTemplateRows: 'auto repeat(6, 1fr)',
-  gap: '6px',
-  flex: 1,
-  height: '100%',
-  minHeight: 0,
-  overflow: 'hidden',
+  backgroundColor: 'surface.900',
+  borderBottom: '1px solid',
+  borderColor: 'surface.700',
 });
 
 export const weekdayHeader = css({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
-  height: '36px',
+  padding: '10px 0',
   fontSize: '11px',
   fontWeight: '600',
-  color: 'text.dim',
+  color: 'text.muted',
   textTransform: 'uppercase',
   letterSpacing: '0.05em',
+});
+
+export const calendarGrid = css({
+  display: 'grid',
+  gridTemplateColumns: 'repeat(7, 1fr)',
+  gridAutoRows: '1fr',
+  flex: 1,
+  backgroundColor: 'surface.700',
+  gap: '1px',
+  overflow: 'hidden',
+  minHeight: 0,
 });
 
 export const dayCell = cva({
   base: {
     display: 'flex',
     flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: '100%',
-    fontSize: '14px',
-    fontWeight: '500',
-    borderRadius: '12px',
+    backgroundColor: 'surface.950',
+    padding: '6px',
+    gap: '2px',
     cursor: 'pointer',
-    transition: 'all 0.15s ease',
-    position: 'relative',
-    border: 'none',
-    backgroundColor: 'transparent',
-    color: 'text.subtle',
+    transition: 'background-color 0.15s ease',
+    overflow: 'hidden',
   },
   variants: {
     isSelected: {
       true: {
-        backgroundColor: 'brand.500',
-        color: 'surface.950',
-        fontWeight: '600',
-        boxShadow: '0 2px 8px rgba(214, 69, 80, 0.35)',
+        backgroundColor: 'surface.900',
       },
     },
     isToday: {
-      true: {
-        backgroundColor: 'surface.900',
-        color: 'brand.500',
-        fontWeight: '600',
-      },
+      true: {},
     },
     isOutsideMonth: {
       true: {
-        color: 'text.faint',
-        cursor: 'default',
+        backgroundColor: 'surface.950',
       },
     },
     hasEvents: {
@@ -135,15 +292,196 @@ export const dayCell = cva({
         },
       },
     },
-    {
-      isSelected: true,
-      isToday: true,
-      css: {
-        backgroundColor: 'brand.500',
-        color: 'surface.950',
+  ],
+});
+
+export const dayNumber = cva({
+  base: {
+    fontSize: '13px',
+    fontWeight: '600',
+    padding: '2px 6px',
+    marginBottom: '2px',
+    display: 'inline-flex',
+    alignSelf: 'flex-start',
+    color: 'text.primary',
+  },
+  variants: {
+    isSelected: {
+      true: {
+        backgroundColor: 'text.primary',
+        color: 'white',
+        borderRadius: '50%',
+        width: '26px',
+        height: '26px',
+        alignItems: 'center',
+        justifyContent: 'center',
+        boxShadow: '0 2px 4px rgba(0, 0, 0, 0.15)',
       },
     },
-  ],
+    isOutsideMonth: {
+      true: {
+        color: 'text.faint',
+      },
+    },
+  },
+});
+
+export const eventItem = cva({
+  base: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: '3px 6px',
+    borderRadius: '4px',
+    cursor: 'pointer',
+    transition: 'opacity 0.15s ease',
+    _hover: {
+      opacity: 0.8,
+    },
+  },
+  variants: {
+    type: {
+      work: {
+        backgroundColor: 'rgba(214, 69, 80, 0.1)',
+        borderLeft: '2px solid',
+        borderColor: 'brand.500',
+      },
+      routine: {
+        backgroundColor: 'rgba(156, 163, 175, 0.15)',
+      },
+      reminder: {
+        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+      },
+      personal: {
+        backgroundColor: 'rgba(168, 85, 247, 0.1)',
+      },
+      study: {
+        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+      },
+      health: {
+        backgroundColor: 'rgba(167, 170, 41, 0.15)',
+      },
+      finance: {
+        backgroundColor: 'rgba(249, 115, 22, 0.1)',
+      },
+    },
+  },
+});
+
+export const eventDot = cva({
+  base: {
+    width: '5px',
+    height: '5px',
+    borderRadius: '50%',
+    flexShrink: 0,
+  },
+  variants: {
+    type: {
+      work: {
+        backgroundColor: 'brand.500',
+      },
+      routine: {
+        backgroundColor: 'text.muted',
+      },
+      reminder: {
+        backgroundColor: '#3B82F6',
+      },
+      personal: {
+        backgroundColor: '#A855F7',
+      },
+      study: {
+        backgroundColor: '#3B82F6',
+      },
+      health: {
+        backgroundColor: 'success.500',
+      },
+      finance: {
+        backgroundColor: '#F97316',
+      },
+    },
+  },
+});
+
+export const eventText = cva({
+  base: {
+    fontSize: '10px',
+    fontWeight: '500',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
+    flex: 1,
+    marginLeft: '4px',
+  },
+  variants: {
+    type: {
+      work: {
+        color: 'brand.500',
+      },
+      routine: {
+        color: 'text.muted',
+      },
+      reminder: {
+        color: '#3B82F6',
+      },
+      personal: {
+        color: '#A855F7',
+      },
+      study: {
+        color: '#3B82F6',
+      },
+      health: {
+        color: 'success.500',
+      },
+      finance: {
+        color: '#F97316',
+      },
+    },
+  },
+});
+
+export const eventTime = cva({
+  base: {
+    fontSize: '9px',
+    marginLeft: '4px',
+    flexShrink: 0,
+  },
+  variants: {
+    type: {
+      work: {
+        color: 'rgba(214, 69, 80, 0.7)',
+      },
+      routine: {
+        color: 'text.faint',
+      },
+      reminder: {
+        color: 'rgba(59, 130, 246, 0.7)',
+      },
+      personal: {
+        color: 'rgba(168, 85, 247, 0.7)',
+      },
+      study: {
+        color: 'rgba(59, 130, 246, 0.7)',
+      },
+      health: {
+        color: 'rgba(167, 170, 41, 0.7)',
+      },
+      finance: {
+        color: 'rgba(249, 115, 22, 0.7)',
+      },
+    },
+  },
+});
+
+export const moreEventsText = css({
+  fontSize: '9px',
+  color: 'text.faint',
+  fontWeight: '500',
+  paddingLeft: '6px',
+  marginTop: '2px',
+  cursor: 'pointer',
+  _hover: {
+    color: 'text.primary',
+  },
 });
 
 export const eventIndicator = css({
@@ -151,10 +489,4 @@ export const eventIndicator = css({
   bottom: '4px',
   display: 'flex',
   gap: '2px',
-});
-
-export const eventDot = css({
-  width: '4px',
-  height: '4px',
-  borderRadius: '50%',
 });

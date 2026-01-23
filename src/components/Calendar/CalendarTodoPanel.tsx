@@ -1,8 +1,6 @@
 import { useState } from 'react';
 import { format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
 import {
-  MdAdd,
   MdWork,
   MdRepeat,
   MdNotifications,
@@ -19,13 +17,10 @@ import { AddTodoModal } from './AddTodoModal';
 import { TodoDetailModal } from './TodoDetailModal';
 import {
   todoPanel,
-  todoPanelHeader,
-  todoPanelTitle,
   todoList,
   todoItem,
   todoStatusIndicator,
   todoText,
-  addTaskButton,
   emptyState,
   todoTime,
   todoRepeatIcon,
@@ -44,7 +39,6 @@ const ICONS: Record<string, React.ComponentType<{ size?: number; color?: string 
 
 export function CalendarTodoPanel() {
   const { selectedDate, getTodosForDate } = useCalendarStore();
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [editingTodo, setEditingTodo] = useState<Todo | null>(null);
   const [selectedTodo, setSelectedTodo] = useState<Todo | null>(null);
 
@@ -59,27 +53,8 @@ export function CalendarTodoPanel() {
     setSelectedTodo(todo);
   };
 
-  
-
   return (
     <div className={todoPanel}>
-      <div className={todoPanelHeader}>
-        <span className={todoPanelTitle}>
-          {format(selectedDate, "d 'de' MMMM", { locale: ptBR })}
-        </span>
-        <button
-          type="button"
-          className={addTaskButton}
-          onClick={() => {
-            setEditingTodo(null);
-            setIsAddModalOpen(true);
-          }}
-        >
-          <MdAdd size={18} />
-          Nova tarefa
-        </button>
-      </div>
-
       {dayTodos.length === 0 ? (
         <div className={emptyState}>
           <MdEventAvailable size={32} color="text.dim" />
@@ -127,10 +102,9 @@ export function CalendarTodoPanel() {
 
       <AddTodoModal
         key={editingTodo?.id ?? 'new'}
-        isOpen={isAddModalOpen || !!editingTodo}
+        isOpen={!!editingTodo}
         todo={editingTodo}
         onClose={() => {
-          setIsAddModalOpen(false);
           setEditingTodo(null);
         }}
       />

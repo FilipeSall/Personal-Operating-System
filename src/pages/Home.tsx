@@ -13,10 +13,9 @@ const homeContainer = css({
 });
 
 const calendarWidget = css({
-  width: '100%',
+  width: '50%',
   height: '100%',
-  maxWidth: '500px',
-  margin: '0 auto',
+  minWidth: '400px',
 });
 
 function Home() {

@@ -1,10 +1,9 @@
 import { css, cva } from '../../../../styled-system/css';
 
 export const todoPanel = css({
-  display: 'grid',
-  gridTemplateRows: 'auto 1fr auto',
-  gap: '20px',
-  padding: '24px',
+  display: 'flex',
+  flexDirection: 'column',
+  padding: '16px',
   backgroundColor: 'surface.900',
   borderRadius: '16px',
   height: '100%',

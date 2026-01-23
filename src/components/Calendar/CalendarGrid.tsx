@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import {
   format,
   startOfMonth,
@@ -5,31 +6,38 @@ import {
   startOfWeek,
   endOfWeek,
   addDays,
-  addMonths,
-  subMonths,
 } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { MdChevronLeft, MdChevronRight } from 'react-icons/md';
+import { MdAdd, MdChecklist } from 'react-icons/md';
 import { useCalendarStore } from '../../store/useCalendarStore';
 import { CalendarDayCell } from './CalendarDayCell';
+import { AddTodoModal } from './AddTodoModal';
 import {
   calendarHeader,
-  calendarTitle,
-  navButton,
-  calendarGrid,
+  calendarHeaderTop,
+  dateCard,
+  dateCardMonth,
+  dateCardDay,
+  navControls,
+  addEventButton,
+  addTaskButton,
+  weekdaysRow,
   weekdayHeader,
+  calendarGrid,
   calendarSection,
 } from './styles/calendar-base.styles';
 
-const WEEKDAYS = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+const WEEKDAYS = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'];
 
 export function CalendarGrid() {
-  const { currentMonth, setCurrentMonth } = useCalendarStore();
+  const { currentMonth } = useCalendarStore();
+  const [isAddTaskModalOpen, setIsAddTaskModalOpen] = useState(false);
 
+  const today = new Date();
   const monthStart = startOfMonth(currentMonth);
   const monthEnd = endOfMonth(currentMonth);
-  const calendarStart = startOfWeek(monthStart);
-  const calendarEnd = endOfWeek(monthEnd);
+  const calendarStart = startOfWeek(monthStart, { weekStartsOn: 1 });
+  const calendarEnd = endOfWeek(monthEnd, { weekStartsOn: 1 });
 
   const days: Date[] = [];
   let day = calendarStart;
@@ -38,35 +46,46 @@ export function CalendarGrid() {
     day = addDays(day, 1);
   }
 
-  const handlePrevMonth = () => {
-    setCurrentMonth(subMonths(currentMonth, 1));
-  };
-
-  const handleNextMonth = () => {
-    setCurrentMonth(addMonths(currentMonth, 1));
-  };
-
   return (
     <div className={calendarSection}>
       <div className={calendarHeader}>
-        <button className={navButton} onClick={handlePrevMonth} type="button">
-          <MdChevronLeft size={20} />
-        </button>
-        <span className={calendarTitle}>
-          {format(currentMonth, 'MMMM yyyy', { locale: ptBR })}
-        </span>
-        <button className={navButton} onClick={handleNextMonth} type="button">
-          <MdChevronRight size={20} />
-        </button>
+        <div className={calendarHeaderTop}>
+          <div className={dateCard}>
+            <div className={dateCardMonth}>
+              {format(today, 'MMM', { locale: ptBR })}
+            </div>
+            <div className={dateCardDay}>
+              {format(today, 'd')}
+            </div>
+          </div>
+
+          <div className={navControls}>
+            <button
+              className={addTaskButton}
+              type="button"
+              onClick={() => setIsAddTaskModalOpen(true)}
+            >
+              <MdChecklist size={18} />
+              Tarefa
+            </button>
+
+            <button className={addEventButton} type="button">
+              <MdAdd size={18} />
+              Evento
+            </button>
+          </div>
+        </div>
       </div>
 
-      <div className={calendarGrid}>
+      <div className={weekdaysRow}>
         {WEEKDAYS.map((weekday) => (
           <div key={weekday} className={weekdayHeader}>
             {weekday}
           </div>
         ))}
+      </div>
 
+      <div className={calendarGrid}>
         {days.map((date) => (
           <CalendarDayCell
             key={date.toISOString()}
@@ -75,6 +94,12 @@ export function CalendarGrid() {
           />
         ))}
       </div>
+
+      <AddTodoModal
+        isOpen={isAddTaskModalOpen}
+        todo={null}
+        onClose={() => setIsAddTaskModalOpen(false)}
+      />
     </div>
   );
 }

@@ -15,9 +15,13 @@ import { AddTodoModal } from './AddTodoModal';
 import {
   calendarHeader,
   calendarHeaderTop,
+  dateCardWrapper,
   dateCard,
   dateCardMonth,
   dateCardDay,
+  monthInfo,
+  calendarTitle,
+  calendarPeriod,
   navControls,
   addEventButton,
   addTaskButton,
@@ -50,12 +54,22 @@ export function CalendarGrid() {
     <div className={calendarSection}>
       <div className={calendarHeader}>
         <div className={calendarHeaderTop}>
-          <div className={dateCard}>
-            <div className={dateCardMonth}>
-              {format(today, 'MMM', { locale: ptBR })}
+          <div className={dateCardWrapper}>
+            <div className={dateCard}>
+              <div className={dateCardMonth}>
+                {format(today, 'MMM', { locale: ptBR })}
+              </div>
+              <div className={dateCardDay}>
+                {format(today, 'd')}
+              </div>
             </div>
-            <div className={dateCardDay}>
-              {format(today, 'd')}
+            <div className={monthInfo}>
+              <h2 className={calendarTitle}>
+                {format(currentMonth, 'MMMM yyyy', { locale: ptBR })}
+              </h2>
+              <p className={calendarPeriod}>
+                {format(monthStart, 'd MMM', { locale: ptBR })} - {format(monthEnd, 'd MMM, yyyy', { locale: ptBR })}
+              </p>
             </div>
           </div>
 

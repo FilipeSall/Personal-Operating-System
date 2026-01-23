@@ -7,9 +7,19 @@ export default defineConfig({
 
   exclude: [],
 
+  globalCss: {
+    'html, body': {
+      fontFamily: 'Montserrat, sans-serif',
+    },
+  },
+
   theme: {
     extend: {
       tokens: {
+        fonts: {
+          montserrat: { value: 'Montserrat, sans-serif' },
+          roboto: { value: 'Roboto, sans-serif' },
+        },
         colors: {
           brand: {
             500: { value: '#D64550' },

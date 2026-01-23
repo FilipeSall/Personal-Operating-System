@@ -2,7 +2,7 @@ import { css, cva } from '../../../../styled-system/css';
 
 export const calendarContainer = css({
   display: 'grid',
-  gridTemplateRows: '1.2fr 1fr',
+  gridTemplateRows: '3fr 2fr',
   gap: '24px',
   padding: '28px',
   backgroundColor: 'surface.950',
@@ -258,11 +258,12 @@ export const dayCell = cva({
     display: 'flex',
     flexDirection: 'column',
     backgroundColor: 'surface.950',
-    padding: '6px',
-    gap: '2px',
+    padding: '8px',
+    gap: '3px',
     cursor: 'pointer',
     transition: 'background-color 0.15s ease',
     overflow: 'hidden',
+    height: '100%',
   },
   variants: {
     isSelected: {

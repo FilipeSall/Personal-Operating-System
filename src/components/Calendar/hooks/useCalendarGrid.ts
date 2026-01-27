@@ -2,6 +2,31 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { addDays, endOfMonth, endOfWeek, setMonth, setYear, startOfMonth, startOfWeek } from 'date-fns';
 import { useCalendarStore } from '../../../store/useCalendarStore';
 
+/**
+ * Hook responsável pela lógica do CalendarGrid (datas, estado do datepicker e modal).
+ *
+ * Props:
+ * - Não possui.
+ *
+ * Como usar:
+ * const {
+ *   currentMonth,
+ *   monthStart,
+ *   monthEnd,
+ *   days,
+ *   today,
+ *   pickerYear,
+ *   isDatePickerOpen,
+ *   isAddTaskModalOpen,
+ *   dropdownRef,
+ *   handleMonthSelect,
+ *   handleYearChange,
+ *   handleYearInputChange,
+ *   handleToggleDatePicker,
+ *   handleOpenAddTaskModal,
+ *   handleCloseAddTaskModal,
+ * } = useCalendarGrid();
+ */
 export const useCalendarGrid = () => {
   const { currentMonth, setCurrentMonth } = useCalendarStore();
   const [isAddTaskModalOpen, setIsAddTaskModalOpen] = useState(false);

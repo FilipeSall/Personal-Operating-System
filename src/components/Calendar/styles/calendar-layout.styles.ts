@@ -2,7 +2,7 @@ import { css } from '../../../../styled-system/css';
 
 export const calendarContainer = css({
   display: 'grid',
-  gridTemplateRows: '4fr 2fr',
+  gridTemplateRows: '5fr 2fr',
   gap: '16px',
   backgroundColor: 'surface.950',
   width: '100%',

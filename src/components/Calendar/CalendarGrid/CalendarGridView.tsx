@@ -3,6 +3,7 @@ import { ptBR } from 'date-fns/locale';
 import { MdAdd, MdChecklist, MdChevronLeft, MdChevronRight } from 'react-icons/md';
 import { CalendarDayCell } from '../CalendarDayCell/CalendarDayCell';
 import { AddTodoModal } from '../AddTodoModal/AddTodoModal';
+import { calendarSection } from '../styles/calendar-layout.styles';
 import {
   calendarHeader,
   calendarHeaderTop,
@@ -24,11 +25,12 @@ import {
   navControls,
   addEventButton,
   addTaskButton,
+} from '../styles/calendar-header.styles';
+import {
   weekdaysRow,
   weekdayHeader,
   calendarGrid,
-  calendarSection,
-} from '../styles/calendar-base.styles';
+} from '../styles/calendar-grid.styles';
 import { CALENDAR_MONTHS, CALENDAR_WEEKDAYS } from '../consts/calendarLabels';
 
 type CalendarGridViewProps = {

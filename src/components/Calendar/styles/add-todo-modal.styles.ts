@@ -1,7 +1,5 @@
 import { css, cva, sva } from '../../../../styled-system/css';
 
-
-
 export const addTodoModalRecipe = sva({
   slots: [
     'overlay',

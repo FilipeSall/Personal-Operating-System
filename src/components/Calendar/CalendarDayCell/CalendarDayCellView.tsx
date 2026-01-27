@@ -1,14 +1,13 @@
 import type { Todo, TodoType } from '../../../types/calendar';
 import { format } from 'date-fns';
+import { dayCell, dayNumber } from '../styles/calendar-grid.styles';
 import {
-  dayCell,
-  dayNumber,
   eventItem,
   eventDot,
   eventText,
   eventTime,
   moreEventsText,
-} from '../styles/calendar-base.styles';
+} from '../styles/calendar-event.styles';
 import { formatTime } from '../utils/formatTime';
 
 type CalendarDayCellViewProps = {

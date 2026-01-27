@@ -32,46 +32,55 @@ import {
 import { CALENDAR_MONTHS, CALENDAR_WEEKDAYS } from '../consts/calendarLabels';
 
 type CalendarGridViewProps = {
-  currentMonth: Date;
-  monthStart: Date;
-  monthEnd: Date;
-  days: Date[];
-  today: Date;
-  pickerYear: number;
-  isDatePickerOpen: boolean;
-  isAddTaskModalOpen: boolean;
-  dropdownRef: React.RefObject<HTMLDivElement | null>;
-  onToggleDatePicker: () => void;
-  onMonthSelect: (monthIndex: number) => void;
-  onYearChange: (delta: number) => void;
-  onYearInputChange: (value: string) => void;
-  onOpenAddTaskModal: () => void;
-  onCloseAddTaskModal: () => void;
+  state: {
+    currentMonth: Date;
+    pickerYear: number;
+    isDatePickerOpen: boolean;
+    isAddTaskModalOpen: boolean;
+  };
+  dates: {
+    today: Date;
+    monthStart: Date;
+    monthEnd: Date;
+    days: Date[];
+  };
+  refs: {
+    dropdownRef: React.RefObject<HTMLDivElement | null>;
+  };
+  actions: {
+    handleMonthSelect: (monthIndex: number) => void;
+    handleYearChange: (delta: number) => void;
+    handleYearInputChange: (value: string) => void;
+    handleToggleDatePicker: () => void;
+    handleOpenAddTaskModal: () => void;
+    handleCloseAddTaskModal: () => void;
+  };
 };
 
 export function CalendarGridView({
-  currentMonth,
-  monthStart,
-  monthEnd,
-  days,
-  today,
-  pickerYear,
-  isDatePickerOpen,
-  isAddTaskModalOpen,
-  dropdownRef,
-  onToggleDatePicker,
-  onMonthSelect,
-  onYearChange,
-  onYearInputChange,
-  onOpenAddTaskModal,
-  onCloseAddTaskModal,
+  state,
+  dates,
+  refs,
+  actions,
 }: CalendarGridViewProps) {
+  const { currentMonth, pickerYear, isDatePickerOpen, isAddTaskModalOpen } = state;
+  const { today, monthStart, monthEnd, days } = dates;
+  const { dropdownRef } = refs;
+  const {
+    handleMonthSelect,
+    handleYearChange,
+    handleYearInputChange,
+    handleToggleDatePicker,
+    handleOpenAddTaskModal,
+    handleCloseAddTaskModal,
+  } = actions;
+
   return (
     <div className={calendarSection}>
       <div className={calendarHeader}>
         <div className={calendarHeaderTop}>
           <div className={dateCardWrapper} ref={dropdownRef}>
-            <button type="button" className={dateCardButton} onClick={onToggleDatePicker}>
+            <button type="button" className={dateCardButton} onClick={handleToggleDatePicker}>
               <div className={dateCardButtonMonth}>
                 {format(today, 'MMM', { locale: ptBR })}
               </div>
@@ -83,21 +92,21 @@ export function CalendarGridView({
                 <div className={datePickerSection}>
                   <span className={datePickerLabel}>Ano</span>
                   <div className={yearSelector}>
-                    <button type="button" className={yearButton} onClick={() => onYearChange(-1)}>
+                    <button type="button" className={yearButton} onClick={() => handleYearChange(-1)}>
                       <MdChevronLeft size={18} />
                     </button>
                     <input
                       type="number"
                       className={yearInput}
                       value={pickerYear}
-                      onChange={(e) => onYearInputChange(e.target.value)}
+                      onChange={(e) => handleYearInputChange(e.target.value)}
                       onKeyDown={(e) => {
                         if (e.key === 'Enter') {
                           e.currentTarget.blur();
                         }
                       }}
                     />
-                    <button type="button" className={yearButton} onClick={() => onYearChange(1)}>
+                    <button type="button" className={yearButton} onClick={() => handleYearChange(1)}>
                       <MdChevronRight size={18} />
                     </button>
                   </div>
@@ -115,7 +124,7 @@ export function CalendarGridView({
                             currentMonth.getMonth() === index &&
                             currentMonth.getFullYear() === pickerYear,
                         })}
-                        onClick={() => onMonthSelect(index)}
+                        onClick={() => handleMonthSelect(index)}
                       >
                         {month}
                       </button>
@@ -137,7 +146,7 @@ export function CalendarGridView({
           </div>
 
           <div className={navControls}>
-            <button className={addTaskButton} type="button" onClick={onOpenAddTaskModal}>
+            <button className={addTaskButton} type="button" onClick={handleOpenAddTaskModal}>
               <MdChecklist size={18} />
               Tarefa
             </button>
@@ -164,7 +173,7 @@ export function CalendarGridView({
         ))}
       </div>
 
-      <AddTodoModal isOpen={isAddTaskModalOpen} todo={null} onClose={onCloseAddTaskModal} />
+      <AddTodoModal isOpen={isAddTaskModalOpen} todo={null} onClose={handleCloseAddTaskModal} />
     </div>
   );
 }

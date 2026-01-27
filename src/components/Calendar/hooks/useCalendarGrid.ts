@@ -9,23 +9,7 @@ import { useCalendarStore } from '../../../store/useCalendarStore';
  * - Não possui.
  *
  * Como usar:
- * const {
- *   currentMonth,
- *   monthStart,
- *   monthEnd,
- *   days,
- *   today,
- *   pickerYear,
- *   isDatePickerOpen,
- *   isAddTaskModalOpen,
- *   dropdownRef,
- *   handleMonthSelect,
- *   handleYearChange,
- *   handleYearInputChange,
- *   handleToggleDatePicker,
- *   handleOpenAddTaskModal,
- *   handleCloseAddTaskModal,
- * } = useCalendarGrid();
+ * const { state, dates, refs, actions } = useCalendarGrid();
  */
 export const useCalendarGrid = () => {
   const { currentMonth, setCurrentMonth } = useCalendarStore();
@@ -100,22 +84,30 @@ export const useCalendarGrid = () => {
   };
 
   return {
-    currentMonth,
-    monthStart,
-    monthEnd,
-    calendarStart,
-    calendarEnd,
-    days,
-    today,
-    pickerYear,
-    isDatePickerOpen,
-    isAddTaskModalOpen,
-    dropdownRef,
-    handleMonthSelect,
-    handleYearChange,
-    handleYearInputChange,
-    handleToggleDatePicker,
-    handleOpenAddTaskModal,
-    handleCloseAddTaskModal,
+    state: {
+      currentMonth,
+      pickerYear,
+      isDatePickerOpen,
+      isAddTaskModalOpen,
+    },
+    dates: {
+      today,
+      monthStart,
+      monthEnd,
+      calendarStart,
+      calendarEnd,
+      days,
+    },
+    refs: {
+      dropdownRef,
+    },
+    actions: {
+      handleMonthSelect,
+      handleYearChange,
+      handleYearInputChange,
+      handleToggleDatePicker,
+      handleOpenAddTaskModal,
+      handleCloseAddTaskModal,
+    },
   };
 };

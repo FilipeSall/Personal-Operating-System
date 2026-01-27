@@ -2,6 +2,8 @@ import { defineConfig } from "@pandacss/dev";
 
 export default defineConfig({
   preflight: true,
+  // Prevent stale artifacts from previous codegen runs.
+  clean: true,
 
   include: ["./src/**/*.{js,jsx,ts,tsx}"],
 

@@ -6,4 +6,7 @@ export default defineConfig({
   plugins: [
     react(),
   ],
+  optimizeDeps: {
+    exclude: ['styled-system'],
+  },
 })

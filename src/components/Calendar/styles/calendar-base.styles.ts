@@ -24,11 +24,61 @@ export const calendarSection = css({
   position: 'relative',
   zIndex: 2,
   backgroundColor: 'surface.950',
-  borderRadius: '16px',
+  borderRadius: '4px 4px 4px 0',
   padding: '16px',
-  boxShadow: '0 8px 24px -4px rgba(0, 0, 0, 0.12), 0 4px 8px -2px rgba(0, 0, 0, 0.08)',
+  boxShadow: `
+    0 1px 1px rgba(0, 0, 0, 0.08),
+    0 2px 2px rgba(0, 0, 0, 0.06),
+    0 4px 4px rgba(0, 0, 0, 0.05),
+    0 8px 8px rgba(0, 0, 0, 0.04),
+    0 16px 16px rgba(0, 0, 0, 0.03)
+  `,
   border: '1px solid',
   borderColor: 'surface.700',
+  backgroundImage: `
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.03) 0%,
+      transparent 40%,
+      transparent 60%,
+      rgba(0, 0, 0, 0.02) 100%
+    )
+  `,
+  _before: {
+    content: '""',
+    position: 'absolute',
+    top: '0',
+    left: '0',
+    right: '0',
+    height: '6px',
+    background: 'linear-gradient(180deg, rgba(255, 255, 255, 0.06), transparent)',
+    borderRadius: '4px 4px 0 0',
+    zIndex: 3,
+    pointerEvents: 'none',
+  },
+  _after: {
+    content: '""',
+    position: 'absolute',
+    bottom: '0',
+    left: '0',
+    width: '28px',
+    height: '28px',
+    background: `
+      linear-gradient(
+        315deg,
+        transparent 0%,
+        transparent 45%,
+        token(colors.surface.800) 45%,
+        token(colors.surface.800) 50%,
+        token(colors.surface.900) 50%,
+        token(colors.surface.900) 100%
+      )
+    `,
+    zIndex: 3,
+    pointerEvents: 'none',
+    boxShadow: '-2px -2px 4px rgba(0, 0, 0, 0.08)',
+    borderTopRightRadius: '4px',
+  },
 });
 
 export const calendarHeader = css({
@@ -441,19 +491,37 @@ export const weekdaysRow = css({
   gridTemplateColumns: 'repeat(7, 1fr)',
   backgroundColor: 'surface.900',
   borderBottom: '1px solid',
+  borderTop: '1px solid',
   borderColor: 'surface.700',
+  position: 'relative',
+  backgroundImage: 'linear-gradient(180deg, rgba(255, 255, 255, 0.02) 0%, transparent 100%)',
 });
 
 export const weekdayHeader = css({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
-  padding: '10px 0',
-  fontSize: '11px',
-  fontWeight: '600',
+  padding: '12px 0',
+  fontSize: '10px',
+  fontWeight: '700',
   color: 'text.muted',
   textTransform: 'uppercase',
-  letterSpacing: '0.05em',
+  letterSpacing: '0.1em',
+  position: 'relative',
+  _after: {
+    content: '""',
+    position: 'absolute',
+    right: '0',
+    top: '25%',
+    height: '50%',
+    width: '1px',
+    backgroundColor: 'surface.700',
+  },
+  _last: {
+    _after: {
+      display: 'none',
+    },
+  },
 });
 
 export const calendarGrid = css({
@@ -465,6 +533,7 @@ export const calendarGrid = css({
   gap: '1px',
   overflow: 'hidden',
   minHeight: 0,
+  borderRadius: '0 0 4px 0',
 });
 
 export const dayCell = cva({
@@ -472,25 +541,30 @@ export const dayCell = cva({
     display: 'flex',
     flexDirection: 'column',
     backgroundColor: 'surface.950',
-    padding: '8px',
+    padding: '6px 8px',
     gap: '3px',
     cursor: 'pointer',
-    transition: 'background-color 0.15s ease',
+    transition: 'all 0.15s ease',
     overflow: 'hidden',
     height: '100%',
+    position: 'relative',
   },
   variants: {
     isSelected: {
       true: {
         backgroundColor: 'surface.900',
+        boxShadow: 'inset 0 0 0 1px token(colors.brand.500/30)',
       },
     },
     isToday: {
-      true: {},
+      true: {
+        backgroundImage: 'linear-gradient(180deg, rgba(255, 255, 255, 0.03) 0%, transparent 50%)',
+      },
     },
     isOutsideMonth: {
       true: {
         backgroundColor: 'surface.950',
+        opacity: 0.4,
       },
     },
     hasEvents: {
@@ -504,6 +578,7 @@ export const dayCell = cva({
       css: {
         _hover: {
           backgroundColor: 'surface.900',
+          backgroundImage: 'linear-gradient(180deg, rgba(255, 255, 255, 0.02) 0%, transparent 100%)',
         },
       },
     },
@@ -512,25 +587,31 @@ export const dayCell = cva({
 
 export const dayNumber = cva({
   base: {
-    fontSize: '13px',
-    fontWeight: '600',
+    fontSize: '12px',
+    fontWeight: '500',
     padding: '2px 6px',
-    marginBottom: '2px',
+    marginBottom: '4px',
     display: 'inline-flex',
     alignSelf: 'flex-start',
-    color: 'text.primary',
+    color: 'text.subtle',
+    borderRadius: '6px',
+    transition: 'all 0.15s ease',
+    lineHeight: '1.4',
   },
   variants: {
     isSelected: {
       true: {
-        backgroundColor: 'text.primary',
+        backgroundColor: 'brand.500',
         color: 'white',
-        borderRadius: '50%',
+        borderRadius: '8px',
         width: '26px',
         height: '26px',
+        padding: '0',
         alignItems: 'center',
         justifyContent: 'center',
-        boxShadow: '0 2px 4px rgba(0, 0, 0, 0.15)',
+        fontWeight: '700',
+        fontSize: '13px',
+        boxShadow: '0 2px 6px rgba(214, 69, 80, 0.35)',
       },
     },
     isOutsideMonth: {
@@ -546,38 +627,45 @@ export const eventItem = cva({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
-    padding: '3px 6px',
+    padding: '2px 6px',
     borderRadius: '4px',
+    borderLeft: '2px solid',
     cursor: 'pointer',
-    transition: 'opacity 0.15s ease',
+    transition: 'all 0.15s ease',
     _hover: {
-      opacity: 0.8,
+      opacity: 0.85,
+      transform: 'translateX(1px)',
     },
   },
   variants: {
     type: {
       work: {
-        backgroundColor: 'rgba(214, 69, 80, 0.1)',
-        borderLeft: '2px solid',
+        backgroundColor: 'rgba(214, 69, 80, 0.08)',
         borderColor: 'brand.500',
       },
       routine: {
-        backgroundColor: 'rgba(156, 163, 175, 0.15)',
+        backgroundColor: 'rgba(156, 163, 175, 0.1)',
+        borderColor: 'rgba(156, 163, 175, 0.5)',
       },
       reminder: {
-        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+        backgroundColor: 'rgba(59, 130, 246, 0.08)',
+        borderColor: 'rgba(59, 130, 246, 0.6)',
       },
       personal: {
-        backgroundColor: 'rgba(168, 85, 247, 0.1)',
+        backgroundColor: 'rgba(168, 85, 247, 0.08)',
+        borderColor: 'rgba(168, 85, 247, 0.6)',
       },
       study: {
-        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+        backgroundColor: 'rgba(59, 130, 246, 0.08)',
+        borderColor: 'rgba(59, 130, 246, 0.6)',
       },
       health: {
-        backgroundColor: 'rgba(167, 170, 41, 0.15)',
+        backgroundColor: 'rgba(167, 170, 41, 0.1)',
+        borderColor: 'rgba(167, 170, 41, 0.6)',
       },
       finance: {
-        backgroundColor: 'rgba(249, 115, 22, 0.1)',
+        backgroundColor: 'rgba(249, 115, 22, 0.08)',
+        borderColor: 'rgba(249, 115, 22, 0.6)',
       },
     },
   },
@@ -585,10 +673,11 @@ export const eventItem = cva({
 
 export const eventDot = cva({
   base: {
-    width: '5px',
-    height: '5px',
+    width: '4px',
+    height: '4px',
     borderRadius: '50%',
     flexShrink: 0,
+    boxShadow: '0 0 3px currentColor',
   },
   variants: {
     type: {
@@ -625,7 +714,8 @@ export const eventText = cva({
     textOverflow: 'ellipsis',
     whiteSpace: 'nowrap',
     flex: 1,
-    marginLeft: '4px',
+    marginLeft: '5px',
+    lineHeight: '1.3',
   },
   variants: {
     type: {
@@ -659,29 +749,31 @@ export const eventTime = cva({
     fontSize: '9px',
     marginLeft: '4px',
     flexShrink: 0,
+    fontVariantNumeric: 'tabular-nums',
+    opacity: 0.7,
   },
   variants: {
     type: {
       work: {
-        color: 'rgba(214, 69, 80, 0.7)',
+        color: 'brand.500',
       },
       routine: {
         color: 'text.faint',
       },
       reminder: {
-        color: 'rgba(59, 130, 246, 0.7)',
+        color: '#3B82F6',
       },
       personal: {
-        color: 'rgba(168, 85, 247, 0.7)',
+        color: '#A855F7',
       },
       study: {
-        color: 'rgba(59, 130, 246, 0.7)',
+        color: '#3B82F6',
       },
       health: {
-        color: 'rgba(167, 170, 41, 0.7)',
+        color: 'rgba(167, 170, 41, 0.9)',
       },
       finance: {
-        color: 'rgba(249, 115, 22, 0.7)',
+        color: '#F97316',
       },
     },
   },
@@ -690,10 +782,11 @@ export const eventTime = cva({
 export const moreEventsText = css({
   fontSize: '9px',
   color: 'text.faint',
-  fontWeight: '500',
-  paddingLeft: '6px',
+  fontWeight: '600',
+  paddingLeft: '8px',
   marginTop: '2px',
   cursor: 'pointer',
+  transition: 'color 0.15s ease',
   _hover: {
     color: 'text.primary',
   },

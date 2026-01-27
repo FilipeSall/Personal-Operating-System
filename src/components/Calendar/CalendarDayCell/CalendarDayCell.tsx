@@ -1,6 +1,6 @@
 import { format, isSameDay, isSameMonth } from 'date-fns';
-import { useCalendarStore } from '../../store/useCalendarStore';
-import type { Todo, TodoType } from '../../types/calendar';
+import { useCalendarStore } from '../../../store/useCalendarStore';
+import type { Todo, TodoType } from '../../../types/calendar';
 import {
   dayCell,
   dayNumber,
@@ -9,7 +9,8 @@ import {
   eventText,
   eventTime,
   moreEventsText,
-} from './styles/calendar-base.styles';
+} from '../styles/calendar-base.styles';
+import { formatTime } from '../utils/formatTime';
 
 interface CalendarDayCellProps {
   date: Date;
@@ -17,14 +18,6 @@ interface CalendarDayCellProps {
 }
 
 const MAX_VISIBLE_EVENTS = 3;
-
-function formatTime(time: string): string {
-  const [hours, minutes] = time.split(':');
-  const hour = parseInt(hours, 10);
-  const suffix = hour >= 12 ? 'PM' : 'AM';
-  const displayHour = hour % 12 || 12;
-  return `${displayHour}:${minutes} ${suffix}`;
-}
 
 function EventItemComponent({ todo }: { todo: Todo }) {
   const type = todo.type as TodoType;

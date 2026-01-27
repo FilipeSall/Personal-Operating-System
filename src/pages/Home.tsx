@@ -1,4 +1,4 @@
-import { Calendar } from '../components/Calendar';
+import { Calendar } from '../components/Calendar/Calendar';
 import { css } from '../../styled-system/css';
 
 const homeContainer = css({

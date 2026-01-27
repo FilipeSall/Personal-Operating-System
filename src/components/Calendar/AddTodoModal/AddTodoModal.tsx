@@ -2,19 +2,10 @@ import { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import {
-  MdClose,
-  MdWork,
-  MdRepeat,
-  MdNotifications,
-  MdPerson,
-  MdSchool,
-  MdFavorite,
-  MdAttachMoney,
-} from 'react-icons/md';
-import { useCalendarStore } from '../../store/useCalendarStore';
-import { TODO_TYPES } from '../../data/todoTypes';
-import type { Todo, TodoType, RepeatType, RepeatDuration, Weekday } from '../../types/calendar';
+import { MdClose } from 'react-icons/md';
+import { useCalendarStore } from '../../../store/useCalendarStore';
+import { TODO_TYPES } from '../../../data/todoTypes';
+import type { Todo, TodoType, RepeatType, RepeatDuration, Weekday } from '../../../types/calendar';
 import {
   addTodoModalRecipe,
   modalTypeButton,
@@ -24,45 +15,11 @@ import {
   durationButton,
   weekdayLabelLong,
   weekdayLabelShort,
-} from './styles/add-todo-modal.styles';
-import { css } from '../../../styled-system/css';
-
-const ICONS: Record<string, React.ComponentType<{ size?: number; color?: string }>> = {
-  MdWork,
-  MdRepeat,
-  MdNotifications,
-  MdPerson,
-  MdSchool,
-  MdFavorite,
-  MdAttachMoney,
-};
-
-const WEEKDAYS: { id: Weekday; short: string; long: string }[] = [
-  { id: 'sun', short: 'D', long: 'Dom' },
-  { id: 'mon', short: 'S', long: 'Seg' },
-  { id: 'tue', short: 'T', long: 'Ter' },
-  { id: 'wed', short: 'Q', long: 'Qua' },
-  { id: 'thu', short: 'Q', long: 'Qui' },
-  { id: 'fri', short: 'S', long: 'Sex' },
-  { id: 'sat', short: 'S', long: 'Sáb' },
-];
-
-const ALL_WEEKDAYS: Weekday[] = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
-const WORK_WEEKDAYS: Weekday[] = ['mon', 'tue', 'wed', 'thu', 'fri'];
-
-const REPEAT_OPTIONS: { id: RepeatType; label: string }[] = [
-  { id: 'none', label: 'Não repetir' },
-  { id: 'daily', label: 'Todo dia' },
-  { id: 'weekly', label: 'Seg a Sex' },
-  { id: 'custom', label: 'Personalizado' },
-];
-
-const DURATION_OPTIONS: { id: RepeatDuration; label: string }[] = [
-  { id: 'month', label: '1 mês' },
-  { id: 'quarter', label: '3 meses' },
-  { id: 'year', label: '1 ano' },
-  { id: 'forever', label: 'Sempre' },
-];
+} from '../styles/add-todo-modal.styles';
+import { css } from '../../../../styled-system/css';
+import { ICONS } from '../consts/icons';
+import { ALL_WEEKDAYS, WEEKDAYS, WORK_WEEKDAYS } from '../consts/weekdays';
+import { DURATION_OPTIONS, REPEAT_OPTIONS } from '../consts/repeatOptions';
 
 type ModalStep = 'details' | 'time' | 'tags' | 'repeat';
 const STEPS: ModalStep[] = ['details', 'time', 'tags', 'repeat'];

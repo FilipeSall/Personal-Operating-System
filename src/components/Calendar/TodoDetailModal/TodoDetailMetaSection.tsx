@@ -9,7 +9,8 @@ import {
   detailCommentContainer,
   detailCommentText,
 } from '../styles/todo-detail-modal.styles';
-import { DURATION_LABELS, REPEAT_TYPE_LABELS, WEEKDAY_LABELS } from './constants';
+import { DURATION_LABELS, REPEAT_TYPE_LABELS } from '../consts/repeatOptions';
+import { WEEKDAY_LABELS } from '../consts/weekdays';
 
 type TodoDetailMetaSectionProps = {
   todo: Todo;

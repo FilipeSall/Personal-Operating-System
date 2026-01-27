@@ -1,19 +1,19 @@
 import { useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { useCalendarStore } from '../../store/useCalendarStore';
-import type { Todo } from '../../types/calendar';
+import { useCalendarStore } from '../../../store/useCalendarStore';
+import type { Todo } from '../../../types/calendar';
 import { endOfMonth, endOfWeek, startOfMonth, startOfWeek } from 'date-fns';
 import {
   modalOverlay,
   detailModalContent,
-} from './styles/todo-detail-modal.styles';
-import { ICONS } from './TodoDetailModal/constants';
-import { formatTodoDate, getTypeConfig } from './TodoDetailModal/utils';
-import { TodoDetailHeader } from './TodoDetailModal/TodoDetailHeader';
-import { TodoDetailTags } from './TodoDetailModal/TodoDetailTags';
-import { TodoDetailMetaSection } from './TodoDetailModal/TodoDetailMetaSection';
-import { TodoDetailActions } from './TodoDetailModal/TodoDetailActions';
-import { TodoDetailDeleteModal } from './TodoDetailModal/TodoDetailDeleteModal';
+} from '../styles/todo-detail-modal.styles';
+import { ICONS } from '../consts/icons';
+import { formatTodoDate, getTypeConfig } from '../utils/todoDetail';
+import { TodoDetailHeader } from './TodoDetailHeader';
+import { TodoDetailTags } from './TodoDetailTags';
+import { TodoDetailMetaSection } from './TodoDetailMetaSection';
+import { TodoDetailActions } from './TodoDetailActions';
+import { TodoDetailDeleteModal } from './TodoDetailDeleteModal';
 
 interface TodoDetailModalProps {
   todo: Todo | null;

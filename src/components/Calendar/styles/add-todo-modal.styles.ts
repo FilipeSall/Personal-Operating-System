@@ -25,6 +25,9 @@ export const addTodoModalRecipe = sva({
     'weekdaySelector',
     'durationSection',
     'durationOptions',
+    'stepActions',
+    'stepButtonPrimary',
+    'stepButtonSecondary',
   ],
   base: {
     overlay: {
@@ -225,7 +228,7 @@ export const addTodoModalRecipe = sva({
     weekdaySelector: {
       display: 'grid',
       gridTemplateColumns: 'repeat(7, minmax(0, 1fr))',
-      gap: '6px',
+      gap: '10px',
       animation: 'slideDown 0.3s ease-out',
     },
     durationSection: {
@@ -238,6 +241,58 @@ export const addTodoModalRecipe = sva({
       display: 'flex',
       gap: '8px',
       flexWrap: 'wrap',
+    },
+    stepActions: {
+      display: 'flex',
+      gap: '12px',
+      justifyContent: 'flex-end',
+      marginTop: '4px',
+    },
+    stepButtonPrimary: {
+      padding: '12px 18px',
+      backgroundColor: 'brand.500',
+      border: 'none',
+      borderRadius: '12px',
+      color: 'surface.950',
+      fontSize: '14px',
+      fontWeight: '700',
+      cursor: 'pointer',
+      transition: 'all 0.2s ease',
+      boxShadow: '0 4px 12px rgba(214, 69, 80, 0.2)',
+      _hover: {
+        backgroundColor: 'brand.600',
+        transform: 'translateY(-1px)',
+        boxShadow: '0 6px 16px rgba(214, 69, 80, 0.3)',
+      },
+      _active: {
+        transform: 'translateY(0)',
+        boxShadow: '0 3px 10px rgba(214, 69, 80, 0.2)',
+      },
+      _disabled: {
+        opacity: 0.5,
+        cursor: 'not-allowed',
+        transform: 'none',
+        boxShadow: 'none',
+      },
+    },
+    stepButtonSecondary: {
+      padding: '12px 18px',
+      backgroundColor: 'surface.900',
+      border: '2px solid',
+      borderColor: 'surface.700',
+      borderRadius: '12px',
+      color: 'text.primary',
+      fontSize: '14px',
+      fontWeight: '600',
+      cursor: 'pointer',
+      transition: 'all 0.2s ease',
+      _hover: {
+        backgroundColor: 'surface.800',
+        borderColor: 'surface.600',
+      },
+      _active: {
+        transform: 'translateY(0)',
+      },
     },
   },
 });
@@ -410,6 +465,15 @@ export const durationButton = cva({
     },
     _active: {
       transform: 'translateY(0)',
+    },
+    _disabled: {
+      opacity: 0.5,
+      cursor: 'not-allowed',
+      borderColor: 'surface.800',
+      color: 'text.dim',
+      backgroundColor: 'surface.900',
+      boxShadow: 'none',
+      transform: 'none',
     },
   },
   variants: {

@@ -2,17 +2,12 @@ import { css, cva } from '../../../../styled-system/css';
 
 export const calendarContainer = css({
   display: 'grid',
-  gridTemplateRows: '3fr 2fr',
+  gridTemplateRows: '4fr 2fr',
   gap: '16px',
-  padding: '28px',
   backgroundColor: 'surface.950',
-  borderRadius: '20px',
+
   width: '100%',
   height: '100%',
-  overflow: 'hidden',
-  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05)',
-  border: '1px solid',
-  borderColor: 'surface.700',
 });
 
 export const calendarSection = css({
@@ -55,29 +50,6 @@ export const calendarSection = css({
     borderRadius: '4px 4px 0 0',
     zIndex: 3,
     pointerEvents: 'none',
-  },
-  _after: {
-    content: '""',
-    position: 'absolute',
-    bottom: '0',
-    left: '0',
-    width: '28px',
-    height: '28px',
-    background: `
-      linear-gradient(
-        315deg,
-        transparent 0%,
-        transparent 45%,
-        token(colors.surface.800) 45%,
-        token(colors.surface.800) 50%,
-        token(colors.surface.900) 50%,
-        token(colors.surface.900) 100%
-      )
-    `,
-    zIndex: 3,
-    pointerEvents: 'none',
-    boxShadow: '-2px -2px 4px rgba(0, 0, 0, 0.08)',
-    borderTopRightRadius: '4px',
   },
 });
 
@@ -597,6 +569,7 @@ export const dayNumber = cva({
     borderRadius: '6px',
     transition: 'all 0.15s ease',
     lineHeight: '1.4',
+    position: 'relative',
   },
   variants: {
     isSelected: {
@@ -614,12 +587,41 @@ export const dayNumber = cva({
         boxShadow: '0 2px 6px rgba(214, 69, 80, 0.35)',
       },
     },
+    isToday: {
+      true: {
+        color: 'brand.500',
+        fontWeight: '700',
+        _after: {
+          content: '""',
+          position: 'absolute',
+          bottom: '-2px',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          width: '4px',
+          height: '4px',
+          borderRadius: '50%',
+          backgroundColor: 'brand.500',
+        },
+      },
+    },
     isOutsideMonth: {
       true: {
         color: 'text.faint',
       },
     },
   },
+  compoundVariants: [
+    {
+      isToday: true,
+      isSelected: true,
+      css: {
+        color: 'white',
+        _after: {
+          display: 'none',
+        },
+      },
+    },
+  ],
 });
 
 export const eventItem = cva({

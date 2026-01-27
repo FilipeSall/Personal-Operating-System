@@ -68,7 +68,7 @@ export function CalendarDayCell({ date, currentMonth }: CalendarDayCellProps) {
         }
       }}
     >
-      <span className={dayNumber({ isSelected, isOutsideMonth })}>
+      <span className={dayNumber({ isSelected, isToday, isOutsideMonth })}>
         {format(date, 'd')}
       </span>
 

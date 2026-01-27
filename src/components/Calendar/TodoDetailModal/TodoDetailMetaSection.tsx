@@ -38,6 +38,18 @@ export function TodoDetailMetaSection({ todo, formattedDate, hasRepeat }: TodoDe
         </span>
       </div>
 
+      {todo.pauseStart && todo.pauseEnd && (
+        <div className={detailRow}>
+          <span className={detailIcon} style={{ visibility: 'hidden' }}>
+            <MdAccessTime size={18} />
+          </span>
+          <span className={detailLabel}>Pausa</span>
+          <span className={detailValue}>
+            {todo.pauseStart} - {todo.pauseEnd}
+          </span>
+        </div>
+      )}
+
       {todo.comments && (
         <div className={detailRow}>
           <span className={detailIcon}>

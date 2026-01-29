@@ -15,11 +15,12 @@ export const weatherPanel = css({
   position: 'relative',
   overflow: 'hidden',
   borderRadius: '36px',
-  backgroundColor: 'rgba(219, 234, 254, 0.6)',
+  backgroundColor: 'var(--weather-panel-bg, rgba(253, 232, 234, 0.6))',
   padding: { base: '20px', bp800: '28px' },
   display: 'flex',
   flexDirection: 'column',
   gap: '24px',
+  transition: 'background-color 0.4s ease',
 });
 
 export const weatherDecorTop = css({
@@ -29,10 +30,11 @@ export const weatherDecorTop = css({
   width: '160px',
   height: '160px',
   borderRadius: '50%',
-  backgroundColor: 'rgba(250, 204, 21, 0.3)',
+  backgroundColor: 'var(--weather-decor-top, rgba(214, 69, 80, 0.3))',
   filter: 'blur(24px)',
   pointerEvents: 'none',
   zIndex: 0,
+  transition: 'background-color 0.4s ease',
 });
 
 export const weatherDecorBottom = css({
@@ -42,7 +44,8 @@ export const weatherDecorBottom = css({
   width: '128px',
   height: '128px',
   borderRadius: '50%',
-  backgroundColor: 'rgba(96, 165, 250, 0.25)',
+  backgroundColor: 'var(--weather-decor-bottom, rgba(191, 58, 68, 0.25))',
+  transition: 'background-color 0.4s ease',
   filter: 'blur(24px)',
   pointerEvents: 'none',
   zIndex: 0,
@@ -302,9 +305,9 @@ export const weatherMetricValue = css({
 export const weatherTipCard = css({
   position: 'relative',
   width: '100%',
-  backgroundColor: '#EEF2FF',
+  backgroundColor: 'var(--weather-accent-light, #FDE8EA)',
   border: '2px solid',
-  borderColor: '#E0E7FF',
+  borderColor: 'var(--weather-accent-light, #FDE8EA)',
   borderRadius: '18px',
   padding: '20px 16px',
   display: 'flex',
@@ -321,10 +324,10 @@ export const weatherTipIcon = css({
   borderRadius: '999px',
   backgroundColor: 'surface.950',
   border: '2px solid',
-  borderColor: '#E0E7FF',
+  borderColor: 'var(--weather-accent-light, #FDE8EA)',
   padding: '6px',
   boxShadow: '0 8px 14px rgba(33, 26, 30, 0.08)',
-  color: '#6366F1',
+  color: 'var(--weather-accent, #D64550)',
 });
 
 export const weatherTipHeader = css({
@@ -337,7 +340,7 @@ export const weatherTipDot = css({
   width: '8px',
   height: '8px',
   borderRadius: '999px',
-  backgroundColor: '#6366F1',
+  backgroundColor: 'var(--weather-accent, #D64550)',
 });
 
 export const weatherTipLabel = css({
@@ -345,13 +348,13 @@ export const weatherTipLabel = css({
   fontWeight: '800',
   letterSpacing: '0.16em',
   textTransform: 'uppercase',
-  color: '#8B5CF6',
+  color: 'var(--weather-accent, #D64550)',
 });
 
 export const weatherTipText = css({
   fontSize: '13px',
   fontWeight: '600',
-  color: '#312E81',
+  color: 'text.subtle',
   lineHeight: 1.4,
 });
 
@@ -365,7 +368,7 @@ export const weatherFooter = css({
   gap: '12px',
   paddingTop: '16px',
   borderTop: '2px solid',
-  borderColor: 'rgba(59, 130, 246, 0.25)',
+  borderColor: 'var(--weather-footer-border, rgba(214, 69, 80, 0.25))',
 });
 
 export const weatherRefreshGroup = css({
@@ -387,8 +390,8 @@ export const weatherRefreshButton = css({
   justifyContent: 'center',
   transition: 'all 0.2s ease',
   _hover: {
-    color: '#2563EB',
-    borderColor: '#93C5FD',
+    color: 'var(--weather-accent, #D64550)',
+    borderColor: 'var(--weather-accent-light, #FDE8EA)',
     transform: 'rotate(180deg)',
   },
   _disabled: {
@@ -416,16 +419,16 @@ export const weatherDetailsButton = css({
   padding: '10px 18px',
   borderRadius: '999px',
   border: '2px solid',
-  borderColor: '#60A5FA',
+  borderColor: 'var(--weather-accent, #D64550)',
   backgroundColor: 'surface.950',
-  color: '#2563EB',
+  color: 'var(--weather-accent, #D64550)',
   fontSize: '12px',
   fontWeight: '700',
   textTransform: 'uppercase',
   letterSpacing: '0.12em',
   transition: 'all 0.2s ease',
   _hover: {
-    backgroundColor: '#3B82F6',
+    backgroundColor: 'var(--weather-accent, #D64550)',
     color: 'white',
     transform: 'translate(2px, 2px)',
     boxShadow: 'none',

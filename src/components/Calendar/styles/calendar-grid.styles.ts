@@ -67,7 +67,7 @@ export const dayCell = cva({
     isSelected: {
       true: {
         backgroundColor: 'surface.900',
-        boxShadow: 'inset 0 0 0 1px token(colors.brand.500/30)',
+        boxShadow: 'inset 0 0 0 1px var(--weather-accent, token(colors.brand.500/30))',
       },
     },
     isToday: {
@@ -116,7 +116,7 @@ export const dayNumber = cva({
   variants: {
     isSelected: {
       true: {
-        backgroundColor: 'brand.500',
+        backgroundColor: 'var(--weather-accent, token(colors.brand.500))',
         color: 'white',
         borderRadius: '8px',
         width: '26px',
@@ -126,12 +126,12 @@ export const dayNumber = cva({
         justifyContent: 'center',
         fontWeight: '700',
         fontSize: '13px',
-        boxShadow: '0 2px 6px rgba(214, 69, 80, 0.35)',
+        boxShadow: '0 2px 6px var(--weather-accent-shadow, rgba(214, 69, 80, 0.35))',
       },
     },
     isToday: {
       true: {
-        color: 'brand.500',
+        color: 'var(--weather-accent, token(colors.brand.500))',
         fontWeight: '700',
         _after: {
           content: '""',
@@ -142,7 +142,7 @@ export const dayNumber = cva({
           width: '4px',
           height: '4px',
           borderRadius: '50%',
-          backgroundColor: 'brand.500',
+          backgroundColor: 'var(--weather-accent, token(colors.brand.500))',
         },
       },
     },

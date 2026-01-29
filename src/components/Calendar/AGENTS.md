@@ -46,3 +46,4 @@
 - `toForecastKey(date)` e `groupItemsByDay` devem usar o mesmo fuso (local) para as chaves coincidirem.
 - O hook `useWeather` deve assinar `store.forecasts` diretamente (nao `getSnapshotForDate`) para garantir reatividade com Zustand.
 - Logs de debug usam `debugLog`/`debugError`/`debugWarn` de `src/utils/logger.ts` (so aparecem em DEV).
+- O label de localizacao para `BR` prioriza `Cidade - UF` (ex.: `Plano Piloto - DF`).

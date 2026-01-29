@@ -148,26 +148,74 @@ const formatPrecipitation = (rain: number, snow: number): string => {
 
 /**
  * Gera recomendacao baseada no resumo do dia.
+ * Usa uma abordagem pratica com toque comico.
  */
 const getSummaryRecommendation = (description: string): string => {
   const normalized = normalizeText(description);
-  if (
-    normalized.includes('chuva') ||
-    normalized.includes('garoa') ||
-    normalized.includes('tempestade')
-  ) {
-    return 'Leve guarda-chuva e planeje deslocamentos.';
+
+  // Tempestades (Grupo 2xx)
+  if (normalized.includes('tempestade') || normalized.includes('trovoada')) {
+    if (normalized.includes('forte') || normalized.includes('pesad') || normalized.includes('severa')) {
+      return 'Tempestade braba! Adia aquela reunião presencial e aproveita pra maratonar série em casa.';
+    }
+    if (normalized.includes('garoa')) {
+      return 'Trovoada com garoa. Despluga o PC, pega um livro e curte o barulho da chuva.';
+    }
+    return 'Trovoada no ar. Evita usar eletrônicos na tomada e aproveita pra ouvir aquele podcast.';
   }
-  if (normalized.includes('neve')) {
-    return 'Use roupas quentes e calcado antiderrapante.';
+
+  // Garoa (Grupo 3xx)
+  if (normalized.includes('garoa') || normalized.includes('chuvisco')) {
+    if (normalized.includes('forte')) {
+      return 'Garoa insistente. Bom dia pra organizar as fotos do celular ou fazer aquele bolo.';
+    }
+    return 'Garoa de leve. Uma caminhada rápida com capa pode ser revigorante (ou não).';
   }
-  if (normalized.includes('ceu limpo')) {
-    return 'Bom para atividades ao ar livre.';
+
+  // Chuva (Grupo 5xx)
+  if (normalized.includes('chuva')) {
+    if (normalized.includes('congel')) {
+      return 'Chuva congelante! Risco de escorregão épico. Fica em casa e aproveita o aconchego.';
+    }
+    if (normalized.includes('forte') || normalized.includes('intensa') || normalized.includes('extrema')) {
+      return 'Dilúvio detectado! Evita sair e faz um treino em casa ou maratona aquela playlist.';
+    }
+    return 'Chuva constante. Dia perfeito pra colocar a série em dia ou testar aquela receita nova.';
   }
+
+  // Neve e Granizo (Grupo 6xx)
+  if (normalized.includes('neve') || normalized.includes('granizo')) {
+    if (normalized.includes('forte') || normalized.includes('pesad')) {
+      return 'Nevasca forte! Fica quentinho em casa, evita dirigir e aproveita pra ler algo legal.';
+    }
+    return 'Neve à vista! Capricha no casaco e tira umas fotos da paisagem branca.';
+  }
+
+  // Atmosfera (Grupo 7xx)
+  if (normalized.includes('nevoa') || normalized.includes('neblina') || normalized.includes('nevoeiro')) {
+    return 'Visibilidade zero. Se dirigir, vai devagar. Atividade sugerida: meditação ou café quentinho.';
+  }
+  if (normalized.includes('fumaca') || normalized.includes('poeira') || normalized.includes('cinzas')) {
+    return 'Ar ruim hoje. Fecha as janelas, liga o ar e hidrata bem. Nada de corridinha ao ar livre.';
+  }
+  if (normalized.includes('tornado') || normalized.includes('vento forte')) {
+    return 'Ventos perigosos! Afasta de janelas e árvores. Busca abrigo seguro agora!';
+  }
+
+  // Céu Limpo (800)
+  if (normalized.includes('ceu limpo') || normalized.includes('sol')) {
+    return 'Dia ensolarado! Passa o protetor e aproveita pra fazer aquela atividade ao ar livre.';
+  }
+
+  // Nuvens (80x)
   if (normalized.includes('nublado') || normalized.includes('nuvens')) {
-    return 'Clima ameno para caminhadas leves.';
+    if (normalized.includes('poucas') || normalized.includes('dispersas')) {
+      return 'Clima agradável. Perfeito pra caminhar no parque ou fazer um piquenique improvisado.';
+    }
+    return 'Céu fechado mas sem chuva. Bom momento pra fotografia ou cuidar das plantas.';
   }
-  return 'Planeje o dia conforme a condicao.';
+
+  return 'Clima tranquilo. Faz o que o coração mandar hoje!';
 };
 
 /**
@@ -175,12 +223,12 @@ const getSummaryRecommendation = (description: string): string => {
  */
 const getTemperatureRecommendation = (min: number, max: number): string => {
   if (max >= 30) {
-    return 'Hidrate-se e evite sol forte.';
+    return 'Calorão! Bebe água feito camelo e evita sol entre 10h-16h. Roupas leves são a chave.';
   }
   if (min <= 12) {
-    return 'Leve casaco para o frio.';
+    return 'Frio de rachar! Casaco, cachecol e aquele café quentinho são obrigatórios hoje.';
   }
-  return 'Temperatura agradavel para o dia.';
+  return 'Temperatura de boa. Dá pra sair sem drama de roupa.';
 };
 
 /**
@@ -188,12 +236,12 @@ const getTemperatureRecommendation = (min: number, max: number): string => {
  */
 const getFeelsLikeRecommendation = (feelsLike: number): string => {
   if (feelsLike >= 30) {
-    return 'Prefira locais ventilados e sombra.';
+    return 'Sensação de sauna! Cola na sombra, busca ventilador e adia qualquer exercício físico.';
   }
   if (feelsLike <= 12) {
-    return 'Use roupas mais quentes.';
+    return 'Tá gelado! Capricha nas camadas de roupa tipo cebola. Seu corpo vai agradecer.';
   }
-  return 'Sensacao termica confortavel.';
+  return 'Sensação térmica de boa. Nem muito quente, nem muito frio.';
 };
 
 /**
@@ -201,12 +249,12 @@ const getFeelsLikeRecommendation = (feelsLike: number): string => {
  */
 const getRainChanceRecommendation = (pop: number): string => {
   if (pop >= 0.6) {
-    return 'Alta chance de chuva: leve guarda-chuva.';
+    return 'Vai chover! Guarda-chuva no bolso ou prepare-se pra virar peixe na rua.';
   }
   if (pop >= 0.3) {
-    return 'Considere capa leve para chuva.';
+    return 'Talvez chova. Melhor levar uma capa de chuva, vai que né?';
   }
-  return 'Baixa chance de chuva.';
+  return 'Chance baixa de chuva. Pode deixar o guarda-chuva em casa tranquilo.';
 };
 
 /**
@@ -215,12 +263,12 @@ const getRainChanceRecommendation = (pop: number): string => {
 const getWindRecommendation = (speed: number): string => {
   const speedKmh = speed * 3.6;
   if (speedKmh >= 35) {
-    return 'Vento forte: evite areas abertas.';
+    return 'Ventania braba! Evita áreas abertas e prende tudo que pode voar. Chapéu? Nem pensar.';
   }
   if (speedKmh >= 20) {
-    return 'Vento moderado: prenda objetos leves.';
+    return 'Vento chatinho. Prende objetos leves e segura bem o cabelo (ou o que sobrou dele).';
   }
-  return 'Vento leve para o dia.';
+  return 'Ventinho gostoso. Dá até pra arejar a casa.';
 };
 
 /**
@@ -228,12 +276,12 @@ const getWindRecommendation = (speed: number): string => {
  */
 const getHumidityRecommendation = (humidity: number): string => {
   if (humidity >= 80) {
-    return 'Ambiente umido: ventile o local.';
+    return 'Úmido demais! Abre as janelas, liga o ventilador ou vira barata de praia mesmo.';
   }
   if (humidity <= 30) {
-    return 'Umidade baixa: hidrate-se.';
+    return 'Ar seco! Bebe água, passa hidratante e considera um umidificador (ou toalha molhada).';
   }
-  return 'Umidade em nivel confortavel.';
+  return 'Umidade tranquila. Tá respirável hoje.';
 };
 
 /**
@@ -241,15 +289,15 @@ const getHumidityRecommendation = (humidity: number): string => {
  */
 const getUvRecommendation = (uv: number): string => {
   if (uv >= 8) {
-    return 'Use protetor alto e evite sol forte.';
+    return 'Sol assassino! Protetor FPS 50+, óculos escuros e evita sol das 10h-16h. É sério.';
   }
   if (uv >= 6) {
-    return 'Use protetor solar e oculos.';
+    return 'UV alto. Passa protetor, bota os óculos e busca sombra quando der.';
   }
   if (uv >= 3) {
-    return 'Protetor recomendado para o dia.';
+    return 'UV moderado. Protetor básico já resolve, mas não esquece de reaplicar.';
   }
-  return 'Baixo indice UV: protecao basica.';
+  return 'UV baixo. Proteção light já tá valendo, mas sempre é bom passar algo.';
 };
 
 /**
@@ -257,19 +305,19 @@ const getUvRecommendation = (uv: number): string => {
  */
 const getCloudsRecommendation = (clouds: number): string => {
   if (clouds >= 70) {
-    return 'Ceo fechado: boa luz para telas.';
+    return 'Céu cinzento total. Luz difusa perfeita pra trabalhar no PC sem reflexo na tela.';
   }
   if (clouds <= 20) {
-    return 'Ceo aberto: aproveite luz natural.';
+    return 'Céu limpo! Abre as cortinas e aproveita a luz natural. Economia de energia garantida.';
   }
-  return 'Ceo parcialmente nublado.';
+  return 'Céu com nuvens espalhadas. Clima agradável, nem muito sol nem muito sombrio.';
 };
 
 /**
  * Gera recomendacao baseada nos horarios de sol.
  */
 const getSunTimesRecommendation = (): string => {
-  return 'Planeje atividades externas entre esses horarios.';
+  return 'Aproveita a luz natural entre esses horários. Vitamina D de graça!';
 };
 
 /**
@@ -277,9 +325,9 @@ const getSunTimesRecommendation = (): string => {
  */
 const getAlertsRecommendation = (alerts: string[]): string => {
   if (alerts.length > 0) {
-    return 'Siga as orientacoes oficiais.';
+    return 'Tem alerta rolando! Segue as orientações oficiais e não faz gracinha com a natureza.';
   }
-  return 'Sem alertas relevantes.';
+  return 'Sem alertas. Tá tudo tranquilo no front meteorológico.';
 };
 
 /**
@@ -288,12 +336,12 @@ const getAlertsRecommendation = (alerts: string[]): string => {
 const getPrecipitationRecommendation = (rain: number, snow: number): string => {
   const total = rain + snow;
   if (total >= 5) {
-    return 'Chuva significativa: leve guarda-chuva.';
+    return 'Vai cair muita água! Guarda-chuva reforçado e evita áreas que alagam fácil.';
   }
   if (total > 0) {
-    return 'Chuva leve: leve guarda-chuva.';
+    return 'Chuva leve prevista. Leva o guarda-chuva ou prepara pra molhar o cabelo.';
   }
-  return 'Sem precipitacao prevista.';
+  return 'Sem previsão de chuva. Pode deixar o guarda-chuva guardado mesmo.';
 };
 
 /**

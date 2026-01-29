@@ -24,12 +24,23 @@ const normalizeWeatherDescription = (value: string): string => {
 
 /**
  * Resolve o emoji animado que melhor representa o clima atual.
+ * PRIORIDADE: Temperatura extrema > Descrição do clima > Temperatura fallback
  */
 export const resolveWeatherEmoji = (snapshot: WeatherSnapshot | null) => {
   if (!snapshot) {
     return sunnyEmoji;
   }
 
+  // PRIORIDADE 1: Temperatura extrema (independente da descrição)
+  if (snapshot.temperature.current >= 30) {
+    return hotEmoji;
+  }
+
+  if (snapshot.temperature.current <= 15) {
+    return coldEmoji;
+  }
+
+  // PRIORIDADE 2: Descrição do clima (quando temperatura está entre 15-30°C)
   const normalized = normalizeWeatherDescription(snapshot.description);
 
   if (RAIN_KEYWORDS.some((keyword) => normalized.includes(keyword))) {
@@ -52,13 +63,6 @@ export const resolveWeatherEmoji = (snapshot: WeatherSnapshot | null) => {
     return sunnyEmoji;
   }
 
-  if (snapshot.temperature.current >= 30) {
-    return hotEmoji;
-  }
-
-  if (snapshot.temperature.current <= 12) {
-    return coldEmoji;
-  }
-
+  // PRIORIDADE 3: Fallback padrão
   return sunnyEmoji;
 };

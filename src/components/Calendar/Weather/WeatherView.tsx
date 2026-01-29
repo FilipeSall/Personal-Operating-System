@@ -51,12 +51,13 @@ type WeatherViewProps = {
   state: WeatherState;
   derived: WeatherDerived;
   actions: WeatherActions;
+  onOpenDetails: () => void;
 };
 
 /**
  * View do componente de clima, renderiza o resumo com metricas e dica do dia.
  */
-export function WeatherView({ state, derived, actions }: WeatherViewProps) {
+export function WeatherView({ state, derived, actions, onOpenDetails }: WeatherViewProps) {
   const updatedAtLabel = state.lastUpdatedAt
     ? format(state.lastUpdatedAt, 'HH:mm', { locale: ptBR })
     : null;
@@ -167,7 +168,12 @@ export function WeatherView({ state, derived, actions }: WeatherViewProps) {
                   <span className={weatherUpdatedLabel}>Atualizado as {updatedAtLabel}</span>
                 )}
               </div>
-              <button type="button" className={weatherDetailsButton} disabled={!derived.snapshot}>
+              <button
+                type="button"
+                className={weatherDetailsButton}
+                disabled={!derived.snapshot}
+                onClick={onOpenDetails}
+              >
                 <span>Ver detalhes</span>
                 <MdArrowForward size={16} />
               </button>

@@ -20,6 +20,7 @@
 - O agrupamento de forecast por dia fica em `src/utils/forecastGrouper.ts`.
 - Tipos da API ficam em `src/types/openWeather.ts`, tipos internos em `src/types/weather.ts`.
 - O emoji principal do clima usa Lottie com assets em `src/assets/emojis`, mapeados em `src/components/Calendar/utils/weatherEmoji.ts`.
+- O botao "Ver detalhes" do clima abre um modal com a tabela completa em `src/components/Calendar/Weather/WeatherDetailsModalView.tsx`.
 
 ### API OpenWeather (plano gratuito)
 

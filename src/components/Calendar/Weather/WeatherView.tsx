@@ -10,6 +10,7 @@ import {
   MdShield,
   MdUmbrella,
 } from 'react-icons/md';
+import { css } from '../../../../styled-system/css';
 import type { WeatherActions, WeatherDerived, WeatherState } from '../hooks/useWeather';
 import { resolveWeatherEmoji } from '../utils/weatherEmoji';
 import {
@@ -117,39 +118,41 @@ export function WeatherView({ state, derived, actions, onOpenDetails }: WeatherV
                 </div>
               </div>
 
-              <div className={weatherMetricsGrid}>
-                <div className={weatherMetricCard({ tone: 'humidity' })}>
-                  <div className={weatherMetricIcon({ tone: 'humidity' })}>
-                    <MdOpacity size={18} />
+              <div className={css({ display: 'flex', flexDirection: 'column', gap: '12px', width: '100%' })}>
+                <div className={weatherMetricsGrid}>
+                  <div className={weatherMetricCard({ tone: 'humidity' })}>
+                    <div className={weatherMetricIcon({ tone: 'humidity' })}>
+                      <MdOpacity size={14} />
+                    </div>
+                    <span className={weatherMetricLabel}>Umidade</span>
+                    <span className={weatherMetricValue}>{humidityValue}</span>
                   </div>
-                  <span className={weatherMetricLabel}>Umidade</span>
-                  <span className={weatherMetricValue}>{humidityValue}</span>
-                </div>
-                <div className={weatherMetricCard({ tone: 'wind' })}>
-                  <div className={weatherMetricIcon({ tone: 'wind' })}>
-                    <MdAir size={18} />
+                  <div className={weatherMetricCard({ tone: 'wind' })}>
+                    <div className={weatherMetricIcon({ tone: 'wind' })}>
+                      <MdAir size={14} />
+                    </div>
+                    <span className={weatherMetricLabel}>Vento</span>
+                    <span className={weatherMetricValue}>{windValue}</span>
                   </div>
-                  <span className={weatherMetricLabel}>Vento</span>
-                  <span className={weatherMetricValue}>{windValue}</span>
-                </div>
-                <div className={weatherMetricCard({ tone: 'uv' })}>
-                  <div className={weatherMetricIcon({ tone: 'uv' })}>
-                    <MdShield size={18} />
+                  <div className={weatherMetricCard({ tone: 'uv' })}>
+                    <div className={weatherMetricIcon({ tone: 'uv' })}>
+                      <MdShield size={14} />
+                    </div>
+                    <span className={weatherMetricLabel}>UV</span>
+                    <span className={weatherMetricValue}>{uvValue}</span>
                   </div>
-                  <span className={weatherMetricLabel}>UV</span>
-                  <span className={weatherMetricValue}>{uvValue}</span>
                 </div>
-              </div>
 
-              <div className={weatherTipCard}>
-                <div className={weatherTipIcon}>
-                  <MdUmbrella size={18} />
+                <div className={weatherTipCard}>
+                  <div className={weatherTipIcon}>
+                    <MdUmbrella size={18} />
+                  </div>
+                  <div className={weatherTipHeader}>
+                    <span className={weatherTipDot} />
+                    <span className={weatherTipLabel}>Dica do dia</span>
+                  </div>
+                  <p className={weatherTipText}>{recommendation}</p>
                 </div>
-                <div className={weatherTipHeader}>
-                  <span className={weatherTipDot} />
-                  <span className={weatherTipLabel}>Dica do dia</span>
-                </div>
-                <p className={weatherTipText}>{recommendation}</p>
               </div>
             </div>
 

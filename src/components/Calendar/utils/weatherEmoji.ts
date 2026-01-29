@@ -1,3 +1,4 @@
+import atmosphereEmoji from '../../../assets/emojis/atmosphere.json';
 import cloundEmoji from '../../../assets/emojis/clound.json';
 import coldEmoji from '../../../assets/emojis/cold.json';
 import hotEmoji from '../../../assets/emojis/hot.json';
@@ -6,7 +7,8 @@ import sunnyEmoji from '../../../assets/emojis/sunny.json';
 import type { WeatherSnapshot } from '../../../types/weather';
 
 const RAIN_KEYWORDS = ['chuva', 'garoa', 'tempestade', 'trovoada'];
-const CLOUD_KEYWORDS = ['nublado', 'nuvens', 'nevoa', 'neblina', 'cloud'];
+const CLOUD_KEYWORDS = ['nublado', 'nuvens', 'cloud'];
+const ATMOSPHERE_KEYWORDS = ['nevoa', 'neblina', 'bruma', 'fumaca', 'poeira', 'areia', 'cinzas', 'tornado', 'nevoeiro'];
 const SUNNY_KEYWORDS = ['sol', 'ensolarado', 'ceu limpo', 'limpo'];
 const SNOW_KEYWORDS = ['neve', 'granizo'];
 
@@ -36,6 +38,10 @@ export const resolveWeatherEmoji = (snapshot: WeatherSnapshot | null) => {
 
   if (SNOW_KEYWORDS.some((keyword) => normalized.includes(keyword))) {
     return coldEmoji;
+  }
+
+  if (ATMOSPHERE_KEYWORDS.some((keyword) => normalized.includes(keyword))) {
+    return atmosphereEmoji;
   }
 
   if (CLOUD_KEYWORDS.some((keyword) => normalized.includes(keyword))) {

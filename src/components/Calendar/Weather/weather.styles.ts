@@ -158,13 +158,13 @@ export const weatherMetricCard = cva({
     backgroundColor: 'surface.950',
     border: '2px solid',
     borderColor: 'surface.700',
-    borderRadius: '18px',
-    padding: '12px',
+    borderRadius: '14px',
+    padding: '8px',
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: '4px',
+    gap: '2px',
     transition: 'transform 0.2s ease, border-color 0.2s ease',
     boxShadow: '0 10px 16px rgba(33, 26, 30, 0.06)',
     _hover: {
@@ -188,13 +188,13 @@ export const weatherMetricCard = cva({
 
 export const weatherMetricIcon = cva({
   base: {
-    width: '32px',
-    height: '32px',
+    width: '24px',
+    height: '24px',
     borderRadius: '999px',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: '4px',
+    marginBottom: '2px',
   },
   variants: {
     tone: {
@@ -215,15 +215,15 @@ export const weatherMetricIcon = cva({
 });
 
 export const weatherMetricLabel = css({
-  fontSize: '10px',
+  fontSize: '8px',
   textTransform: 'uppercase',
-  letterSpacing: '0.14em',
+  letterSpacing: '0.12em',
   fontWeight: '700',
   color: 'text.dim',
 });
 
 export const weatherMetricValue = css({
-  fontSize: '18px',
+  fontSize: '14px',
   fontWeight: '700',
   color: 'text.primary',
 });
@@ -235,11 +235,12 @@ export const weatherTipCard = css({
   border: '2px solid',
   borderColor: '#E0E7FF',
   borderRadius: '18px',
-  padding: '16px',
+  padding: '20px 16px',
   display: 'flex',
   flexDirection: 'column',
-  gap: '8px',
+  gap: '10px',
   boxShadow: '0 10px 16px rgba(33, 26, 30, 0.06)',
+  flex: 1,
 });
 
 export const weatherTipIcon = css({

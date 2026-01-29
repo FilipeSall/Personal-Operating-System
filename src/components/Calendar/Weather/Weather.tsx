@@ -10,9 +10,6 @@ export function Weather() {
   const { state, derived, actions } = useWeather();
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
 
-  /**
-   * Abre o modal de detalhes do clima.
-   */
   const handleOpenDetails = () => {
     if (!derived.snapshot) {
       return;
@@ -20,9 +17,6 @@ export function Weather() {
     setIsDetailsOpen(true);
   };
 
-  /**
-   * Fecha o modal de detalhes do clima.
-   */
   const handleCloseDetails = () => {
     setIsDetailsOpen(false);
   };

@@ -5,7 +5,7 @@ const homeContainer = css({
   height: '100vh',
   backgroundColor: '#FDFFFC',
   color: '#211A1E',
-  padding: '32px',
+  padding: { base: '12px', bp800: '32px' },
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'stretch',
@@ -13,9 +13,9 @@ const homeContainer = css({
 });
 
 const calendarWidget = css({
-  width: '50%',
+  width: { base: '100%', bp800: '50%' },
   height: '100%',
-  minWidth: '400px',
+  minWidth: { bp800: '400px' },
 });
 
 function Home() {

@@ -55,13 +55,13 @@ export const weatherTop = css({
   flexDirection: { base: 'column', bp800: 'row' },
   alignItems: { base: 'flex-start', bp800: 'center' },
   justifyContent: 'space-between',
-  gap: '24px',
+  gap: { base: '16px', bp800: '24px' },
 });
 
 export const weatherSummary = css({
   display: 'flex',
   alignItems: 'center',
-  gap: '20px',
+  gap: '24px',
   flex: 1,
 });
 
@@ -87,7 +87,7 @@ export const weatherEmoji = css({
 export const weatherSummaryText = css({
   display: 'flex',
   flexDirection: 'column',
-  gap: '6px',
+  gap: '8px',
 });
 
 export const weatherDateBadge = css({
@@ -111,14 +111,14 @@ export const weatherTemperatureRow = css({
 });
 
 export const weatherTemperatureValue = css({
-  fontSize: { base: '48px', bp800: '56px' },
+  fontSize: { base: '56px', bp800: '64px' },
   fontWeight: '800',
   color: 'text.primary',
   lineHeight: 1,
 });
 
 export const weatherTemperatureUnit = css({
-  fontSize: '24px',
+  fontSize: '28px',
   fontWeight: '700',
   color: 'text.muted',
   marginTop: '6px',
@@ -145,12 +145,62 @@ export const weatherLocationRow = css({
   color: 'text.muted',
 });
 
+export const weatherMetricsTipWrapper = css({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '12px',
+  width: '100%'
+});
+
 export const weatherMetricsGrid = css({
   display: 'grid',
   gridTemplateColumns: { base: 'repeat(2, minmax(0, 1fr))', bp800: 'repeat(3, minmax(0, 1fr))' },
   gap: '12px',
   width: '100%',
-  maxWidth: { bp800: '320px' },
+});
+
+export const weatherMetricsCarousel = css({
+  position: 'relative',
+  width: '100%',
+});
+
+export const weatherMetricsTrack = css({
+  display: 'grid',
+  gridTemplateColumns: { base: 'repeat(3, 1fr)', bp800: 'repeat(6, 1fr)' },
+  gap: '8px',
+  width: '100%',
+});
+
+export const weatherScrollButton = cva({
+  base: {
+    position: 'absolute',
+    top: '50%',
+    transform: 'translateY(-50%)',
+    zIndex: 2,
+    width: '28px',
+    height: '28px',
+    borderRadius: '999px',
+    border: '2px solid',
+    borderColor: 'surface.700',
+    backgroundColor: 'surface.950',
+    color: 'text.muted',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    cursor: 'pointer',
+    transition: 'all 0.2s ease',
+    boxShadow: '0 4px 8px rgba(33, 26, 30, 0.1)',
+    _hover: {
+      color: '#2563EB',
+      borderColor: '#93C5FD',
+    },
+  },
+  variants: {
+    direction: {
+      left: { left: '-14px' },
+      right: { right: '-14px' },
+    },
+  },
 });
 
 export const weatherMetricCard = cva({
@@ -182,6 +232,15 @@ export const weatherMetricCard = cva({
       uv: {
         borderColor: '#EDE9FE',
       },
+      feelsLike: {
+        borderColor: '#FEF3C7',
+      },
+      rain: {
+        borderColor: '#BFDBFE',
+      },
+      clouds: {
+        borderColor: '#E5E7EB',
+      },
     },
   },
 });
@@ -209,6 +268,18 @@ export const weatherMetricIcon = cva({
       uv: {
         backgroundColor: '#EDE9FE',
         color: '#7C3AED',
+      },
+      feelsLike: {
+        backgroundColor: '#FEF3C7',
+        color: '#D97706',
+      },
+      rain: {
+        backgroundColor: '#BFDBFE',
+        color: '#1D4ED8',
+      },
+      clouds: {
+        backgroundColor: '#F3F4F6',
+        color: '#6B7280',
       },
     },
   },

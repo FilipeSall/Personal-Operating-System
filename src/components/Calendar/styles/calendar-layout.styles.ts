@@ -3,9 +3,9 @@ import { css } from '../../../../styled-system/css';
 export const calendarContainer = css({
   display: 'flex',
   flexDirection: 'column',
-  gap: '32px',
+  gap: { base: '6px', bp800: '12px' },
   width: '100%',
-  maxWidth: '896px',
+  maxWidth: { base: '100%', bp800: '896px' },
   height: '100%',
   minHeight: 0,
   margin: '0 auto',
@@ -21,7 +21,7 @@ export const calendarSection = css({
   zIndex: 2,
   backgroundColor: 'surface.950',
   borderRadius: '4px 4px 4px 0',
-  padding: '16px',
+  padding: { base: '8px', bp800: '16px' },
   boxShadow: `
     0 1px 1px rgba(0, 0, 0, 0.08),
     0 2px 2px rgba(0, 0, 0, 0.06),

@@ -25,6 +25,7 @@
 - O endpoint `data/3.0/onecall` exige plano pago e retorna 401 no plano free. Nao usar.
 - `data/2.5/forecast`: previsao de 3h em 3h, ate 5 dias. Endpoint principal.
 - `data/2.5/weather`: clima atual. Usado como fallback para o dia de hoje.
+- `geo/1.0/reverse`: reverse geocoding para transformar lat/lon em cidade (label de localizacao).
 - Campos indisponiveis no plano free: `uvIndex` (sempre 0), `alerts` (sempre []).
 - A chave da API fica em `.env.local` como `VITE_OPENWEATHER_API_KEY`.
 

@@ -1,7 +1,8 @@
 import { create } from 'zustand';
-import { fetchForecast, fetchCurrentWeather } from '../services/openWeatherService';
+import { fetchForecast, fetchCurrentWeather, fetchReverseGeocode } from '../services/openWeatherService';
 import { resolveWeatherCoordinates } from '../utils/weatherLocation';
 import { groupForecastByDay, toForecastKey } from '../utils/forecastGrouper';
+import { formatLocationLabel } from '../utils/formatLocationLabel';
 import type { WeatherSnapshot } from '../types/weather';
 import type { OpenWeatherCurrentResponse } from '../types/openWeather';
 
@@ -89,6 +90,24 @@ export const useWeatherStore = create<WeatherStore>((set, get) => ({
         fetchCurrentWeather({ lat: coordinates.lat, lon: coordinates.lon, signal }),
       ]);
 
+      let locationLabel = coordinates.label;
+      try {
+        const reverse = await fetchReverseGeocode({
+          lat: coordinates.lat,
+          lon: coordinates.lon,
+          signal,
+        });
+        const place = reverse[0];
+        locationLabel = formatLocationLabel({
+          cityName: place?.name,
+          stateName: place?.state,
+          countryCode: place?.country,
+          fallback: coordinates.label,
+        });
+      } catch {
+        locationLabel = coordinates.label;
+      }
+
       const grouped = groupForecastByDay(forecastData);
 
       const todayKey = toForecastKey(new Date());
@@ -101,7 +120,7 @@ export const useWeatherStore = create<WeatherStore>((set, get) => ({
         forecasts: grouped,
         isLoading: false,
         error: null,
-        locationLabel: coordinates.label,
+        locationLabel,
         lastUpdatedAt: new Date(),
       }));
     } catch (error) {

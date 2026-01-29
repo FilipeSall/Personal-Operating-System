@@ -72,3 +72,10 @@ export type OpenWeatherCurrentResponse = {
     '3h'?: number;
   };
 };
+
+export type OpenWeatherReverseGeocodeItem = {
+  name: string;
+  state?: string;
+  country?: string;
+  local_names?: Record<string, string>;
+};

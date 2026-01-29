@@ -4,7 +4,7 @@ import { buildWeatherRows } from '../utils/weatherMetrics';
 import { useWeatherStore } from '../../../store/useWeatherStore';
 import { useCalendarStore } from '../../../store/useCalendarStore';
 import { toForecastKey } from '../../../utils/forecastGrouper';
-import type { WeatherRow } from '../../../types/weather';
+import type { WeatherRow, WeatherSnapshot } from '../../../types/weather';
 
 export type WeatherState = {
   isLoading: boolean;
@@ -17,6 +17,11 @@ export type WeatherState = {
 export type WeatherDerived = {
   rows: WeatherRow[];
   hasData: boolean;
+  snapshot: WeatherSnapshot | null;
+};
+
+export type WeatherActions = {
+  refreshWeather: () => Promise<void>;
 };
 
 /**
@@ -41,6 +46,13 @@ export const useWeather = () => {
     fetchWeather();
   }, [fetchWeather]);
 
+  /**
+   * Forca a atualizacao do clima no store.
+   */
+  const refreshWeather = () => {
+    return fetchWeather({ force: true });
+  };
+
   const dateKey = toForecastKey(selectedDate);
   const snapshot = forecasts.get(dateKey) ?? null;
 
@@ -56,6 +68,10 @@ export const useWeather = () => {
     derived: {
       rows,
       hasData: Boolean(snapshot),
+      snapshot,
+    },
+    actions: {
+      refreshWeather,
     },
   };
 };

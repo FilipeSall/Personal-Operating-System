@@ -30,6 +30,7 @@ export const formatLocationLabel = (params: {
   fallback: string;
 }): string => {
   const { cityName, stateName, countryCode, fallback } = params;
+  console.log(params)
 
   if (cityName && countryCode === 'BR' && stateName) {
     const stateAbbreviation = getBrazilStateAbbreviation(stateName);

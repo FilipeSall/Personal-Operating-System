@@ -19,6 +19,7 @@
 - O store global de clima fica em `src/store/useWeatherStore.ts`.
 - O agrupamento de forecast por dia fica em `src/utils/forecastGrouper.ts`.
 - Tipos da API ficam em `src/types/openWeather.ts`, tipos internos em `src/types/weather.ts`.
+- O emoji principal do clima usa Lottie com assets em `src/assets/emojis`, mapeados em `src/components/Calendar/utils/weatherEmoji.ts`.
 
 ### API OpenWeather (plano gratuito)
 

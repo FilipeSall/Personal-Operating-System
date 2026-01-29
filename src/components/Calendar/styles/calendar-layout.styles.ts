@@ -1,18 +1,20 @@
 import { css } from '../../../../styled-system/css';
 
 export const calendarContainer = css({
-  display: 'grid',
-  gridTemplateRows: '5fr 2fr',
-  gap: '16px',
-  backgroundColor: 'surface.950',
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '32px',
   width: '100%',
+  maxWidth: '896px',
   height: '100%',
+  minHeight: 0,
+  margin: '0 auto',
 });
 
 export const calendarSection = css({
   display: 'flex',
   flexDirection: 'column',
-  height: '100%',
+  flex: 1,
   minHeight: 0,
   overflow: 'hidden',
   position: 'relative',

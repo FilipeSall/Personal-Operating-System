@@ -18,7 +18,7 @@ type UseCalendarDayCellParams = {
  * Use os retornos para renderizar o UI do dia e lidar com cliques/teclas.
  */
 export const useCalendarDayCell = ({ date, currentMonth }: UseCalendarDayCellParams) => {
-  const { selectedDate, setSelectedDate, getTodosForDate } = useCalendarStore();
+  const { selectedDate, setSelectedDate, setCurrentMonth, getTodosForDate } = useCalendarStore();
 
   const dateKey = format(date, 'yyyy-MM-dd');
   const dayTodos = getTodosForDate(dateKey);
@@ -31,8 +31,9 @@ export const useCalendarDayCell = ({ date, currentMonth }: UseCalendarDayCellPar
   const hiddenCount = dayTodos.length - maxVisibleEvents;
 
   const handleSelect = () => {
-    if (!isOutsideMonth) {
-      setSelectedDate(date);
+    setSelectedDate(date);
+    if (isOutsideMonth) {
+      setCurrentMonth(date);
     }
   };
 

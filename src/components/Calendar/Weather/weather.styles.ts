@@ -9,6 +9,7 @@ export const weatherSection = css({
   backgroundColor: 'surface.950',
   padding: '4px',
   boxShadow: '0 18px 32px rgba(33, 26, 30, 0.08)',
+  minHeight: 0,
 });
 
 export const weatherPanel = css({
@@ -16,11 +17,12 @@ export const weatherPanel = css({
   overflow: 'hidden',
   borderRadius: '36px',
   backgroundColor: 'var(--weather-panel-bg, rgba(253, 232, 234, 0.6))',
-  padding: { base: '20px', bp800: '28px' },
+  padding: { base: '12px', bp800: '28px' },
   display: 'flex',
   flexDirection: 'column',
-  gap: '24px',
+  gap: { base: '10px', bp800: '24px' },
   transition: 'background-color 0.4s ease',
+  height: '100%',
 });
 
 export const weatherDecorTop = css({
@@ -58,7 +60,7 @@ export const weatherTop = css({
   flexDirection: { base: 'column', bp800: 'row' },
   alignItems: { base: 'flex-start', bp800: 'center' },
   justifyContent: 'space-between',
-  gap: { base: '16px', bp800: '24px' },
+  gap: { base: '10px', bp800: '24px' },
 });
 
 export const weatherSummary = css({
@@ -69,8 +71,8 @@ export const weatherSummary = css({
 });
 
 export const weatherEmojiWrapper = css({
-  width: '112px',
-  height: '96px',
+  width: { base: '80px', bp800: '112px' },
+  height: { base: '68px', bp800: '96px' },
   borderRadius: '24px',
   backgroundColor: 'surface.950',
   border: '2px solid',
@@ -114,17 +116,17 @@ export const weatherTemperatureRow = css({
 });
 
 export const weatherTemperatureValue = css({
-  fontSize: { base: '56px', bp800: '64px' },
+  fontSize: { base: '40px', bp800: '64px' },
   fontWeight: '800',
   color: 'text.primary',
   lineHeight: 1,
 });
 
 export const weatherTemperatureUnit = css({
-  fontSize: '28px',
+  fontSize: { base: '20px', bp800: '28px' },
   fontWeight: '700',
   color: 'text.muted',
-  marginTop: '6px',
+  marginTop: { base: '4px', bp800: '6px' },
 });
 
 export const weatherConditionBadge = css({
@@ -309,10 +311,10 @@ export const weatherTipCard = css({
   border: '2px solid',
   borderColor: 'var(--weather-accent-light, #FDE8EA)',
   borderRadius: '18px',
-  padding: '20px 16px',
+  padding: { base: '12px 10px', bp800: '20px 16px' },
   display: 'flex',
   flexDirection: 'column',
-  gap: '10px',
+  gap: '8px',
   boxShadow: '0 10px 16px rgba(33, 26, 30, 0.06)',
   flex: 1,
 });
@@ -362,13 +364,14 @@ export const weatherFooter = css({
   position: 'relative',
   zIndex: 1,
   display: 'flex',
-  flexDirection: { base: 'column', bp800: 'row' },
-  alignItems: { base: 'flex-start', bp800: 'center' },
+  flexDirection: 'row',
+  alignItems: 'center',
   justifyContent: 'space-between',
-  gap: '12px',
-  paddingTop: '16px',
+  gap: '8px',
+  paddingTop: '10px',
   borderTop: '2px solid',
   borderColor: 'var(--weather-footer-border, rgba(214, 69, 80, 0.25))',
+  marginTop: 'auto',
 });
 
 export const weatherRefreshGroup = css({
@@ -378,8 +381,8 @@ export const weatherRefreshGroup = css({
 });
 
 export const weatherRefreshButton = css({
-  width: '40px',
-  height: '40px',
+  width: '32px',
+  height: '32px',
   borderRadius: '999px',
   border: '2px solid',
   borderColor: 'surface.700',
@@ -402,11 +405,11 @@ export const weatherRefreshButton = css({
 });
 
 export const weatherUpdatedLabel = css({
-  fontSize: '11px',
+  fontSize: '10px',
   fontWeight: '700',
   color: 'text.dim',
   backgroundColor: 'rgba(255, 255, 255, 0.6)',
-  padding: '6px 10px',
+  padding: '4px 8px',
   borderRadius: '999px',
   border: '1px solid',
   borderColor: 'surface.700',
@@ -415,14 +418,14 @@ export const weatherUpdatedLabel = css({
 export const weatherDetailsButton = css({
   display: 'inline-flex',
   alignItems: 'center',
-  gap: '8px',
-  padding: '10px 18px',
+  gap: '4px',
+  padding: '4px 8px',
   borderRadius: '999px',
   border: '2px solid',
   borderColor: 'var(--weather-accent, #D64550)',
   backgroundColor: 'surface.950',
   color: 'var(--weather-accent, #D64550)',
-  fontSize: '12px',
+  fontSize: '10px',
   fontWeight: '700',
   textTransform: 'uppercase',
   letterSpacing: '0.12em',

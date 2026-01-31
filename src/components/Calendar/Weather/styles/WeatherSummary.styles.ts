@@ -5,7 +5,7 @@ export const weatherSummary = css({
   display: 'flex',
   alignItems: 'center',
   gap: '1.5em',
-  width: '100%',
+  maxWidth: '100%',
 });
 
 export const weatherEmojiWrapper = css({

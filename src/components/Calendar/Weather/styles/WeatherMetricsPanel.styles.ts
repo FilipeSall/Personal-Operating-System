@@ -6,6 +6,7 @@ export const weatherMetricsTipWrapper = css({
   gridTemplateRows: 'auto 1fr',
   gap: '0.75em',
   width: '100%',
+  minWidth: 0,
   minHeight: 0,
 });
 
@@ -14,6 +15,7 @@ export const weatherMetricsGrid = css({
   gridTemplateColumns: { base: 'repeat(2, minmax(0, 1fr))', bp800: 'repeat(3, minmax(0, 1fr))' },
   gap: '0.75em',
   width: '100%',
+  minWidth: 0,
   minHeight: 0,
 });
 

@@ -28,6 +28,7 @@ export const weatherRefreshButton = css({
   ...weatherBorder,
   backgroundColor: 'surface.950',
   color: 'text.muted',
+  cursor: 'pointer',
   transition: 'all 0.2s ease',
   _hover: {
     color: 'var(--weather-accent, #D64550)',
@@ -60,6 +61,7 @@ export const weatherDetailsButton = css({
   borderColor: 'var(--weather-accent, #D64550)',
   backgroundColor: 'surface.950',
   color: 'var(--weather-accent, #D64550)',
+  cursor: 'pointer',
   transition: 'all 0.2s ease',
   _hover: {
     backgroundColor: 'var(--weather-accent, #D64550)',

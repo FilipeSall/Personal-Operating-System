@@ -1,5 +1,3 @@
-import { format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
 import {
   MdAir,
   MdOpacity,
@@ -21,6 +19,7 @@ import {
   weatherTop,
 } from './weather.styles';
 import { getWeatherStatusMessage } from './utils/getWeatherStatusMessage';
+import { buildWeatherViewModel } from './utils/weatherViewModel';
 import { WeatherFooter } from './components/WeatherFooter';
 import { WeatherSummary } from './components/WeatherSummary';
 import { WeatherTipPanel } from './components/WeatherTipPanel';
@@ -37,35 +36,23 @@ type WeatherViewProps = {
  * View do componente de clima, renderiza o resumo com metricas e dica do dia.
  */
 export function WeatherView({ state, derived, actions, onOpenDetails }: WeatherViewProps) {
-  const updatedAtLabel = state.lastUpdatedAt
-    ? format(state.lastUpdatedAt, 'HH:mm', { locale: ptBR })
-    : null;
-
-  const dateLabel = format(state.selectedDate, "d 'de' MMM", { locale: ptBR });
-
-  const summaryRow = derived.rows.find((row) => row.id === 'summary');
-
-  const temperatureValue = derived.snapshot
-    ? Math.round(derived.snapshot.temperature.current)
-    : null;
-
-  const humidityValue = derived.snapshot
-    ? `${Math.round(derived.snapshot.humidity)}%`
-    : '--';
-
-  const windValue = derived.snapshot
-    ? `${Math.round(derived.snapshot.wind.speed * 3.6)} km/h`
-    : '--';
-
-  const uvValue = derived.snapshot ? derived.snapshot.uvIndex.toFixed(1) : '--';
+  const {
+    updatedAtLabel,
+    dateLabel,
+    description,
+    recommendation,
+    temperatureValue,
+    humidityValue,
+    windValue,
+    uvValue,
+  } = buildWeatherViewModel({ state, derived });
 
   const statusMessage = getWeatherStatusMessage(state, derived);
-  const description = summaryRow?.value ?? 'Sem descricao';
-  const recommendation = summaryRow?.recommendation ?? 'Sem recomendacao disponivel.';
 
   return (
     <section className={weatherSection}>
       <div className={weatherPanel}>
+        {/*Decorações de bolinhas */}
         <div className={weatherDecorTop} />
         <div className={weatherDecorBottom} />
 

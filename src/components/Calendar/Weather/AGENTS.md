@@ -9,6 +9,7 @@ O Weather organiza a lógica e a visualização em camadas claras, o que facilit
 
 ## Componentes UI
 - **WeatherSummary**: resumo com emoji animado, temperatura, condição e localização. Recebe `snapshot`, `description`, `dateLabel`, `temperatureValue` e `locationLabel`.
+- **WeatherMetricsPanel**: agrupa o grid de métricas (umidade, vento, UV) e o `WeatherTipPanel`.
 - **WeatherTipPanel**: encapsula o cartão "Dica do dia" e a responsividade lateral.
 - **WeatherFooter**: agrupa o botão de atualizar e o botão de detalhes, reutilizando os estilos já existentes.
 

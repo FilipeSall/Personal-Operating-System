@@ -18,4 +18,4 @@ O Weather organiza a lógica e a visualização em camadas claras, o que facilit
 
 ## Observações
 - Mantivemos `resolveWeatherEmoji` e os hooks externos sem alterações; os estilos agora ficam separados na pasta `styles/` por componente.
-- O `weatherPanel` usa grid em proporção `70/30` (conteúdo/rodapé) e respeita o slot do container (`height: 100%` com `maxHeight: 70vmin`), mantendo unidades em `em` para escalar com o viewport.
+- O `weatherPanel` usa grid em proporção `80/20` (conteúdo/rodapé) e respeita o slot do container (`height: 100%` com `maxHeight: 70vmin`), mantendo unidades em `em` para escalar com o viewport.

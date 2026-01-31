@@ -21,7 +21,7 @@ export const weatherPanel = css({
   backgroundColor: 'var(--weather-panel-bg, rgba(253, 232, 234, 0.6))',
   padding: { base: '0.75em', bp800: '1.75em' },
   display: 'grid',
-  gridTemplateRows: '7fr 3fr',
+  gridTemplateRows: '8fr 2fr',
   gap: { base: '0.625em', bp800: '1.5em' },
   transition: 'background-color 0.4s ease',
   width: '100%',

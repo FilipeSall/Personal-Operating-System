@@ -8,22 +8,22 @@ export const weatherFooter = css({
   flexDirection: 'row',
   alignItems: 'center',
   justifyContent: 'space-between',
-  gap: '0.5em',
-  paddingTop: '0.625em',
+  gap: '0.375em',
+  paddingTop: '0.5em',
   borderTop: '0.125em solid',
-  borderColor: 'var(--weather-footer-border, rgba(214, 69, 80, 0.25))',
+  borderColor: 'var(--weather-footer-border, rgba(214, 69, 80, 0.15))',
   minHeight: 0,
 });
 
 export const weatherRefreshGroup = css({
   display: 'flex',
   alignItems: 'center',
-  gap: '0.75em',
+  gap: '0.5em',
 });
 
 export const weatherRefreshButton = css({
-  width: '2em',
-  height: '2em',
+  width: '1.75em',
+  height: '1.75em',
   ...weatherCircle,
   ...weatherBorder,
   backgroundColor: 'surface.950',
@@ -45,7 +45,7 @@ export const weatherUpdatedLabel = css({
   ...weatherPill,
   color: 'text.dim',
   backgroundColor: 'rgba(255, 255, 255, 0.6)',
-  padding: '0.25em 0.5em',
+  padding: '0.2em 0.45em',
   border: '0.0625em solid',
   borderColor: 'surface.700',
 });
@@ -53,8 +53,8 @@ export const weatherUpdatedLabel = css({
 export const weatherDetailsButton = css({
   display: 'inline-flex',
   alignItems: 'center',
-  gap: '0.25em',
-  padding: '0.25em 0.5em',
+  gap: '0.2em',
+  padding: '0.2em 0.45em',
   ...weatherPill,
   border: '0.125em solid',
   borderColor: 'var(--weather-accent, #D64550)',

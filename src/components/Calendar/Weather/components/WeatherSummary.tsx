@@ -49,7 +49,9 @@ export function WeatherSummary({
           <span className={weatherTemperatureValue}>{temperatureValue}</span>
           <span className={weatherTemperatureUnit}>°C</span>
         </div>
+      
         <span className={weatherConditionBadge}>{description}</span>
+
         <div className={weatherLocationRow}>
           <MdLocationOn size={16} />
           <span>{locationLabel}</span>

@@ -61,8 +61,8 @@ export const weatherTop = css({
   position: 'relative',
   zIndex: 1,
   display: 'grid',
-  gridTemplateColumns: { base: '1fr', bp800: '1fr 1fr' },
-  alignItems: { base: 'start', bp800: 'center' },
+  gridTemplateColumns: '1fr 1fr',
+  alignItems: 'center',
   gap: { base: '0.625em', bp800: '1.5em' },
   minHeight: 0,
 });

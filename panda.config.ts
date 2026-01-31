@@ -58,6 +58,57 @@ export default defineConfig({
           success: {
             500: { value: '#A7AA29' },
           },
+          blue: {
+            300: { value: '#93C5FD' },
+            400: { value: '#60A5FA' },
+            500: { value: '#3B82F6' },
+            600: { value: '#2563EB' },
+          },
+          red: {
+            400: { value: '#F87171' },
+          },
+          rose: {
+            500: { value: '#F43F5E' },
+            600: { value: '#E11D48' },
+          },
+          orange: {
+            300: { value: '#FDB063' },
+            400: { value: '#FB923C' },
+            500: { value: '#F97316' },
+          },
+          indigo: {
+            400: { value: '#818CF8' },
+            500: { value: '#6366F1' },
+          },
+          purple: {
+            500: { value: '#A855F7' },
+            600: { value: '#9333EA' },
+          },
+          teal: {
+            300: { value: '#5EEAD4' },
+            500: { value: '#14B8A6' },
+          },
+          cyan: {
+            400: { value: '#22D3EE' },
+            600: { value: '#0891B2' },
+          },
+          green: {
+            400: { value: '#4ADE80' },
+          },
+          emerald: {
+            500: { value: '#10B981' },
+            600: { value: '#059669' },
+          },
+          pink: {
+            400: { value: '#F472B6' },
+          },
+          gray: {
+            400: { value: '#9CA3AF' },
+            600: { value: '#4B5563' },
+          },
+          yellow: {
+            500: { value: '#EAB308' },
+          },
         },
       },
     },

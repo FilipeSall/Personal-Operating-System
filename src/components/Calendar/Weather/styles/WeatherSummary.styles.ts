@@ -4,17 +4,20 @@ import { weatherBorder, weatherPill } from './weatherTokens';
 export const weatherSummary = css({
   display: 'flex',
   alignItems: 'center',
-  gap: '1.5em',
+  gap: '1.75em',
   maxWidth: '100%',
+  paddingRight: '0.75em',
+  borderRight: '0.0625em solid',
+  borderColor: 'rgba(120, 124, 130, 0.15)',
 });
 
 export const weatherEmojiWrapper = css({
-  width: { base: '5em', bp800: '7em' },
-  height: { base: '4.25em', bp800: '6em' },
-  borderRadius: '1.5em',
+  width: { base: '5.75em', bp800: '8em' },
+  height: { base: '5em', bp800: '7em' },
+  borderRadius: '1.75em',
   backgroundColor: 'surface.950',
   ...weatherBorder,
-  boxShadow: '0 0.75em 1.25em rgba(33, 26, 30, 0.08)',
+  boxShadow: '0 0.9em 1.35em rgba(33, 26, 30, 0.08)',
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
@@ -29,7 +32,10 @@ export const weatherEmoji = css({
 export const weatherSummaryText = css({
   display: 'flex',
   flexDirection: 'column',
-  gap: '0.5em',
+  gap: '0.6em',
+  flex: 1,
+  minWidth: 0,
+  alignItems: 'center',
 });
 
 export const weatherDateBadge = css({
@@ -39,46 +45,44 @@ export const weatherDateBadge = css({
   border: '0.0625em solid',
   borderColor: 'surface.700',
   padding: '0.25em 0.625em',
-  alignSelf: 'flex-start',
 });
 
 export const weatherTemperatureRow = css({
   display: 'flex',
   alignItems: 'flex-start',
-  gap: '0.375em',
+  gap: '0.45em',
 });
 
 export const weatherTemperatureValue = css({
-  fontSize: { base: '2.5em', bp800: '4em' },
+  fontSize: { base: '2.8em', bp800: '4.4em' },
   fontWeight: '800',
   color: 'text.primary',
   lineHeight: 1,
 });
 
 export const weatherTemperatureUnit = css({
-  fontSize: { base: '1.25em', bp800: '1.75em' },
+  fontSize: { base: '1.35em', bp800: '1.9em' },
   fontWeight: '700',
   color: 'text.muted',
-  marginTop: { base: '0.25em', bp800: '0.375em' },
+  marginTop: { base: '0.3em', bp800: '0.4em' },
 });
 
 export const weatherConditionBadge = css({
-  fontSize: '0.875em',
+  fontSize: '0.95em',
   fontWeight: '700',
   color: 'text.subtle',
   backgroundColor: 'rgba(255, 255, 255, 0.7)',
   border: '0.0625em solid',
   borderColor: 'surface.700',
-  padding: '0.25em 0.625em',
-  borderRadius: '0.75em',
-  alignSelf: 'flex-start',
+  padding: '0.28em 0.7em',
+  borderRadius: '0.85em',
 });
 
 export const weatherLocationRow = css({
   display: 'flex',
   alignItems: 'center',
-  gap: '0.25em',
-  fontSize: '0.75em',
+  gap: '0.3em',
+  fontSize: '0.85em',
   fontWeight: '600',
   color: 'text.muted',
 });

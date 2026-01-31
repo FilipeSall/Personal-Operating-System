@@ -114,9 +114,16 @@ export const weatherDetailsValue = css({
 
 // Valor secundário (ex: Min/Max temperatura ou complementos inline)
 export const weatherDetailsSecondary = css({
-  fontSize: '0.75rem',
+  fontSize: '1.5rem',
+  fontWeight: '700',
+  color: 'text.subtle',
+});
+
+// Valor secundário (compatibilidade) - para outros usos
+export const weatherDetailsSecondarySmall = css({
+  fontSize: '0.875rem',
   fontWeight: '600',
-  color: 'text.dim',
+  color: 'text.subtle',
 });
 
 // Container para valores múltiplos (ex: nascer/pôr do sol)
@@ -152,11 +159,20 @@ export const weatherDetailsValueComplement = css({
   marginLeft: '0.25rem',
 });
 
+// Valor mínimo e máximo de temperatura (no final do card)
+export const weatherDetailsTemperatureRange = css({
+  fontSize: '0.875rem',
+  fontWeight: '600',
+  color: 'text.dim',
+  marginTop: 'auto',
+  paddingTop: '0.5rem',
+});
+
 // Seção de recomendação (footer do card)
 export const weatherDetailsRecommendation = css({
   paddingTop: '1rem',
   borderTop: '1px solid',
-  borderColor: 'surface.700',
+  borderColor: 'gray.300',
   fontSize: '0.875rem',
   fontWeight: '600',
   color: 'text.subtle',

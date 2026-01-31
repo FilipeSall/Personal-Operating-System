@@ -1,4 +1,4 @@
-import type { WeatherDerived, WeatherState } from '../hooks/useWeather';
+import type { WeatherDerived, WeatherState } from '../../hooks/useWeather';
 
 /**
  * Retorna a mensagem que deve ser exibida quando o resumo do clima não pode ser renderizado.

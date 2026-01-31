@@ -35,6 +35,7 @@ import {
   weatherDetailsSecondary,
   weatherDetailsValue,
   weatherDetailsValueComplement,
+  weatherDetailsTemperatureRange,
   gradientBlue,
   gradientCyan,
   gradientGreen,
@@ -204,9 +205,9 @@ export function WeatherDetailsModalView({
                       <div className={weatherDetailsInfo}>
                         <h3 className={weatherDetailsLabel}>{row.label}</h3>
                         <p className={weatherDetailsValue}>{currentTemp}</p>
-                        {minMaxStr && <p className={weatherDetailsSecondary}>{minMaxStr}</p>}
                       </div>
                       <div className={weatherDetailsRecommendation}>{row.recommendation}</div>
+                      {minMaxStr && <p className={weatherDetailsTemperatureRange}>{minMaxStr}</p>}
                     </div>
                   );
                 }

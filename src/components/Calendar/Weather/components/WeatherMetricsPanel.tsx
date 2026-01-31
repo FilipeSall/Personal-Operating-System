@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import { MdAir, MdOpacity, MdShield } from 'react-icons/md';
 import {
   weatherMetricsGrid,
@@ -16,6 +17,65 @@ type WeatherMetricsPanelProps = {
   recommendation: string;
 };
 
+type WeatherMetricTone = 'humidity' | 'wind' | 'uv';
+
+type WeatherMetricItem = {
+  tone: WeatherMetricTone;
+  label: string;
+  value: string;
+  icon: ReactNode;
+};
+
+type WeatherMetricCardProps = {
+  tone: WeatherMetricTone;
+  label: string;
+  value: string;
+  icon: ReactNode;
+};
+
+/**
+ * Card unitário para exibir uma métrica de clima com ícone e valor.
+ */
+function WeatherMetricCardView({ tone, label, value, icon }: WeatherMetricCardProps) {
+  return (
+    <div className={weatherMetricCard({ tone })}>
+      <div className={weatherMetricIcon({ tone })}>{icon}</div>
+      <span className={weatherMetricLabel}>{label}</span>
+      <span className={weatherMetricValue}>{value}</span>
+    </div>
+  );
+}
+
+/**
+ * Monta a lista de métricas do painel com base nos valores atuais.
+ */
+function buildWeatherMetricItems({
+  humidityValue,
+  windValue,
+  uvValue,
+}: Pick<WeatherMetricsPanelProps, 'humidityValue' | 'windValue' | 'uvValue'>): WeatherMetricItem[] {
+  return [
+    {
+      tone: 'humidity',
+      label: 'Umidade',
+      value: humidityValue,
+      icon: <MdOpacity size={18} />,
+    },
+    {
+      tone: 'wind',
+      label: 'Vento',
+      value: windValue,
+      icon: <MdAir size={18} />,
+    },
+    {
+      tone: 'uv',
+      label: 'UV',
+      value: uvValue,
+      icon: <MdShield size={18} />,
+    },
+  ];
+}
+
 /**
  * Painel de metricas e recomendacao do clima.
  */
@@ -25,30 +85,20 @@ export function WeatherMetricsPanel({
   uvValue,
   recommendation,
 }: WeatherMetricsPanelProps) {
+  const metricItems = buildWeatherMetricItems({ humidityValue, windValue, uvValue });
+
   return (
     <div className={weatherMetricsTipWrapper}>
       <div className={weatherMetricsGrid}>
-        <div className={weatherMetricCard({ tone: 'humidity' })}>
-          <div className={weatherMetricIcon({ tone: 'humidity' })}>
-            <MdOpacity size={18} />
-          </div>
-          <span className={weatherMetricLabel}>Umidade</span>
-          <span className={weatherMetricValue}>{humidityValue}</span>
-        </div>
-        <div className={weatherMetricCard({ tone: 'wind' })}>
-          <div className={weatherMetricIcon({ tone: 'wind' })}>
-            <MdAir size={18} />
-          </div>
-          <span className={weatherMetricLabel}>Vento</span>
-          <span className={weatherMetricValue}>{windValue}</span>
-        </div>
-        <div className={weatherMetricCard({ tone: 'uv' })}>
-          <div className={weatherMetricIcon({ tone: 'uv' })}>
-            <MdShield size={18} />
-          </div>
-          <span className={weatherMetricLabel}>UV</span>
-          <span className={weatherMetricValue}>{uvValue}</span>
-        </div>
+        {metricItems.map((metric) => (
+          <WeatherMetricCardView
+            key={metric.tone}
+            tone={metric.tone}
+            label={metric.label}
+            value={metric.value}
+            icon={metric.icon}
+          />
+        ))}
       </div>
       <WeatherTipPanel recommendation={recommendation} />
     </div>

@@ -19,6 +19,7 @@ export default defineConfig({
     extend: {
       breakpoints: {
         bp800: '800px',
+        bp1024: '1024px',
         bp1400: '1400px',
       },
       tokens: {

@@ -6,7 +6,7 @@ import {
   weatherTipDot,
   weatherTipLabel,
   weatherTipText,
-} from '../weather.styles';
+} from '../styles/WeatherTipPanel.styles';
 
 type WeatherTipPanelProps = {
   recommendation: string;
@@ -17,15 +17,15 @@ type WeatherTipPanelProps = {
  */
 export function WeatherTipPanel({ recommendation }: WeatherTipPanelProps) {
   return (
-      <div className={weatherTipCard}>
-        <div className={weatherTipIcon}>
-          <MdUmbrella size={18} />
-        </div>
-        <div className={weatherTipHeader}>
-          <span className={weatherTipDot} />
-          <span className={weatherTipLabel}>Dica do dia</span>
-        </div>
-        <p className={weatherTipText}>{recommendation}</p>
+    <div className={weatherTipCard}>
+      <div className={weatherTipIcon}>
+        <MdUmbrella size={18} />
       </div>
+      <div className={weatherTipHeader}>
+        <span className={weatherTipDot} />
+        <span className={weatherTipLabel}>Dica do dia</span>
+      </div>
+      <p className={weatherTipText}>{recommendation}</p>
+    </div>
   );
 }

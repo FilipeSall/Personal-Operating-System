@@ -17,4 +17,5 @@ O Weather organiza a lógica e a visualização em camadas claras, o que facilit
 - **getWeatherStatusMessage** (em `utils/`): centraliza a mensagem exibida quando o snapshot não está disponível ou quando há erro.
 
 ## Observações
-- Mantivemos `resolveWeatherEmoji`, os estilos em `weather.styles.ts` e os hooks externos sem alterações; apenas os componentes visuais foram refatorados para manter a lógica em um único lugar.
+- Mantivemos `resolveWeatherEmoji` e os hooks externos sem alterações; os estilos agora ficam separados na pasta `styles/` por componente.
+- O `weatherPanel` usa grid em proporção `70/30` (conteúdo/rodapé) e respeita o slot do container (`height: 100%` com `maxHeight: 70vmin`), mantendo unidades em `em` para escalar com o viewport.

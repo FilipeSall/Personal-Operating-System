@@ -6,7 +6,7 @@ import {
   weatherMetricIcon,
   weatherMetricLabel,
   weatherMetricValue,
-} from '../weather.styles';
+} from '../styles/WeatherMetricsPanel.styles';
 import { WeatherTipPanel } from './WeatherTipPanel';
 
 type WeatherMetricsPanelProps = {

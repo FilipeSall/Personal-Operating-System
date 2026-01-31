@@ -6,7 +6,7 @@ import {
   weatherSection,
   weatherStatusCard,
   weatherTop,
-} from './weather.styles';
+} from './styles/WeatherView.styles';
 import { getWeatherStatusMessage } from './utils/getWeatherStatusMessage';
 import { buildWeatherViewModel } from './utils/weatherViewModel';
 import { WeatherFooter } from './components/WeatherFooter';

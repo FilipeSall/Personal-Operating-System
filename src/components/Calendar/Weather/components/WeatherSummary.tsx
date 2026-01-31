@@ -13,7 +13,7 @@ import {
   weatherTemperatureUnit,
   weatherConditionBadge,
   weatherLocationRow,
-} from '../weather.styles';
+} from '../styles/WeatherSummary.styles';
 
 type WeatherSummaryProps = {
   snapshot: WeatherSnapshot | null;

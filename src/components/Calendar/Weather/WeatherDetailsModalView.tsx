@@ -21,7 +21,7 @@ import {
 import { cx } from '../../../../styled-system/css';
 import type { WeatherRowId } from '../../../types/weather';
 import type { WeatherDerived, WeatherState } from '../hooks/useWeather';
-import { addTodoModalRecipe } from '../styles/add-todo-modal.styles';
+import { weatherDetailsModalRecipe } from '../styles/add-todo-modal.styles';
 import {
   weatherDetailsCard,
   weatherDetailsContent,
@@ -160,7 +160,7 @@ export function WeatherDetailsModalView({
   state,
   derived,
 }: WeatherDetailsModalViewProps) {
-  const modalSlots = addTodoModalRecipe();
+  const modalSlots = weatherDetailsModalRecipe();
   const dateLabel = format(state.selectedDate, "d 'de' MMMM", { locale: ptBR });
 
   /**

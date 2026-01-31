@@ -484,3 +484,86 @@ export const durationButton = cva({
     },
   },
 });
+
+export const weatherDetailsModalRecipe = sva({
+  slots: [
+    'overlay',
+    'content',
+    'header',
+    'title',
+    'closeButton',
+  ],
+  base: {
+    overlay: {
+      position: 'fixed',
+      inset: 0,
+      backgroundColor: 'rgba(0, 0, 0, 0.4)',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      zIndex: 9999,
+      backdropFilter: 'blur(4px)',
+      animation: 'modalFadeIn 0.3s ease-out',
+    },
+    content: {
+      backgroundColor: 'surface.950',
+      borderRadius: '20px',
+      padding: '32px',
+      width: '90%',
+      maxWidth: '90%',
+      maxHeight: '90vh',
+      overflowY: 'auto',
+      display: 'flex',
+      flexDirection: 'column',
+      gap: '20px',
+      boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.15)',
+      border: '1px solid',
+      borderColor: 'surface.700',
+      animation: 'modalSlideIn 0.3s ease-out',
+      scrollbarWidth: 'none',
+      '&::-webkit-scrollbar': {
+        width: '8px',
+      },
+      '&::-webkit-scrollbar-track': {
+        background: 'surface.800',
+        borderRadius: '10px',
+        margin: '4px',
+      },
+      '&::-webkit-scrollbar-thumb': {
+        background: 'surface.600',
+        borderRadius: '10px',
+        '&:hover': {
+          background: 'surface.500',
+        },
+      },
+    },
+    header: {
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+    },
+    title: {
+      fontSize: '18px',
+      fontWeight: '600',
+      color: 'text.primary',
+      letterSpacing: '-0.01em',
+    },
+    closeButton: {
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      width: '32px',
+      height: '32px',
+      backgroundColor: 'surface.900',
+      border: 'none',
+      borderRadius: '8px',
+      color: 'text.dim',
+      cursor: 'pointer',
+      transition: 'all 0.15s ease',
+      _hover: {
+        backgroundColor: 'surface.800',
+        color: 'text.primary',
+      },
+    },
+  },
+});

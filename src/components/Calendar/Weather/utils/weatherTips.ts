@@ -584,11 +584,12 @@ const buildSecondaryTips = (snapshot: WeatherSnapshot, primaryKind: WeatherTipKi
 /**
  * Gera dicas coringa para completar a lista.
  */
-const buildFallbackTips = (snapshot: WeatherSnapshot): WeatherTip[] => {
+const buildFallbackTips = (snapshot: WeatherSnapshot, selectedDate: Date): WeatherTip[] => {
   const tips: WeatherTip[] = [];
   const maxTemp = Math.round(snapshot.temperature.max);
   const minTemp = Math.round(snapshot.temperature.min);
   const feelsLike = Math.round(snapshot.feelsLike);
+  const signals = buildWeatherTipSignals(snapshot, selectedDate);
 
   if (maxTemp >= 30) {
     tips.push(
@@ -621,23 +622,8 @@ const buildFallbackTips = (snapshot: WeatherSnapshot): WeatherTip[] => {
     )
   );
 
-  tips.push(
-    createTip(
-      'fallback-routine',
-      'Rotina',
-      'Confira a previsão antes de sair. Pequenos preparativos evitam contratempos.',
-      'generic'
-    )
-  );
-
-  tips.push(
-    createTip(
-      'fallback-check',
-      'Check rápido',
-      'Verifique as condições climáticas antes de planejar o dia. Prevenir é melhor que remediar.',
-      'generic'
-    )
-  );
+  tips.push(...buildRoutineTips(signals));
+  tips.push(...buildQuickCheckTips(signals));
 
   return tips;
 };
@@ -648,6 +634,462 @@ const buildFallbackTips = (snapshot: WeatherSnapshot): WeatherTip[] => {
 type TipPool = {
   tips: WeatherTip[];
   weight: number;
+};
+
+type WeatherTipSignals = {
+  isWeekend: boolean;
+  isStorm: boolean;
+  isRainy: boolean;
+  isSnowy: boolean;
+  isSunny: boolean;
+  isCloudy: boolean;
+  isHot: boolean;
+  isCold: boolean;
+  isWindy: boolean;
+  popPercent: number;
+  maxTemp: number;
+  minTemp: number;
+  feelsLike: number;
+  tempCurrent: number;
+};
+
+/**
+ * Resume sinais do clima e do dia para variar dicas de rotina.
+ */
+const buildWeatherTipSignals = (
+  snapshot: WeatherSnapshot,
+  selectedDate: Date
+): WeatherTipSignals => {
+  const normalized = normalizeText(snapshot.description);
+  const popPercent = Math.round(snapshot.pop * 100);
+  const maxTemp = Math.round(snapshot.temperature.max);
+  const minTemp = Math.round(snapshot.temperature.min);
+  const tempCurrent = Math.round(snapshot.temperature.current);
+  const feelsLike = Math.round(snapshot.feelsLike);
+  const windKmh = Math.round(snapshot.wind.speed * 3.6);
+  const isStorm =
+    normalized.includes('tempestade') ||
+    normalized.includes('trovoada') ||
+    normalized.includes('storm') ||
+    normalized.includes('thunder');
+  const isSnowy =
+    normalized.includes('neve') ||
+    normalized.includes('granizo') ||
+    normalized.includes('snow') ||
+    snapshot.precipitation.snow > 0;
+  const isRainy =
+    normalized.includes('chuva') ||
+    normalized.includes('garoa') ||
+    normalized.includes('chuvisco') ||
+    normalized.includes('drizzle') ||
+    normalized.includes('rain') ||
+    snapshot.precipitation.rain > 0 ||
+    popPercent >= 50;
+  const isSunny =
+    normalized.includes('ceu limpo') ||
+    normalized.includes('ensolarado') ||
+    normalized.includes('sol') ||
+    normalized.includes('clear') ||
+    (snapshot.clouds <= 35 && snapshot.pop <= 0.2);
+  const isCloudy =
+    normalized.includes('nublado') ||
+    normalized.includes('nuvens') ||
+    normalized.includes('cloud') ||
+    snapshot.clouds >= 70;
+  const isHot = maxTemp >= 30 || feelsLike >= 30;
+  const isCold = minTemp <= 10 || feelsLike <= 12;
+  const isWindy = windKmh >= 25;
+  const isWeekend = [0, 6].includes(selectedDate.getDay());
+
+  return {
+    isWeekend,
+    isStorm,
+    isRainy,
+    isSnowy,
+    isSunny,
+    isCloudy,
+    isHot,
+    isCold,
+    isWindy,
+    popPercent,
+    maxTemp,
+    minTemp,
+    feelsLike,
+    tempCurrent,
+  };
+};
+
+/**
+ * Gera dicas de rotina com base no clima e no dia da semana.
+ */
+const buildRoutineTips = (signals: WeatherTipSignals): WeatherTip[] => {
+  const tips: WeatherTip[] = [];
+
+  if (signals.isWeekend) {
+    if (signals.isSnowy) {
+      tips.push(
+        createTip(
+          'fallback-routine-weekend-snow-1',
+          'Rotina',
+          'Neve no fim de semana: boneco de neve, chocolate quente e fotos épicas. Ande devagar, o chão vira patinação.',
+          'generic'
+        ),
+        createTip(
+          'fallback-routine-weekend-snow-2',
+          'Rotina',
+          'Nevasca leve: passeio curto e seguro, depois lareira/filme. Meias grossas são o verdadeiro luxo.',
+          'generic'
+        )
+      );
+      return tips;
+    }
+
+    if (signals.isStorm) {
+      tips.push(
+        createTip(
+          'fallback-routine-weekend-storm-1',
+          'Rotina',
+          'Tempestade no fds: plano B é sofá, pipoca e jogo/filme. Evita virar pipa humana lá fora.',
+          'generic'
+        ),
+        createTip(
+          'fallback-routine-weekend-storm-2',
+          'Rotina',
+          'Trovoadas: fique em casa, carregue os eletrônicos e curta um game. O céu hoje tá bravo.',
+          'generic'
+        )
+      );
+      return tips;
+    }
+
+    if (signals.isRainy) {
+      tips.push(
+        createTip(
+          'fallback-routine-weekend-rain-1',
+          'Rotina',
+          'Chuva no fim de semana: troca o rolê externo por cinema, museu ou maratona. Academia coberta salva o cardio.',
+          'generic'
+        ),
+        createTip(
+          'fallback-routine-weekend-rain-2',
+          'Rotina',
+          'Dia molhado: livro, café e treino indoor. Guarda-chuva como acessório fashion involuntário.',
+          'generic'
+        )
+      );
+      return tips;
+    }
+
+    if (signals.isSunny && signals.isHot) {
+      tips.push(
+        createTip(
+          'fallback-routine-weekend-sun-hot-1',
+          'Rotina',
+          'Sol e calor no fds: de manhã, academia cedo; à tarde, clube/piscina. Hidrata e vai.',
+          'generic'
+        ),
+        createTip(
+          'fallback-routine-weekend-sun-hot-2',
+          'Rotina',
+          'Solzão no fim de semana: manhã de treino leve, tarde de clube ou sombra com água de coco.',
+          'generic'
+        )
+      );
+      return tips;
+    }
+
+    if (signals.isSunny) {
+      tips.push(
+        createTip(
+          'fallback-routine-weekend-sun-1',
+          'Rotina',
+          'Solzinho de fim de semana: manhã de parque ou bike, tarde de café na rua. Rolê sem pressa.',
+          'generic'
+        ),
+        createTip(
+          'fallback-routine-weekend-sun-2',
+          'Rotina',
+          'Dia aberto: caminhada cedo e depois brunch. A tarde pede passeio tranquilo.',
+          'generic'
+        )
+      );
+      return tips;
+    }
+
+    if (signals.isCloudy) {
+      tips.push(
+        createTip(
+          'fallback-routine-weekend-cloudy-1',
+          'Rotina',
+          'Nublado de boas: caminhada sem sol na testa, feira ou livraria. Clima de passear sem derreter.',
+          'generic'
+        ),
+        createTip(
+          'fallback-routine-weekend-cloudy-2',
+          'Rotina',
+          'Céu fechado: museu, café ou cinema. Sem sol, sem drama.',
+          'generic'
+        )
+      );
+      return tips;
+    }
+
+    tips.push(
+      createTip(
+        'fallback-routine-weekend-generic-1',
+        'Rotina',
+        'Fim de semana livre: agenda leve, pausa sem culpa e um rolê que não começa com “só vou ali”.',
+        'generic'
+      )
+    );
+    return tips;
+  }
+
+  if (signals.isStorm) {
+    tips.push(
+      createTip(
+        'fallback-routine-weekday-storm-1',
+        'Rotina',
+        'Tempestade em dia útil: se puder, home office. Se sair, saia cedo e evite áreas alagadas.',
+        'generic'
+      ),
+      createTip(
+        'fallback-routine-weekday-storm-2',
+        'Rotina',
+        'Trovoadas hoje: horário flexível ajuda. Tenha capa e carregador (o clima adora desligar tudo).',
+        'generic'
+      )
+    );
+    return tips;
+  }
+
+  if (signals.isSnowy) {
+    tips.push(
+      createTip(
+        'fallback-routine-weekday-snow-1',
+        'Rotina',
+        'Neve no expediente: saia com tempo extra, use sola aderente e leve luvas. O chão tá no modo escorregadio.',
+        'generic'
+      )
+    );
+    return tips;
+  }
+
+  if (signals.isRainy) {
+    tips.push(
+      createTip(
+        'fallback-routine-weekday-rain-1',
+        'Rotina',
+        'Chuva no expediente: planeje deslocamento e use calçado que não chora com poça.',
+        'generic'
+      ),
+      createTip(
+        'fallback-routine-weekday-rain-2',
+        'Rotina',
+        'Dia chuvoso: guarda-chuva na mochila e +10 min no trajeto. Seu tênis agradece.',
+        'generic'
+      )
+    );
+    return tips;
+  }
+
+  if (signals.isHot) {
+    tips.push(
+      createTip(
+        'fallback-routine-weekday-hot-1',
+        'Rotina',
+        `Calorão no trabalho: roupas leves e água por perto. ${signals.maxTemp}°C não é brincadeira.`,
+        'generic'
+      ),
+      createTip(
+        'fallback-routine-weekday-hot-2',
+        'Rotina',
+        'Dia quente: programe pausas curtas pra não virar torrada. Ar-condicionado é aliado.',
+        'generic'
+      )
+    );
+    return tips;
+  }
+
+  if (signals.isCold) {
+    tips.push(
+      createTip(
+        'fallback-routine-weekday-cold-1',
+        'Rotina',
+        `Frio no ar: camadas e cachecol. Mínima de ${signals.minTemp}°C pede respeito.`,
+        'generic'
+      ),
+      createTip(
+        'fallback-routine-weekday-cold-2',
+        'Rotina',
+        'Dia frio: café quentinho e mãos protegidas. Produtividade gosta de calor humano.',
+        'generic'
+      )
+    );
+    return tips;
+  }
+
+  if (signals.isSunny) {
+    tips.push(
+      createTip(
+        'fallback-routine-weekday-sun-1',
+        'Rotina',
+        'Solzinho: aproveite o almoço ao ar livre. Vitamina D no intervalo é upgrade.',
+        'generic'
+      )
+    );
+    return tips;
+  }
+
+  if (signals.isCloudy) {
+    tips.push(
+      createTip(
+        'fallback-routine-weekday-cloudy-1',
+        'Rotina',
+        'Nublado: tela sem reflexo e clima estável. Bom dia pra foco e café.',
+        'generic'
+      )
+    );
+    return tips;
+  }
+
+  tips.push(
+    createTip(
+      'fallback-routine-weekday-generic-1',
+      'Rotina',
+      'Rotina padrão: previsão checada, mochila ok, vida andando. Bônus de organização desbloqueado.',
+      'generic'
+    )
+  );
+  return tips;
+};
+
+/**
+ * Gera dicas curtas de check rápido baseadas no clima.
+ */
+const buildQuickCheckTips = (signals: WeatherTipSignals): WeatherTip[] => {
+  const tips: WeatherTip[] = [];
+
+  if (signals.isStorm) {
+    tips.push(
+      createTip(
+        'fallback-check-storm-1',
+        'Check rápido',
+        'Capa, celular carregado e longe de janela. Hoje o céu tá elétrico.',
+        'generic'
+      ),
+      createTip(
+        'fallback-check-storm-2',
+        'Check rápido',
+        'Tempestade chegando: guarda-chuva firme e evita se abrigar debaixo de árvore. Árvore não é para-raios.',
+        'generic'
+      )
+    );
+    return tips;
+  }
+
+  if (signals.isSnowy) {
+    tips.push(
+      createTip(
+        'fallback-check-snow-1',
+        'Check rápido',
+        'Luva, gorro e sola aderente. O chão escorrega mais que promessa.',
+        'generic'
+      ),
+      createTip(
+        'fallback-check-snow-2',
+        'Check rápido',
+        'Neve no radar: casaco grosso e passo curto. Andar rápido hoje é esporte radical.',
+        'generic'
+      )
+    );
+    return tips;
+  }
+
+  if (signals.isRainy) {
+    tips.push(
+      createTip(
+        'fallback-check-rain-1',
+        'Check rápido',
+        'Guarda-chuva + meia extra. Poça adora tênis limpo.',
+        'generic'
+      ),
+      createTip(
+        'fallback-check-rain-2',
+        'Check rápido',
+        `Chance de chuva ${signals.popPercent}%. Capricha na capa, o céu tá de brincadeira.`,
+        'generic'
+      )
+    );
+  }
+
+  if (signals.isHot) {
+    tips.push(
+      createTip(
+        'fallback-check-hot-1',
+        'Check rápido',
+        'Água, protetor solar e roupa leve. Derreter não é meta.',
+        'generic'
+      )
+    );
+  }
+
+  if (signals.isCold) {
+    tips.push(
+      createTip(
+        'fallback-check-cold-1',
+        'Check rápido',
+        'Casaco, cachecol e mãos quentes. Frio gosta de dedos distraídos.',
+        'generic'
+      )
+    );
+  }
+
+  if (signals.isWindy) {
+    tips.push(
+      createTip(
+        'fallback-check-wind-1',
+        'Check rápido',
+        'Prende o cabelo e segura objetos leves. O vento tá querendo ser DJ.',
+        'generic'
+      )
+    );
+  }
+
+  if (signals.isSunny && !signals.isHot) {
+    tips.push(
+      createTip(
+        'fallback-check-sun-1',
+        'Check rápido',
+        'Óculos escuros e protetor. Sol tá no modo holofote.',
+        'generic'
+      )
+    );
+  }
+
+  if (signals.isCloudy) {
+    tips.push(
+      createTip(
+        'fallback-check-cloudy-1',
+        'Check rápido',
+        'Se for trabalhar em casa, liga uma luz extra. Nuvem economiza sua conta de sol, mas cobra foco.',
+        'generic'
+      )
+    );
+  }
+
+  if (tips.length === 0) {
+    tips.push(
+      createTip(
+        'fallback-check-generic-1',
+        'Check rápido',
+        `Sensação de ${signals.feelsLike}°C. Olhou a previsão? Pronto, já ganhou bônus de organização.`,
+        'generic'
+      )
+    );
+  }
+
+  return tips;
 };
 
 /**
@@ -744,8 +1186,9 @@ export const buildWeatherTips = ({ snapshot, selectedDate }: WeatherTipsInput): 
   secondaryPool.push(...randomizedSecondary);
 
   // 6. Dicas coringa
-  const fallbackTips = buildFallbackTips(snapshot);
-  fallbackPool.push(...fallbackTips);
+  const fallbackTips = buildFallbackTips(snapshot, selectedDate);
+  const randomizedFallback = shuffleTips(fallbackTips, seed + 7);
+  fallbackPool.push(...randomizedFallback);
 
   // Montar pools com pesos
   const weightedPools: TipPool[] = [

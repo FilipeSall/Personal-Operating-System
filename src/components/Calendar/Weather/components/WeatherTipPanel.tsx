@@ -6,7 +6,7 @@ import {
   weatherTipDot,
   weatherTipLabel,
   weatherTipText,
-} from '../styles/WeatherTipPanel.styles';
+} from '../CSS/WeatherTipPanel.styles';
 
 type WeatherTipPanelProps = {
   recommendation: string;

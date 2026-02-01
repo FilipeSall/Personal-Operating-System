@@ -6,7 +6,7 @@ import {
   weatherRefreshButton,
   weatherUpdatedLabel,
   weatherDetailsButton,
-} from '../styles/WeatherFooter.styles';
+} from '../CSS/WeatherFooter.styles';
 
 type WeatherFooterProps = {
   actions: WeatherActions;

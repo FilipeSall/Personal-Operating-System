@@ -49,7 +49,7 @@ import {
   weatherDetailsHeader,
   weatherDetailsMeta,
   weatherDetailsSubtitle,
-} from './weather-details-modal.styles';
+} from './CSS/weather-details-modal.styles';
 
 const WEATHER_ICONS: Record<WeatherRowId, ReactNode> = {
   summary: <MdWbCloudy size={32} />,

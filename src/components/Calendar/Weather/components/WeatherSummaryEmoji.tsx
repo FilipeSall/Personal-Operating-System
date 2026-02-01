@@ -1,7 +1,7 @@
 import Lottie from 'lottie-react';
 import type { WeatherSnapshot } from '../../../../types/weather';
 import { resolveWeatherEmoji } from '../../utils/weatherEmoji';
-import { weatherEmoji, weatherEmojiWrapper } from '../styles/WeatherSummary.styles';
+import { weatherEmoji, weatherEmojiWrapper } from '../CSS/WeatherSummary.styles';
 
 type WeatherSummaryEmojiProps = {
   snapshot: WeatherSnapshot | null;

@@ -1,13 +1,7 @@
-import type { ReactNode } from 'react';
 import { MdAir, MdOpacity, MdShield } from 'react-icons/md';
-import {
-  weatherMetricsGrid,
-  weatherMetricsTipWrapper,
-  weatherMetricCard,
-  weatherMetricIcon,
-  weatherMetricLabel,
-  weatherMetricValue,
-} from '../styles/WeatherMetricsPanel.styles';
+import { weatherMetricsTipWrapper } from '../CSS/WeatherMetricsPanel.styles';
+import type { WeatherMetricItem } from './WeatherMetricCard';
+import { WeatherMetricsGrid } from './WeatherMetricsGrid';
 import { WeatherTipPanel } from './WeatherTipPanel';
 
 type WeatherMetricsPanelProps = {
@@ -17,44 +11,16 @@ type WeatherMetricsPanelProps = {
   recommendation: string;
 };
 
-type WeatherMetricTone = 'humidity' | 'wind' | 'uv';
-
-type WeatherMetricItem = {
-  tone: WeatherMetricTone;
-  label: string;
-  value: string;
-  icon: ReactNode;
-};
-
-type WeatherMetricCardProps = {
-  tone: WeatherMetricTone;
-  label: string;
-  value: string;
-  icon: ReactNode;
-};
-
 /**
- * Card unitário para exibir uma métrica de clima com ícone e valor.
+ * Painel de metricas e recomendacao do clima.
  */
-function WeatherMetricCardView({ tone, label, value, icon }: WeatherMetricCardProps) {
-  return (
-    <div className={weatherMetricCard({ tone })}>
-      <div className={weatherMetricIcon({ tone })}>{icon}</div>
-      <span className={weatherMetricLabel}>{label}</span>
-      <span className={weatherMetricValue}>{value}</span>
-    </div>
-  );
-}
-
-/**
- * Monta a lista de métricas do painel com base nos valores atuais.
- */
-function buildWeatherMetricItems({
+export function WeatherMetricsPanel({
   humidityValue,
   windValue,
   uvValue,
-}: Pick<WeatherMetricsPanelProps, 'humidityValue' | 'windValue' | 'uvValue'>): WeatherMetricItem[] {
-  return [
+  recommendation,
+}: WeatherMetricsPanelProps) {
+  const metricItems: WeatherMetricItem[] = [
     {
       tone: 'humidity',
       label: 'Umidade',
@@ -74,32 +40,10 @@ function buildWeatherMetricItems({
       icon: <MdShield size={18} />,
     },
   ];
-}
-
-/**
- * Painel de metricas e recomendacao do clima.
- */
-export function WeatherMetricsPanel({
-  humidityValue,
-  windValue,
-  uvValue,
-  recommendation,
-}: WeatherMetricsPanelProps) {
-  const metricItems = buildWeatherMetricItems({ humidityValue, windValue, uvValue });
 
   return (
     <div className={weatherMetricsTipWrapper}>
-      <div className={weatherMetricsGrid}>
-        {metricItems.map((metric) => (
-          <WeatherMetricCardView
-            key={metric.tone}
-            tone={metric.tone}
-            label={metric.label}
-            value={metric.value}
-            icon={metric.icon}
-          />
-        ))}
-      </div>
+      <WeatherMetricsGrid items={metricItems} />
       <WeatherTipPanel recommendation={recommendation} />
     </div>
   );

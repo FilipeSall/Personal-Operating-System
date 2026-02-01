@@ -1,5 +1,5 @@
 import type { WeatherSnapshot } from '../../../../types/weather';
-import { weatherSummary } from '../styles/WeatherSummary.styles';
+import { weatherSummary } from '../CSS/WeatherSummary.styles';
 import { WeatherSummaryEmoji } from './WeatherSummaryEmoji';
 import { WeatherSummaryInfo } from './WeatherSummaryInfo';
 

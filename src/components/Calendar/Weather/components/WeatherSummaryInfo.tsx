@@ -7,7 +7,7 @@ import {
   weatherTemperatureUnit,
   weatherConditionBadge,
   weatherLocationRow,
-} from '../styles/WeatherSummary.styles';
+} from '../CSS/WeatherSummary.styles';
 
 type WeatherSummaryInfoProps = {
   dateLabel: string;

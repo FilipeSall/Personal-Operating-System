@@ -6,13 +6,12 @@ import {
   weatherSection,
   weatherStatusCard,
   weatherTop,
-} from './styles/WeatherView.styles';
+} from './CSS/WeatherView.styles';
 import { getWeatherStatusMessage } from './utils/getWeatherStatusMessage';
 import { buildWeatherViewModel } from './utils/weatherViewModel';
 import { WeatherFooter } from './components/WeatherFooter';
 import { WeatherMetricsPanel } from './components/WeatherMetricsPanel';
 import { WeatherSummary } from './components/WeatherSummary';
-
 
 type WeatherViewProps = {
   state: WeatherState;

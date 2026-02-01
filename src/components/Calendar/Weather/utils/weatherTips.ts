@@ -290,7 +290,7 @@ const buildPrimaryTip = (snapshot: WeatherSnapshot): WeatherTip => {
     return createTip(
       'primary-clouds',
       'Dica do dia',
-      `Com ${descriptionText} e ${clouds}% de nuvens, luz natural mais suave e temperatura estável.`,
+      `Com ${descriptionText} e ${clouds}% de nuvens, a luz fica bem difusa e o sol tira o dia de folga. Ótimo para evitar clarão.`,
       'clouds'
     );
   }
@@ -545,7 +545,7 @@ const buildSecondaryTips = (snapshot: WeatherSnapshot, primaryKind: WeatherTipKi
       createTip(
         'precipitation',
         'Chuva acumulada',
-        `Acumulado de ${precipitationTotal.toFixed(1)} mm. Evite áreas com risco de alagamento.`,
+        `Acumulado de ${precipitationTotal.toFixed(1)} mm (chuva de ${precipitationTotal.toFixed(1)} L por m²). Evite áreas com risco de alagamento.`,
         'precipitation'
       ),
       usedKinds
@@ -558,7 +558,7 @@ const buildSecondaryTips = (snapshot: WeatherSnapshot, primaryKind: WeatherTipKi
       createTip(
         'clouds',
         'Céu fechado',
-        `Nuvens em ${clouds}%. Luminosidade reduzida, considere iluminação adicional se necessário.`,
+        `Nuvens em ${clouds}%. A luz fica mais suave, quase um filtro natural. Se precisar de foco, liga uma luz extra.`,
         'clouds'
       ),
       usedKinds
@@ -571,7 +571,7 @@ const buildSecondaryTips = (snapshot: WeatherSnapshot, primaryKind: WeatherTipKi
       createTip(
         'rain-chance',
         'Chance de chuva',
-        `Chance de chuva ${popPercent}%. Leve guarda-chuva como precaução.`,
+        `Chance de chuva ${popPercent}%. Leve guarda-chuva, ele adora um passeio.`,
         'rain'
       ),
       usedKinds

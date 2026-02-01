@@ -54,8 +54,10 @@ export const weatherUpdatedLabel = css({
 export const weatherDetailsButton = css({
   display: 'inline-flex',
   alignItems: 'center',
+  justifyContent: 'center',
   gap: '0.2em',
-  padding: '0.2em 0.45em',
+  padding: '0.3em 0.75em',
+  minWidth: '8.5em',
   ...weatherPill,
   border: '0.125em solid',
   borderColor: 'var(--weather-accent, #D64550)',
@@ -63,6 +65,8 @@ export const weatherDetailsButton = css({
   color: 'var(--weather-accent, #D64550)',
   cursor: 'pointer',
   transition: 'all 0.2s ease',
+  textAlign: 'center',
+  fontSize: '0.7em',
   _hover: {
     backgroundColor: 'var(--weather-accent, #D64550)',
     color: 'white',

@@ -200,6 +200,8 @@ const buildPrimaryTip = (snapshot: WeatherSnapshot): WeatherTip => {
   const clouds = Math.round(snapshot.clouds);
   const humidity = Math.round(snapshot.humidity);
   const windKmh = Math.round(snapshot.wind.speed * 3.6);
+  const daylightSignals = buildDaylightSignals(snapshot, new Date());
+  const isNight = daylightSignals.isNight;
 
   if (
     normalized.includes('tempestade') ||
@@ -278,6 +280,14 @@ const buildPrimaryTip = (snapshot: WeatherSnapshot): WeatherTip => {
     normalized.includes('sol') ||
     normalized.includes('clear')
   ) {
+    if (isNight) {
+      return createTip(
+        'primary-sun-night',
+        'Dica do dia',
+        `Com ${descriptionText}, a noite tende a ficar limpa. Boa chance de ver estrelas (e fugir do calor do dia).`,
+        'sun'
+      );
+    }
     return createTip(
       'primary-sun',
       'Dica do dia',
@@ -287,10 +297,36 @@ const buildPrimaryTip = (snapshot: WeatherSnapshot): WeatherTip => {
   }
 
   if (normalized.includes('nublado') || normalized.includes('nuvens') || normalized.includes('cloud')) {
+    const cloudLabel =
+      clouds <= 40
+        ? 'sol aparece com frequência'
+        : clouds <= 70
+          ? 'luz alterna entre sol e sombra'
+          : 'luz bem difusa e pouca abertura de sol';
+    const cloudPunch =
+      clouds <= 40
+        ? 'Ótimo para atividades externas sem torrar.'
+        : clouds <= 70
+          ? 'Bom para passeios sem o sol no talo.'
+          : 'Perfeito para evitar clarão direto.';
+    const cloudNightLabel =
+      clouds <= 40
+        ? 'a noite deve ficar mais aberta'
+        : clouds <= 70
+          ? 'a noite fica com nuvens alternando'
+          : 'a noite tende a ficar bem fechada';
+    const cloudNightPunch =
+      clouds <= 40
+        ? 'Boa chance de céu estrelado.'
+        : clouds <= 70
+          ? 'Clima bom pra um passeio leve.'
+          : 'Noite ótima pra luz indireta e descanso.';
     return createTip(
       'primary-clouds',
       'Dica do dia',
-      `Com ${descriptionText} e ${clouds}% de nuvens, a luz fica bem difusa e o sol tira o dia de folga. Ótimo para evitar clarão.`,
+      isNight
+        ? `Com ${descriptionText} e ${clouds}% de nuvens, ${cloudNightLabel}. ${cloudNightPunch}`
+        : `Com ${descriptionText} e ${clouds}% de nuvens, ${cloudLabel}. ${cloudPunch}`,
       'clouds'
     );
   }
@@ -463,7 +499,11 @@ const pushUniqueTip = (tips: WeatherTip[], tip: WeatherTip, usedKinds: Set<Weath
 /**
  * Monta uma lista de dicas secundarias a partir dos dados do dia.
  */
-const buildSecondaryTips = (snapshot: WeatherSnapshot, primaryKind: WeatherTipKind): WeatherTip[] => {
+const buildSecondaryTips = (
+  snapshot: WeatherSnapshot,
+  primaryKind: WeatherTipKind,
+  selectedDate: Date
+): WeatherTip[] => {
   const tips: WeatherTip[] = [];
   const usedKinds = new Set<WeatherTipKind>([primaryKind]);
   const windKmh = Math.round(snapshot.wind.speed * 3.6);
@@ -473,6 +513,33 @@ const buildSecondaryTips = (snapshot: WeatherSnapshot, primaryKind: WeatherTipKi
   const precipitationTotal = snapshot.precipitation.rain + snapshot.precipitation.snow;
   const clouds = Math.round(snapshot.clouds);
   const popPercent = Math.round(snapshot.pop * 100);
+  const signals = buildWeatherTipSignals(snapshot, selectedDate);
+
+  if (signals.isNearSunrise) {
+    pushUniqueTip(
+      tips,
+      createTip(
+        'sunrise-window',
+        'Amanhecer',
+        'Aproveite o nascer do sol: luz suave e clima bom pra uma caminhada leve.',
+        'sun'
+      ),
+      usedKinds
+    );
+  }
+
+  if (signals.isNearSunset) {
+    pushUniqueTip(
+      tips,
+      createTip(
+        'sunset-window',
+        'Pôr do sol',
+        'Pôr do sol por perto. Hora perfeita pra fotos e um respiro no fim do dia.',
+        'sun'
+      ),
+      usedKinds
+    );
+  }
 
   if (uvIndex >= 6) {
     pushUniqueTip(
@@ -553,12 +620,15 @@ const buildSecondaryTips = (snapshot: WeatherSnapshot, primaryKind: WeatherTipKi
   }
 
   if (clouds >= 70) {
+    const cloudMessage = signals.isNight
+      ? `Noite com ${clouds}% de nuvens. Se for sair, luz extra ajuda na visibilidade.`
+      : `Nuvens em ${clouds}%. A luz fica mais suave, quase um filtro natural. Se precisar de foco, liga uma luz extra.`;
     pushUniqueTip(
       tips,
       createTip(
         'clouds',
         'Céu fechado',
-        `Nuvens em ${clouds}%. A luz fica mais suave, quase um filtro natural. Se precisar de foco, liga uma luz extra.`,
+        cloudMessage,
         'clouds'
       ),
       usedKinds
@@ -642,15 +712,59 @@ type WeatherTipSignals = {
   isRainy: boolean;
   isSnowy: boolean;
   isSunny: boolean;
-  isCloudy: boolean;
+  isOvercast: boolean;
+  isMostlyCloudy: boolean;
+  isPartlyCloudy: boolean;
   isHot: boolean;
   isCold: boolean;
   isWindy: boolean;
+  isNight: boolean;
+  isMorning: boolean;
+  isAfternoon: boolean;
+  isEvening: boolean;
+  isNearSunrise: boolean;
+  isNearSunset: boolean;
   popPercent: number;
   maxTemp: number;
   minTemp: number;
   feelsLike: number;
   tempCurrent: number;
+  cloudCover: number;
+};
+
+type DaylightSignals = {
+  isNight: boolean;
+  isMorning: boolean;
+  isAfternoon: boolean;
+  isEvening: boolean;
+  isNearSunrise: boolean;
+  isNearSunset: boolean;
+};
+
+const SUN_WINDOW_MINUTES = 45;
+
+/**
+ * Gera sinais do período do dia e proximidade de nascer/pôr do sol.
+ */
+const buildDaylightSignals = (snapshot: WeatherSnapshot, now: Date): DaylightSignals => {
+  const sunrise = new Date(snapshot.sunrise * 1000);
+  const sunset = new Date(snapshot.sunset * 1000);
+  const isNight = now < sunrise || now > sunset;
+  const hour = now.getHours();
+  const isMorning = hour >= 5 && hour < 12;
+  const isAfternoon = hour >= 12 && hour < 18;
+  const isEvening = hour >= 18 || hour < 5;
+  const minutesToSunrise = Math.abs(now.getTime() - sunrise.getTime()) / (60 * 1000);
+  const minutesToSunset = Math.abs(now.getTime() - sunset.getTime()) / (60 * 1000);
+
+  return {
+    isNight,
+    isMorning,
+    isAfternoon,
+    isEvening,
+    isNearSunrise: minutesToSunrise <= SUN_WINDOW_MINUTES,
+    isNearSunset: minutesToSunset <= SUN_WINDOW_MINUTES,
+  };
 };
 
 /**
@@ -660,6 +774,8 @@ const buildWeatherTipSignals = (
   snapshot: WeatherSnapshot,
   selectedDate: Date
 ): WeatherTipSignals => {
+  const now = new Date();
+  const daylightSignals = buildDaylightSignals(snapshot, now);
   const normalized = normalizeText(snapshot.description);
   const popPercent = Math.round(snapshot.pop * 100);
   const maxTemp = Math.round(snapshot.temperature.max);
@@ -685,17 +801,26 @@ const buildWeatherTipSignals = (
     normalized.includes('rain') ||
     snapshot.precipitation.rain > 0 ||
     popPercent >= 50;
+  const cloudCover = Math.round(snapshot.clouds);
+  const isOvercast =
+    cloudCover >= 80 ||
+    normalized.includes('encoberto') ||
+    normalized.includes('overcast') ||
+    normalized.includes('ceu fechado');
+  const isMostlyCloudy = cloudCover >= 60 && cloudCover < 80;
+  const isPartlyCloudy =
+    (cloudCover >= 25 && cloudCover < 60) ||
+    normalized.includes('nuvens dispersas') ||
+    normalized.includes('poucas nuvens') ||
+    normalized.includes('scattered') ||
+    normalized.includes('few clouds');
   const isSunny =
-    normalized.includes('ceu limpo') ||
-    normalized.includes('ensolarado') ||
-    normalized.includes('sol') ||
-    normalized.includes('clear') ||
-    (snapshot.clouds <= 35 && snapshot.pop <= 0.2);
-  const isCloudy =
-    normalized.includes('nublado') ||
-    normalized.includes('nuvens') ||
-    normalized.includes('cloud') ||
-    snapshot.clouds >= 70;
+    (normalized.includes('ceu limpo') ||
+      normalized.includes('ensolarado') ||
+      normalized.includes('clear') ||
+      (normalized.includes('sol') && cloudCover <= 50)) &&
+    cloudCover <= 40 &&
+    snapshot.pop <= 0.2;
   const isHot = maxTemp >= 30 || feelsLike >= 30;
   const isCold = minTemp <= 10 || feelsLike <= 12;
   const isWindy = windKmh >= 25;
@@ -707,15 +832,24 @@ const buildWeatherTipSignals = (
     isRainy,
     isSnowy,
     isSunny,
-    isCloudy,
+    isOvercast,
+    isMostlyCloudy,
+    isPartlyCloudy,
     isHot,
     isCold,
     isWindy,
+    isNight: daylightSignals.isNight,
+    isMorning: daylightSignals.isMorning,
+    isAfternoon: daylightSignals.isAfternoon,
+    isEvening: daylightSignals.isEvening,
+    isNearSunrise: daylightSignals.isNearSunrise && !isRainy && !isSnowy && !isStorm,
+    isNearSunset: daylightSignals.isNearSunset && !isRainy && !isSnowy && !isStorm,
     popPercent,
     maxTemp,
     minTemp,
     feelsLike,
     tempCurrent,
+    cloudCover,
   };
 };
 
@@ -726,6 +860,18 @@ const buildRoutineTips = (signals: WeatherTipSignals): WeatherTip[] => {
   const tips: WeatherTip[] = [];
 
   if (signals.isWeekend) {
+    if (signals.isNight && (signals.isSunny || signals.isPartlyCloudy || signals.isMostlyCloudy)) {
+      tips.push(
+        createTip(
+          'fallback-routine-weekend-night-1',
+          'Rotina',
+          'Noite de tempo estável: passeio leve, comida na rua ou filme ao ar livre. Sem sol, sem pressa.',
+          'generic'
+        )
+      );
+      return tips;
+    }
+
     if (signals.isSnowy) {
       tips.push(
         createTip(
@@ -781,11 +927,14 @@ const buildRoutineTips = (signals: WeatherTipSignals): WeatherTip[] => {
     }
 
     if (signals.isSunny && signals.isHot) {
+      const hotWeekendCopy = signals.isAfternoon
+        ? 'Sol e calor no fds: tarde pede clube/piscina e água gelada. Hidrata e vai.'
+        : 'Sol e calor no fds: de manhã, academia cedo; à tarde, clube/piscina. Hidrata e vai.';
       tips.push(
         createTip(
           'fallback-routine-weekend-sun-hot-1',
           'Rotina',
-          'Sol e calor no fds: de manhã, academia cedo; à tarde, clube/piscina. Hidrata e vai.',
+          hotWeekendCopy,
           'generic'
         ),
         createTip(
@@ -799,11 +948,14 @@ const buildRoutineTips = (signals: WeatherTipSignals): WeatherTip[] => {
     }
 
     if (signals.isSunny) {
+      const sunnyWeekendCopy = signals.isAfternoon
+        ? 'Solzinho no fds: tarde de café na rua e passeio leve. Rolê sem pressa.'
+        : 'Solzinho de fim de semana: manhã de parque ou bike, tarde de café na rua. Rolê sem pressa.';
       tips.push(
         createTip(
           'fallback-routine-weekend-sun-1',
           'Rotina',
-          'Solzinho de fim de semana: manhã de parque ou bike, tarde de café na rua. Rolê sem pressa.',
+          sunnyWeekendCopy,
           'generic'
         ),
         createTip(
@@ -816,18 +968,46 @@ const buildRoutineTips = (signals: WeatherTipSignals): WeatherTip[] => {
       return tips;
     }
 
-    if (signals.isCloudy) {
+    if (signals.isOvercast) {
       tips.push(
         createTip(
-          'fallback-routine-weekend-cloudy-1',
+          'fallback-routine-weekend-overcast-1',
           'Rotina',
-          'Nublado de boas: caminhada sem sol na testa, feira ou livraria. Clima de passear sem derreter.',
+          'Céu fechado: museu, café ou cinema. Sem sol, sem drama.',
           'generic'
         ),
         createTip(
-          'fallback-routine-weekend-cloudy-2',
+          'fallback-routine-weekend-overcast-2',
           'Rotina',
-          'Céu fechado: museu, café ou cinema. Sem sol, sem drama.',
+          'Dia cinza total: rolê indoor e manta no sofá. O sol hoje entrou de folga.',
+          'generic'
+        )
+      );
+      return tips;
+    }
+
+    if (signals.isMostlyCloudy) {
+      tips.push(
+        createTip(
+          'fallback-routine-weekend-mostly-cloudy-1',
+          'Rotina',
+          signals.isAfternoon
+            ? 'Nublado com brechas: tarde tranquila pra café na rua. O sol aparece, mas sem exagero.'
+            : 'Nublado com brechas: passeio curto e café na rua. O sol aparece, mas sem exagero.',
+          'generic'
+        )
+      );
+      return tips;
+    }
+
+    if (signals.isPartlyCloudy) {
+      tips.push(
+        createTip(
+          'fallback-routine-weekend-partly-cloudy-1',
+          'Rotina',
+          signals.isAfternoon
+            ? 'Sol e nuvens alternando: tarde ótima pra feira ou caminhada. Sem torrar, sem sumir.'
+            : 'Sol e nuvens alternando: ótimo pra caminhada ou feira. Sem torrar, sem sumir.',
           'generic'
         )
       );
@@ -930,23 +1110,56 @@ const buildRoutineTips = (signals: WeatherTipSignals): WeatherTip[] => {
   }
 
   if (signals.isSunny) {
+    const sunnyWeekdayCopy = signals.isNight
+      ? 'Noite limpa: caminhada leve ou pausa na varanda. O sol já foi, mas o clima ajuda.'
+      : signals.isAfternoon
+        ? 'Tarde ensolarada: aproveite uma pausa rápida ao ar livre.'
+        : 'Solzinho: aproveite o almoço ao ar livre. Vitamina D no intervalo é upgrade.';
     tips.push(
       createTip(
         'fallback-routine-weekday-sun-1',
         'Rotina',
-        'Solzinho: aproveite o almoço ao ar livre. Vitamina D no intervalo é upgrade.',
+        sunnyWeekdayCopy,
         'generic'
       )
     );
     return tips;
   }
 
-  if (signals.isCloudy) {
+  if (signals.isOvercast) {
     tips.push(
       createTip(
-        'fallback-routine-weekday-cloudy-1',
+        'fallback-routine-weekday-overcast-1',
         'Rotina',
-        'Nublado: tela sem reflexo e clima estável. Bom dia pra foco e café.',
+        'Céu fechado: luz baixa e clima constante. Bom dia pra foco e café.',
+        'generic'
+      )
+    );
+    return tips;
+  }
+
+  if (signals.isMostlyCloudy) {
+    tips.push(
+      createTip(
+        'fallback-routine-weekday-mostly-cloudy-1',
+        'Rotina',
+        signals.isNight
+          ? 'Noite com nuvens: clima estável pra foco e descanso. Sem clarão, sem stress.'
+          : 'Nublado com brechas: dá pra sair sem sol estourado. Café e produtividade em paz.',
+        'generic'
+      )
+    );
+    return tips;
+  }
+
+  if (signals.isPartlyCloudy) {
+    tips.push(
+      createTip(
+        'fallback-routine-weekday-partly-cloudy-1',
+        'Rotina',
+        signals.isNight
+          ? 'Noite com nuvens alternando: passeio rápido e seguro. Luz da rua resolve.'
+          : 'Sol aparecendo de vez em quando: ótimo pra uma pausa rápida ao ar livre.',
         'generic'
       )
     );
@@ -1061,18 +1274,33 @@ const buildQuickCheckTips = (signals: WeatherTipSignals): WeatherTip[] => {
       createTip(
         'fallback-check-sun-1',
         'Check rápido',
-        'Óculos escuros e protetor. Sol tá no modo holofote.',
+        signals.isNight
+          ? 'Noite limpa: se for sair, casaco leve resolve. Céu aberto ajuda na sensação térmica.'
+          : 'Óculos escuros e protetor. Sol tá no modo holofote.',
         'generic'
       )
     );
   }
 
-  if (signals.isCloudy) {
+  if (signals.isOvercast) {
     tips.push(
       createTip(
-        'fallback-check-cloudy-1',
+        'fallback-check-overcast-1',
         'Check rápido',
-        'Se for trabalhar em casa, liga uma luz extra. Nuvem economiza sua conta de sol, mas cobra foco.',
+        'Céu bem fechado: liga uma luz extra. O sol não vem, mas o foco precisa.',
+        'generic'
+      )
+    );
+  }
+
+  if (signals.isPartlyCloudy || signals.isMostlyCloudy) {
+    tips.push(
+      createTip(
+        'fallback-check-partly-cloudy-1',
+        'Check rápido',
+        signals.isNight
+          ? 'Noite com nuvens alternando: luz extra ajuda. Sol não dá as caras, mas a segurança sim.'
+          : 'Nuvens alternando: óculos escuros opcional. O sol aparece sem aviso prévio.',
         'generic'
       )
     );
@@ -1181,7 +1409,7 @@ export const buildWeatherTips = ({ snapshot, selectedDate }: WeatherTipsInput): 
   if (workoutTip) positivePool.push(workoutTip);
 
   // 5. Dicas secundárias (existentes)
-  const secondaryTips = buildSecondaryTips(snapshot, primaryTip.kind);
+  const secondaryTips = buildSecondaryTips(snapshot, primaryTip.kind, selectedDate);
   const randomizedSecondary = shuffleTips(secondaryTips, seed);
   secondaryPool.push(...randomizedSecondary);
 

@@ -188,7 +188,7 @@ const isDeceptivelyCold = (temp: number, clouds: number, windKmh: number): boole
 /**
  * Cria a dica principal usando a descricao e cruzando dados do dia.
  */
-const buildPrimaryTip = (snapshot: WeatherSnapshot): WeatherTip => {
+const buildPrimaryTip = (snapshot: WeatherSnapshot, selectedDate: Date): WeatherTip => {
   const normalized = normalizeText(snapshot.description);
   const descriptionLabel = capitalizeText(snapshot.description);
   const descriptionText = descriptionLabel ? `"${descriptionLabel}"` : 'o tempo';
@@ -200,8 +200,20 @@ const buildPrimaryTip = (snapshot: WeatherSnapshot): WeatherTip => {
   const clouds = Math.round(snapshot.clouds);
   const humidity = Math.round(snapshot.humidity);
   const windKmh = Math.round(snapshot.wind.speed * 3.6);
-  const daylightSignals = buildDaylightSignals(snapshot, new Date());
+  const now = new Date();
+  const isToday = isSameLocalDay(selectedDate, now);
+  const daylightSignals = isToday
+    ? buildDaylightSignals(snapshot, now)
+    : {
+      isNight: false,
+      isMorning: false,
+      isAfternoon: false,
+      isEvening: false,
+      isNearSunrise: false,
+      isNearSunset: false,
+    };
   const isNight = daylightSignals.isNight;
+  const isAfternoon = daylightSignals.isAfternoon;
 
   if (
     normalized.includes('tempestade') ||
@@ -288,10 +300,12 @@ const buildPrimaryTip = (snapshot: WeatherSnapshot): WeatherTip => {
         'sun'
       );
     }
+    const sunTiming = isToday ? (isAfternoon ? 'À tarde' : 'Durante o dia') : '';
+    const sunPrefix = sunTiming ? `${sunTiming}, ` : '';
     return createTip(
       'primary-sun',
       'Dica do dia',
-      `Com ${descriptionText}, a máxima chega a ${maxTemp}°C. Use protetor solar e mantenha-se bem hidratado.`,
+      `${sunPrefix}com ${descriptionText}, a máxima chega a ${maxTemp}°C. Use protetor solar e mantenha-se bem hidratado.`,
       'sun'
     );
   }
@@ -321,12 +335,13 @@ const buildPrimaryTip = (snapshot: WeatherSnapshot): WeatherTip => {
         : clouds <= 70
           ? 'Clima bom pra um passeio leve.'
           : 'Noite ótima pra luz indireta e descanso.';
+    const cloudPrefix = isToday ? (isAfternoon ? 'À tarde, ' : 'Durante o dia, ') : '';
     return createTip(
       'primary-clouds',
       'Dica do dia',
       isNight
         ? `Com ${descriptionText} e ${clouds}% de nuvens, ${cloudNightLabel}. ${cloudNightPunch}`
-        : `Com ${descriptionText} e ${clouds}% de nuvens, ${cloudLabel}. ${cloudPunch}`,
+        : `${cloudPrefix}com ${descriptionText} e ${clouds}% de nuvens, ${cloudLabel}. ${cloudPunch}`,
       'clouds'
     );
   }
@@ -445,21 +460,28 @@ const buildDeceptiveColdTip = (snapshot: WeatherSnapshot): WeatherTip | null => 
 /**
  * Dica de clima perfeito para atividades ao ar livre.
  */
-const buildPerfectDayTip = (snapshot: WeatherSnapshot): WeatherTip | null => {
+const buildPerfectDayTip = (snapshot: WeatherSnapshot, selectedDate: Date): WeatherTip | null => {
   const temp = Math.round(snapshot.temperature.current);
   const humidity = Math.round(snapshot.humidity);
   const windKmh = Math.round(snapshot.wind.speed * 3.6);
   const pop = snapshot.pop;
   const clouds = Math.round(snapshot.clouds);
+  const signals = buildWeatherTipSignals(snapshot, selectedDate);
 
   if (!isPerfectDay(temp, humidity, windKmh, pop, clouds)) {
     return null;
   }
 
+  const perfectCopy = signals.isNight
+    ? `${temp}°C, umidade agradável (${humidity}%) e brisa suave. Noite ótima para um passeio leve.`
+    : signals.isAfternoon
+      ? `${temp}°C, umidade agradável (${humidity}%) e brisa suave. Tarde excelente para atividades ao ar livre.`
+      : `${temp}°C, umidade agradável (${humidity}%) e brisa suave. Excelente dia para atividades ao ar livre.`;
+
   return createTip(
     'perfect-day',
     'Clima ideal',
-    `${temp}°C, umidade agradável (${humidity}%) e brisa suave. Excelente dia para atividades ao ar livre.`,
+    perfectCopy,
     'positive'
   );
 };
@@ -467,20 +489,27 @@ const buildPerfectDayTip = (snapshot: WeatherSnapshot): WeatherTip | null => {
 /**
  * Dica de clima perfeito para exercícios.
  */
-const buildWorkoutTip = (snapshot: WeatherSnapshot): WeatherTip | null => {
+const buildWorkoutTip = (snapshot: WeatherSnapshot, selectedDate: Date): WeatherTip | null => {
   const temp = Math.round(snapshot.temperature.current);
   const humidity = Math.round(snapshot.humidity);
   const uvIndex = snapshot.uvIndex;
   const windKmh = Math.round(snapshot.wind.speed * 3.6);
+  const signals = buildWeatherTipSignals(snapshot, selectedDate);
 
   if (!isWorkoutWeather(temp, humidity, uvIndex, windKmh)) {
     return null;
   }
 
+  const workoutCopy = signals.isNight
+    ? `Condições ideais para exercícios leves: ${temp}°C e umidade controlada. Noite boa pra se mexer.`
+    : signals.isAfternoon
+      ? `Condições ideais para exercícios ao ar livre: ${temp}°C e umidade controlada. Tarde boa pra treinar.`
+      : `Condições ideais para exercícios ao ar livre: ${temp}°C e umidade controlada. Aproveite para se movimentar.`;
+
   return createTip(
     'workout-weather',
     'Clima de treino',
-    `Condições ideais para exercícios ao ar livre: ${temp}°C e umidade controlada. Aproveite para se movimentar.`,
+    workoutCopy,
     'positive'
   );
 };
@@ -542,12 +571,15 @@ const buildSecondaryTips = (
   }
 
   if (uvIndex >= 6) {
+    const uvMessage = signals.isNight
+      ? `UV alto (${uvIndex.toFixed(1)}) durante o dia. Protetor solar FPS 30+ segue essencial.`
+      : `UV alto (${uvIndex.toFixed(1)}). Use protetor solar FPS 30+ e reaplique a cada 2 horas.`;
     pushUniqueTip(
       tips,
       createTip(
         'uv-high',
         'Proteção UV',
-        `UV alto (${uvIndex.toFixed(1)}). Use protetor solar FPS 30+ e reaplique a cada 2 horas.`,
+        uvMessage,
         'uv'
       ),
       usedKinds
@@ -708,6 +740,8 @@ type TipPool = {
 
 type WeatherTipSignals = {
   isWeekend: boolean;
+  isToday: boolean;
+  isFuture: boolean;
   isStorm: boolean;
   isRainy: boolean;
   isSnowy: boolean;
@@ -744,9 +778,38 @@ type DaylightSignals = {
 const SUN_WINDOW_MINUTES = 45;
 
 /**
+ * Verifica se duas datas sao do mesmo dia (fuso local).
+ */
+function isSameLocalDay(left: Date, right: Date): boolean {
+  return left.getFullYear() === right.getFullYear() &&
+    left.getMonth() === right.getMonth() &&
+    left.getDate() === right.getDate();
+}
+
+/**
+ * Indica se a data alvo e futura em relacao ao dia atual (fuso local).
+ */
+function isFutureLocalDay(target: Date, now: Date): boolean {
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const targetDay = new Date(target.getFullYear(), target.getMonth(), target.getDate());
+  return targetDay.getTime() > today.getTime();
+}
+
+/**
+ * Ajusta mensagens para dias futuros (tom de previsao/preparo).
+ */
+const formatFutureTipMessage = (message: string): string => {
+  const sanitized = message.replace(/\bhoje\b/gi, 'nesse dia');
+  if (sanitized.startsWith('Previsão') || sanitized.startsWith('Para esse dia')) {
+    return sanitized;
+  }
+  return `Para esse dia, ${sanitized}`;
+};
+
+/**
  * Gera sinais do período do dia e proximidade de nascer/pôr do sol.
  */
-const buildDaylightSignals = (snapshot: WeatherSnapshot, now: Date): DaylightSignals => {
+function buildDaylightSignals(snapshot: WeatherSnapshot, now: Date): DaylightSignals {
   const sunrise = new Date(snapshot.sunrise * 1000);
   const sunset = new Date(snapshot.sunset * 1000);
   const isNight = now < sunrise || now > sunset;
@@ -765,17 +828,28 @@ const buildDaylightSignals = (snapshot: WeatherSnapshot, now: Date): DaylightSig
     isNearSunrise: minutesToSunrise <= SUN_WINDOW_MINUTES,
     isNearSunset: minutesToSunset <= SUN_WINDOW_MINUTES,
   };
-};
+}
 
 /**
  * Resume sinais do clima e do dia para variar dicas de rotina.
  */
-const buildWeatherTipSignals = (
+function buildWeatherTipSignals(
   snapshot: WeatherSnapshot,
   selectedDate: Date
-): WeatherTipSignals => {
+): WeatherTipSignals {
   const now = new Date();
-  const daylightSignals = buildDaylightSignals(snapshot, now);
+  const isToday = isSameLocalDay(selectedDate, now);
+  const isFuture = isFutureLocalDay(selectedDate, now);
+  const daylightSignals = isToday
+    ? buildDaylightSignals(snapshot, now)
+    : {
+      isNight: false,
+      isMorning: false,
+      isAfternoon: false,
+      isEvening: false,
+      isNearSunrise: false,
+      isNearSunset: false,
+    };
   const normalized = normalizeText(snapshot.description);
   const popPercent = Math.round(snapshot.pop * 100);
   const maxTemp = Math.round(snapshot.temperature.max);
@@ -828,6 +902,8 @@ const buildWeatherTipSignals = (
 
   return {
     isWeekend,
+    isToday,
+    isFuture,
     isStorm,
     isRainy,
     isSnowy,
@@ -842,8 +918,8 @@ const buildWeatherTipSignals = (
     isMorning: daylightSignals.isMorning,
     isAfternoon: daylightSignals.isAfternoon,
     isEvening: daylightSignals.isEvening,
-    isNearSunrise: daylightSignals.isNearSunrise && !isRainy && !isSnowy && !isStorm,
-    isNearSunset: daylightSignals.isNearSunset && !isRainy && !isSnowy && !isStorm,
+    isNearSunrise: isToday && daylightSignals.isNearSunrise && !isRainy && !isSnowy && !isStorm,
+    isNearSunset: isToday && daylightSignals.isNearSunset && !isRainy && !isSnowy && !isStorm,
     popPercent,
     maxTemp,
     minTemp,
@@ -851,13 +927,107 @@ const buildWeatherTipSignals = (
     tempCurrent,
     cloudCover,
   };
-};
+}
 
 /**
  * Gera dicas de rotina com base no clima e no dia da semana.
  */
 const buildRoutineTips = (signals: WeatherTipSignals): WeatherTip[] => {
   const tips: WeatherTip[] = [];
+
+  if (signals.isFuture) {
+    if (signals.isSnowy) {
+      tips.push(
+        createTip(
+          'fallback-routine-future-snow-1',
+          'Rotina',
+          'Neve prevista: programe deslocamentos com folga e separe roupas térmicas. Seu futuro eu agradece.',
+          'generic'
+        )
+      );
+      return tips;
+    }
+
+    if (signals.isStorm) {
+      tips.push(
+        createTip(
+          'fallback-routine-future-storm-1',
+          'Rotina',
+          'Tempestade prevista: remarca tarefas externas e deixe o guarda-chuva no modo prontidão.',
+          'generic'
+        )
+      );
+      return tips;
+    }
+
+    if (signals.isRainy) {
+      tips.push(
+        createTip(
+          'fallback-routine-future-rain-1',
+          'Rotina',
+          signals.isWeekend
+            ? 'Chuva prevista no fds: planeje rolês cobertos e leve capa/guarda-chuva na bolsa.'
+            : 'Chuva prevista: planeje rotas cobertas e leve capa/guarda-chuva na bolsa.',
+          'generic'
+        )
+      );
+      return tips;
+    }
+
+    if (signals.isSunny && signals.isHot) {
+      tips.push(
+        createTip(
+          'fallback-routine-future-sun-hot-1',
+          'Rotina',
+          signals.isWeekend
+            ? 'Calor previsto no fds: programe academia e alguma atividade com água (clube/piscina).'
+            : 'Calor previsto: roupas leves e água por perto. Planejamento evita perrengue.',
+          'generic'
+        )
+      );
+      return tips;
+    }
+
+    if (signals.isSunny) {
+      tips.push(
+        createTip(
+          'fallback-routine-future-sun-1',
+          'Rotina',
+          signals.isWeekend
+            ? 'Tempo aberto no fds: ótimo pra passeio e atividades ao ar livre. Separe protetor e óculos.'
+            : 'Tempo aberto previsto: boa chance de agenda externa. Separe protetor e óculos.',
+          'generic'
+        )
+      );
+      return tips;
+    }
+
+    if (signals.isOvercast || signals.isMostlyCloudy || signals.isPartlyCloudy) {
+      tips.push(
+        createTip(
+          'fallback-routine-future-clouds-1',
+          'Rotina',
+          signals.isWeekend
+            ? 'Nuvens previstas no fds: clima estável pra passeios sem calorão.'
+            : 'Nuvens previstas: clima mais estável e sem calorão. Planeje atividades sem sofrer no sol.',
+          'generic'
+        )
+      );
+      return tips;
+    }
+
+    tips.push(
+      createTip(
+        'fallback-routine-future-generic-1',
+        'Rotina',
+        signals.isWeekend
+          ? 'Fim de semana à vista: organize a agenda com base na previsão e prepare o rolê.'
+          : 'Dia futuro: organize a agenda com base na previsão. Deixe a mochila pronta e evite correria.',
+        'generic'
+      )
+    );
+    return tips;
+  }
 
   if (signals.isWeekend) {
     if (signals.isNight && (signals.isSunny || signals.isPartlyCloudy || signals.isMostlyCloudy)) {
@@ -1183,6 +1353,78 @@ const buildRoutineTips = (signals: WeatherTipSignals): WeatherTip[] => {
 const buildQuickCheckTips = (signals: WeatherTipSignals): WeatherTip[] => {
   const tips: WeatherTip[] = [];
 
+  if (signals.isFuture && signals.isStorm) {
+    tips.push(
+      createTip(
+        'fallback-check-future-storm-1',
+        'Check rápido',
+        'Tempestade prevista: carregue a bateria reserva e evite marcar compromissos ao ar livre.',
+        'generic'
+      )
+    );
+    return tips;
+  }
+
+  if (signals.isFuture && signals.isSnowy) {
+    tips.push(
+      createTip(
+        'fallback-check-future-snow-1',
+        'Check rápido',
+        'Neve prevista: separe casaco térmico, luvas e calçado aderente.',
+        'generic'
+      )
+    );
+    return tips;
+  }
+
+  if (signals.isFuture && signals.isRainy) {
+    tips.push(
+      createTip(
+        'fallback-check-future-rain-1',
+        'Check rápido',
+        'Chuva prevista: guarda-chuva pronto e capa na mochila. Seu tênis agradece nesse dia.',
+        'generic'
+      )
+    );
+    return tips;
+  }
+
+  if (signals.isFuture && signals.isSunny && signals.isHot) {
+    tips.push(
+      createTip(
+        'fallback-check-future-hot-1',
+        'Check rápido',
+        'Calor previsto: garrafa de água e protetor separados com antecedência.',
+        'generic'
+      )
+    );
+    return tips;
+  }
+
+  if (signals.isFuture && signals.isSunny) {
+    tips.push(
+      createTip(
+        'fallback-check-future-sun-1',
+        'Check rápido',
+        'Tempo aberto previsto: protetor e óculos já na mochila.',
+        'generic'
+      )
+    );
+    return tips;
+  }
+
+  if (signals.isFuture && (signals.isOvercast || signals.isMostlyCloudy || signals.isPartlyCloudy)) {
+    tips.push(
+      createTip(
+        'fallback-check-future-clouds-1',
+        'Check rápido',
+        'Nuvens previstas: luz extra pode ajudar em atividades de foco.',
+        'generic'
+      )
+    );
+    return tips;
+  }
+
   if (signals.isStorm) {
     tips.push(
       createTip(
@@ -1368,6 +1610,8 @@ const selectFromWeightedPools = (
  * Monta a lista final com 4 dicas, usando sistema de prioridades.
  */
 export const buildWeatherTips = ({ snapshot, selectedDate }: WeatherTipsInput): WeatherTip[] => {
+  const now = new Date();
+  const isFuture = isFutureLocalDay(selectedDate, now);
   const seed = buildTipSeed(selectedDate, snapshot.description);
 
   // Pools de dicas por prioridade
@@ -1398,14 +1642,14 @@ export const buildWeatherTips = ({ snapshot, selectedDate }: WeatherTipsInput): 
   if (deceptiveColdTip) compositePool.push(deceptiveColdTip);
 
   // 3. Dica principal (baseada na descrição do clima)
-  const primaryTip = buildPrimaryTip(snapshot);
+  const primaryTip = buildPrimaryTip(snapshot, selectedDate);
   primaryPool.push(primaryTip);
 
   // 4. Condições positivas
-  const perfectDayTip = buildPerfectDayTip(snapshot);
+  const perfectDayTip = buildPerfectDayTip(snapshot, selectedDate);
   if (perfectDayTip) positivePool.push(perfectDayTip);
 
-  const workoutTip = buildWorkoutTip(snapshot);
+  const workoutTip = buildWorkoutTip(snapshot, selectedDate);
   if (workoutTip) positivePool.push(workoutTip);
 
   // 5. Dicas secundárias (existentes)
@@ -1428,5 +1672,14 @@ export const buildWeatherTips = ({ snapshot, selectedDate }: WeatherTipsInput): 
     { tips: fallbackPool, weight: 1 },    // Coringa (último recurso)
   ];
 
-  return selectFromWeightedPools(weightedPools, 4);
+  const selected = selectFromWeightedPools(weightedPools, 4);
+
+  if (!isFuture) {
+    return selected;
+  }
+
+  return selected.map((tip) => ({
+    ...tip,
+    message: formatFutureTipMessage(tip.message),
+  }));
 };

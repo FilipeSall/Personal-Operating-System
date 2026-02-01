@@ -6,14 +6,19 @@ export const weatherSummary = css({
   alignItems: 'center',
   gap: '1.75em',
   maxWidth: '100%',
-  paddingRight: '0.75em',
+  padding: '0 2em',
   borderRight: '0.0625em solid',
   borderColor: 'rgba(120, 124, 130, 0.15)',
+  '@media (min-width: 768px) and (max-width: 1024px)': {
+    padding: '0',
+  },
+  '@media (max-width: 425px)': {
+    padding: '0 1em',
+  },
 });
 
 export const weatherEmojiWrapper = css({
-  width: { base: '5.75em', bp800: '8em' },
-  height: { base: '5em', bp800: '7em' },
+  width: 'clamp(7em, 10vw, 10em)',
   borderRadius: '1.75em',
   backgroundColor: 'surface.950',
   ...weatherBorder,
@@ -21,7 +26,9 @@ export const weatherEmojiWrapper = css({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
-  overflow: 'hidden',
+  '@media (max-width: 425px)': {
+    width: '7em',
+  },
 });
 
 export const weatherEmoji = css({

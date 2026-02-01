@@ -10,8 +10,8 @@ import {
 import { getWeatherStatusMessage } from './utils/getWeatherStatusMessage';
 import { buildWeatherViewModel } from './utils/weatherViewModel';
 import { WeatherFooter } from './components/WeatherFooter';
-import { WeatherMetricsPanel } from './components/WeatherMetricsPanel';
 import { WeatherSummary } from './components/WeatherSummary';
+import { WeatherTipPanel } from './components/WeatherTipPanel';
 
 type WeatherViewProps = {
   state: WeatherState;
@@ -28,11 +28,8 @@ export function WeatherView({ state, derived, actions, onOpenDetails }: WeatherV
     updatedAtLabel,
     dateLabel,
     description,
-    recommendation,
     temperatureValue,
-    humidityValue,
-    windValue,
-    uvValue,
+    tips,
   } = buildWeatherViewModel({ state, derived });
 
   const statusMessage = getWeatherStatusMessage(state, derived);
@@ -56,12 +53,7 @@ export function WeatherView({ state, derived, actions, onOpenDetails }: WeatherV
                 temperatureValue={temperatureValue}
                 locationLabel={state.locationLabel}
               />
-              <WeatherMetricsPanel
-                humidityValue={humidityValue}
-                windValue={windValue}
-                uvValue={uvValue}
-                recommendation={recommendation}
-              />
+              <WeatherTipPanel tips={tips} />
             </div>
 
             <WeatherFooter

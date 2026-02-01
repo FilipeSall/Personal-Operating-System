@@ -21,6 +21,7 @@
 - Tipos da API ficam em `src/types/openWeather.ts`, tipos internos em `src/types/weather.ts`.
 - O emoji principal do clima usa Lottie com assets em `src/assets/emojis`, mapeados em `src/components/Calendar/utils/weatherEmoji.ts`.
 - O botao "Ver detalhes" do clima abre um modal com a tabela completa em `src/components/Calendar/Weather/WeatherDetailsModalView.tsx`.
+- O painel superior combina `WeatherSummary` com `WeatherTipPanel`, que exibe 4 dicas paginadas e prioriza alertas em segundo quando existirem.
 
 ### API OpenWeather (plano gratuito)
 

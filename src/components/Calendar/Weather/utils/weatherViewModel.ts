@@ -1,7 +1,8 @@
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import type { WeatherRow, WeatherSnapshot } from '../../../../types/weather';
+import type { WeatherRow, WeatherSnapshot, WeatherTip } from '../../../../types/weather';
 import type { WeatherDerived, WeatherState } from '../../hooks/useWeather';
+import { buildWeatherTips } from './weatherTips';
 
 export type WeatherViewModelInput = {
   state: WeatherState;
@@ -12,11 +13,8 @@ export type WeatherViewModel = {
   updatedAtLabel: string | null;
   dateLabel: string;
   description: string;
-  recommendation: string;
   temperatureValue: number | null;
-  humidityValue: string;
-  windValue: string;
-  uvValue: string;
+  tips: WeatherTip[];
 };
 
 /**
@@ -45,7 +43,6 @@ export const getSummaryRow = (rows: WeatherRow[]): WeatherRow | undefined => {
 
 type WeatherSummaryTexts = {
   description: string;
-  recommendation: string;
 };
 
 /**
@@ -54,36 +51,18 @@ type WeatherSummaryTexts = {
 export const getSummaryTexts = (summaryRow?: WeatherRow): WeatherSummaryTexts => {
   return {
     description: summaryRow?.value ?? 'Sem descricao',
-    recommendation: summaryRow?.recommendation ?? 'Sem recomendacao disponivel.',
   };
-};
-
-type WeatherMetricValues = {
-  temperatureValue: number | null;
-  humidityValue: string;
-  windValue: string;
-  uvValue: string;
 };
 
 /**
- * Calcula os valores exibidos nas metricas do painel.
+ * Calcula o valor exibido na temperatura principal.
  */
-export const getMetricValues = (snapshot: WeatherSnapshot | null): WeatherMetricValues => {
+export const getTemperatureValue = (snapshot: WeatherSnapshot | null): number | null => {
   if (!snapshot) {
-    return {
-      temperatureValue: null,
-      humidityValue: '--',
-      windValue: '--',
-      uvValue: '--',
-    };
+    return null;
   }
 
-  return {
-    temperatureValue: Math.round(snapshot.temperature.current),
-    humidityValue: `${Math.round(snapshot.humidity)}%`,
-    windValue: `${Math.round(snapshot.wind.speed * 3.6)} km/h`,
-    uvValue: snapshot.uvIndex.toFixed(1),
-  };
+  return Math.round(snapshot.temperature.current);
 };
 
 /**
@@ -96,17 +75,17 @@ export const buildWeatherViewModel = ({
   const updatedAtLabel = formatUpdatedAtLabel(state.lastUpdatedAt);
   const dateLabel = formatSelectedDateLabel(state.selectedDate);
   const summaryRow = getSummaryRow(derived.rows);
-  const { description, recommendation } = getSummaryTexts(summaryRow);
-  const { temperatureValue, humidityValue, windValue, uvValue } = getMetricValues(derived.snapshot);
+  const { description } = getSummaryTexts(summaryRow);
+  const temperatureValue = getTemperatureValue(derived.snapshot);
+  const tips = derived.snapshot
+    ? buildWeatherTips({ snapshot: derived.snapshot, selectedDate: state.selectedDate })
+    : [];
 
   return {
     updatedAtLabel,
     dateLabel,
     description,
-    recommendation,
     temperatureValue,
-    humidityValue,
-    windValue,
-    uvValue,
+    tips,
   };
 };

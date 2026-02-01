@@ -23,9 +23,9 @@ export function WeatherSummary({
 }: WeatherSummaryProps) {
   return (
     <div className={weatherSummary}>
-      <WeatherSummaryEmoji snapshot={snapshot} description={description} />
+      <WeatherSummaryEmoji snapshot={snapshot} description={description} dateLabel={dateLabel} />
       <WeatherSummaryInfo
-        dateLabel={dateLabel}
+        snapshot={snapshot}
         temperatureValue={temperatureValue}
         description={description}
         locationLabel={locationLabel}

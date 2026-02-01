@@ -21,6 +21,7 @@ export default defineConfig({
         bp800: '800px',
         bp1024: '1024px',
         bp1400: '1400px',
+        bp1440: '1440px',
       },
       tokens: {
         fonts: {

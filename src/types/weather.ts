@@ -43,6 +43,30 @@ export type WeatherSnapshot = {
   };
 };
 
+export type WeatherTipKind =
+  | 'sun'
+  | 'rain'
+  | 'storm'
+  | 'snow'
+  | 'fog'
+  | 'clouds'
+  | 'wind'
+  | 'humidity'
+  | 'uv'
+  | 'temperature'
+  | 'precipitation'
+  | 'alert'
+  | 'generic'
+  | 'composite'
+  | 'positive';
+
+export type WeatherTip = {
+  id: string;
+  label: string;
+  message: string;
+  kind: WeatherTipKind;
+};
+
 export type WeatherCoordinates = {
   lat: number;
   lon: number;

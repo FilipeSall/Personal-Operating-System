@@ -1549,11 +1549,14 @@ const buildQuickCheckTips = (signals: WeatherTipSignals): WeatherTip[] => {
   }
 
   if (tips.length === 0) {
+    const message = signals.isFuture
+      ? `Sensação de ${signals.feelsLike}°C. Olhou a previsão? Pronto, já ganhou bônus de organização.`
+      : `Sensação de ${signals.feelsLike}°C agora. Ajuste a roupa e se hidrate; a previsão das próximas horas ajuda.`;
     tips.push(
       createTip(
         'fallback-check-generic-1',
         'Check rápido',
-        `Sensação de ${signals.feelsLike}°C. Olhou a previsão? Pronto, já ganhou bônus de organização.`,
+        message,
         'generic'
       )
     );

@@ -71,12 +71,87 @@ export const weatherStatusCard = css({
   position: 'relative',
   zIndex: 1,
   backgroundColor: 'surface.950',
-  border: '0.0625em solid',
-  borderColor: 'surface.700',
+  border: '0.08em dashed rgba(214, 69, 80, 0.35)',
+  borderRadius: '1.4em',
+  padding: { base: '1.4em 1.2em', bp800: '1.8em 2em' },
+  textAlign: 'center',
+  display: 'grid',
+  gap: '0.6em',
+  justifyItems: 'center',
+  boxShadow: '0 1em 1.6em rgba(33, 26, 30, 0.08)',
+});
+
+export const weatherStatusIcon = css({
+  width: '3em',
+  height: '3em',
   borderRadius: '1em',
-  padding: '1em',
-  fontSize: '0.8125em',
+  display: 'inline-flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  backgroundColor: 'rgba(214, 69, 80, 0.12)',
+  color: 'var(--weather-accent, #D64550)',
+});
+
+export const weatherStatusSpinner = css({
+  width: '1.6em',
+  height: '1.6em',
+  borderRadius: '50%',
+  border: '0.2em solid rgba(214, 69, 80, 0.2)',
+  borderTopColor: 'var(--weather-accent, #D64550)',
+  animation: 'spin 0.9s linear infinite',
+});
+
+export const weatherStatusLottieContainer = css({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  width: 'clamp(4em, 9vmin, 5.5em)',
+  height: 'clamp(4em, 9vmin, 5.5em)',
+  marginBottom: '0.6em',
+});
+
+export const weatherStatusLottiePlayer = css({
+  width: '100%',
+  height: '100%',
+});
+
+export const weatherStatusBadge = css({
+  fontSize: '0.6em',
+  fontWeight: '800',
+  textTransform: 'uppercase',
+  letterSpacing: '0.16em',
+  color: 'var(--weather-accent, #D64550)',
+  display: 'inline-flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  lineHeight: 1,
+  height: '2em',
+  padding: '0.25em 0.8em',
+  borderRadius: '999px',
+  border: '0.08em solid rgba(214, 69, 80, 0.3)',
+  backgroundColor: 'rgba(255, 255, 255, 0.7)',
+});
+
+export const weatherStatusTitle = css({
+  fontSize: { base: '1.15em', bp800: '1.3em' },
+  fontWeight: '800',
+  color: 'text.primary',
+  letterSpacing: '-0.01em',
+});
+
+export const weatherStatusMessage = css({
+  fontSize: { base: '0.86em', bp800: '0.92em' },
   fontWeight: '600',
   color: 'text.muted',
-  textAlign: 'center',
+  maxWidth: '28em',
+});
+
+export const weatherStatusDetail = css({
+  fontSize: '0.75em',
+  color: 'text.dim',
+  backgroundColor: 'rgba(255, 255, 255, 0.6)',
+  border: '0.08em solid rgba(120, 124, 130, 0.2)',
+  borderRadius: '0.9em',
+  padding: '0.5em 0.8em',
+  maxWidth: '30em',
 });

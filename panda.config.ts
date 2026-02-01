@@ -23,6 +23,16 @@ export default defineConfig({
         bp1400: '1400px',
         bp1440: '1440px',
       },
+      keyframes: {
+        spin: {
+          from: { transform: 'rotate(0deg)' },
+          to: { transform: 'rotate(360deg)' },
+        },
+        spinnerPulse: {
+          '0%, 100%': { boxShadow: '0 0 0 0 rgba(214, 69, 80, 0.35)' },
+          '50%': { boxShadow: '0 0 0 0.35em rgba(214, 69, 80, 0.12)' },
+        },
+      },
       tokens: {
         fonts: {
           montserrat: { value: 'Montserrat, sans-serif' },

@@ -4,14 +4,14 @@ import {
   weatherDecorTop,
   weatherPanel,
   weatherSection,
-  weatherStatusCard,
   weatherTop,
 } from './CSS/WeatherView.styles';
-import { getWeatherStatusMessage } from './utils/getWeatherStatusMessage';
+import { getWeatherStatusState } from './utils/getWeatherStatusMessage';
 import { buildWeatherViewModel } from './utils/weatherViewModel';
 import { WeatherFooter } from './components/WeatherFooter';
 import { WeatherSummary } from './components/WeatherSummary';
 import { WeatherTipPanel } from './components/WeatherTipPanel';
+import { WeatherStatusCard } from './components/WeatherStatusCard';
 
 type WeatherViewProps = {
   state: WeatherState;
@@ -32,7 +32,7 @@ export function WeatherView({ state, derived, actions, onOpenDetails }: WeatherV
     tips,
   } = buildWeatherViewModel({ state, derived });
 
-  const statusMessage = getWeatherStatusMessage(state, derived);
+  const statusState = getWeatherStatusState(state, derived);
 
   return (
     <section className={weatherSection}>
@@ -41,8 +41,8 @@ export function WeatherView({ state, derived, actions, onOpenDetails }: WeatherV
         <div className={weatherDecorTop} />
         <div className={weatherDecorBottom} />
 
-        {statusMessage ? (
-          <div className={weatherStatusCard}>{statusMessage}</div>
+        {statusState ? (
+          <WeatherStatusCard status={statusState} />
         ) : (
           <>
             <div className={weatherTop}>

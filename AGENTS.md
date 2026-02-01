@@ -2,6 +2,7 @@
 
 Este projeto segue os padrões abaixo:
 
+- Usar Bun como gerenciador de pacotes e runner (evitar npm/npx).
 - Separar sempre a lógica de serviços e a UI (componentes de view).
 - Centralizar funções utilitárias na pasta `utils`.
 - Todas as funções devem ter JSDoc em TypeScript.

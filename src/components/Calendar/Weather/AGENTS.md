@@ -17,7 +17,7 @@ O Weather organiza a lógica e a visualização em camadas claras, o que facilit
 
 ## Utilitários
 - **getWeatherStatusMessage** (em `utils/`): centraliza a mensagem exibida quando o snapshot não está disponível ou quando há erro.
-- **weatherTips** (em `utils/`): gera 4 dicas com tom profissional e contextual usando sistema de weighted pools. Detecta condições compostas (calor abafado, vento cortante, clima perfeito, etc.) com prioridades claras.
+- **weatherTips** (em `utils/weatherTips/`): gera 4 dicas com tom profissional e contextual usando sistema de weighted pools. Detecta condições compostas (calor abafado, vento cortante, clima perfeito, etc.) com prioridades claras. Importe sempre de `./weatherTips/buildWeatherTips`.
 - **weatherTags** (em `utils/`) - NOVO: gera até 3 tags de contexto do clima (sensação térmica, umidade extrema, vento significativo, UV alto, visibilidade reduzida). Prioriza sensação térmica sempre, depois extremos de umidade e vento.
 - **weatherViewModel** (em `utils/`): integra dicas e tags no modelo de view.
 

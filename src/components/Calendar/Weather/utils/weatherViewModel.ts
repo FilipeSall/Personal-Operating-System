@@ -2,7 +2,7 @@ import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import type { WeatherRow, WeatherSnapshot, WeatherTip } from '../../../../types/weather';
 import type { WeatherDerived, WeatherState } from '../../hooks/useWeather';
-import { buildWeatherTips } from './weatherTips';
+import { buildWeatherTips } from './weatherTips/buildWeatherTips';
 
 export type WeatherViewModelInput = {
   state: WeatherState;

@@ -1,9 +1,9 @@
 import Lottie from 'lottie-react';
 import {
-  weatherStatusBadge,
   weatherStatusCard,
   weatherStatusDetail,
   weatherStatusIcon,
+  weatherStatusIconLarge,
   weatherStatusMessage,
   weatherStatusTitle,
   weatherStatusLottieContainer,
@@ -12,6 +12,7 @@ import {
 import type { WeatherStatusState } from '../utils/getWeatherStatusMessage';
 import loadingAnimation from '../../../../assets/icons/loading.json';
 import alertAnimation from '../../../../assets/icons/alert.json';
+import timeAnimation from '../../../../assets/icons/time.json';
 
 type WeatherStatusCardProps = {
   status: WeatherStatusState;
@@ -22,6 +23,7 @@ type WeatherStatusCardProps = {
  */
 export function WeatherStatusCard({ status }: WeatherStatusCardProps) {
   const isLoading = status.kind === 'loading';
+  const isPast = status.kind === 'past';
 
   return (
     <div className={weatherStatusCard}>
@@ -30,8 +32,13 @@ export function WeatherStatusCard({ status }: WeatherStatusCardProps) {
           <Lottie className={weatherStatusLottiePlayer} animationData={loadingAnimation} loop autoplay />
         </div>
       ) : (
-        <div className={weatherStatusIcon}>
-          <Lottie className={weatherStatusLottiePlayer} animationData={alertAnimation} loop autoplay />
+        <div className={`${weatherStatusIcon} ${isPast ? weatherStatusIconLarge : ''}`}>
+          <Lottie
+            className={weatherStatusLottiePlayer}
+            animationData={isPast ? timeAnimation : alertAnimation}
+            loop
+            autoplay
+          />
         </div>
       )}
       <h3 className={weatherStatusTitle}>{status.title}</h3>

@@ -92,6 +92,11 @@ export const weatherStatusIcon = css({
   color: 'var(--weather-accent, #D64550)',
 });
 
+export const weatherStatusIconLarge = css({
+  width: '12em',
+  height: '12em',
+});
+
 export const weatherStatusSpinner = css({
   width: '1.6em',
   height: '1.6em',
@@ -116,6 +121,7 @@ export const weatherStatusLottiePlayer = css({
 });
 
 export const weatherStatusBadge = css({
+  textAlign: 'center',
   fontSize: '0.6em',
   fontWeight: '800',
   textTransform: 'uppercase',

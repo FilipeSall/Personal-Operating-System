@@ -1,7 +1,7 @@
 import type { WeatherDerived, WeatherState } from '../../hooks/useWeather';
 
 export type WeatherStatusState = {
-  kind: 'loading' | 'error';
+  kind: 'loading' | 'error' | 'past';
   title: string;
   message: string;
   detail?: string;
@@ -15,6 +15,16 @@ type WeatherLoadingCopy = {
 type WeatherNoForecastCopy = {
   title: string;
   message: string;
+};
+
+const getStartOfDay = (date: Date): Date => {
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+};
+
+const isPastLocalDay = (target: Date, now: Date): boolean => {
+  const today = getStartOfDay(now);
+  const targetDay = getStartOfDay(target);
+  return targetDay.getTime() < today.getTime();
 };
 
 /**
@@ -94,6 +104,14 @@ export function getWeatherStatusState(
         kind: 'loading',
         title: loadingCopy.title,
         message: loadingCopy.message,
+      };
+    }
+
+    if (isPastLocalDay(state.selectedDate, new Date())) {
+      return {
+        kind: 'past',
+        title: 'Data no passado',
+        message: 'Esse dia já foi e os meteorologistas também. Não temos previsão para datas antigas (nem DeLorean resolve).',
       };
     }
 

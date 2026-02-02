@@ -76,7 +76,7 @@ export const weatherDateBadge = css({
 
 export const weatherTemperatureRow = css({
   display: 'flex',
-  alignItems: 'baseline',
+  alignItems: 'flex-start',
   gap: '0.35em',
 });
 
@@ -92,7 +92,9 @@ export const weatherTemperatureUnit = css({
   fontSize: { base: '1.35em', bp800: '1.9em' },
   fontWeight: '700',
   color: 'text.muted',
-  marginTop: { base: '0.2em', bp800: '0.3em' },
+  alignSelf: 'flex-start',
+  marginTop: 0,
+  lineHeight: 1,
 });
 
 export const weatherConditionBadge = css({

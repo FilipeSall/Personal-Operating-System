@@ -19,7 +19,7 @@ export const weatherPanel = css({
   overflow: 'visible',
   borderRadius: '2.25em',
   backgroundColor: 'var(--weather-panel-bg, rgba(253, 232, 234, 0.6))',
-  padding: { base: '0.75em', bp800: '1.75em' },
+  padding: '1em 1.25em',
   display: 'grid',
   gridTemplateRows: '8fr 2fr',
   gap: { base: '0.625em', bp800: '1.5em' },

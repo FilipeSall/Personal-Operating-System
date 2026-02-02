@@ -82,8 +82,8 @@ export const weatherStatusCard = css({
 });
 
 export const weatherStatusIcon = css({
-  width: '3em',
-  height: '3em',
+  width: '6em',
+  height: '6em',
   borderRadius: '1em',
   display: 'inline-flex',
   alignItems: 'center',

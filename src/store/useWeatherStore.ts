@@ -27,10 +27,23 @@ type WeatherStoreActions = {
 
 export type WeatherStore = WeatherStoreState & WeatherStoreActions;
 
+type MapCurrentToSnapshotOptions = {
+  /**
+   * Probabilidade de precipitação herdada de um snapshot de forecast diário (opcional).
+   */
+  inheritedPop?: number;
+};
+
 /**
  * Converte a resposta do clima atual para WeatherSnapshot.
+ *
+ * @param data Resposta atual da OpenWeatherMap.
+ * @param options Opções para herdar métricas adicionais do forecast.
  */
-const mapCurrentToSnapshot = (data: OpenWeatherCurrentResponse): WeatherSnapshot => ({
+const mapCurrentToSnapshot = (
+  data: OpenWeatherCurrentResponse,
+  options?: MapCurrentToSnapshotOptions
+): WeatherSnapshot => ({
   description: data.weather[0]?.description ?? 'Sem descricao',
   temperature: {
     current: data.main.temp,
@@ -38,7 +51,7 @@ const mapCurrentToSnapshot = (data: OpenWeatherCurrentResponse): WeatherSnapshot
     max: data.main.temp_max,
   },
   feelsLike: data.main.feels_like,
-  pop: 0,
+  pop: options?.inheritedPop ?? 0,
   wind: {
     speed: data.wind.speed,
     deg: data.wind.deg,
@@ -110,7 +123,13 @@ export const useWeatherStore = create<WeatherStore>((set, get) => ({
 
       const grouped = groupForecastByDay(forecastData);
       const todayKey = toForecastKey(new Date());
-      grouped.set(todayKey, mapCurrentToSnapshot(currentData));
+      const todaySnapshot = grouped.get(todayKey);
+      grouped.set(
+        todayKey,
+        mapCurrentToSnapshot(currentData, {
+          inheritedPop: todaySnapshot?.pop,
+        })
+      );
 
       set((state) => ({
         ...state,

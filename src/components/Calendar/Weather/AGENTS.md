@@ -48,3 +48,4 @@ As dicas agora usam um sistema de **weighted pools** que prioriza automaticament
 - Breakpoint `bp1440` adicionado para aumentar fontes em telas largas (> 1440px)
 - Estilos consolidados em `CSS/` folder, sem style inline (Panda CSS)
 - O `weatherPanel` usa grid em proporção `80/20` (conteúdo/rodapé) e respeita o slot do container (`height: 100%` com `maxHeight: 70vmin`), mantendo unidades em `em` para escalar com o viewport.
+- 02/02/2026: Ao substituir o snapshot do dia atual pelo dado em tempo real, agora herdamos a probabilidade de chuva agregada do forecast para evitar mostrar "Chance de chuva 0%" quando já há chuva leve.

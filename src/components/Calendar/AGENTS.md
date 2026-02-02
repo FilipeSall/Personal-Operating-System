@@ -38,7 +38,7 @@
 1. `useWeather` hook dispara `fetchWeather()` no mount.
 2. O store faz duas chamadas em paralelo: `fetchForecast` + `fetchCurrentWeather`.
 3. `groupForecastByDay()` agrupa os intervalos de 3h por dia (fuso local via `fromUnixTime`).
-4. Se o dia de hoje nao existir no forecast (ex.: noite tarde), o clima atual e inserido como fallback.
+4. O dia de hoje e sempre substituido pelo clima atual para garantir que a temperatura exibida reflita o momento presente, mesmo que o forecast ja contenha intervalos para hoje.
 5. O resultado e um `Map<string, WeatherSnapshot>` com chave `"YYYY-MM-DD"`.
 6. `useWeather` le `selectedDate` do `useCalendarStore` e busca o snapshot correspondente.
 7. Ao clicar em um dia no calendario, o Weather atualiza automaticamente.
@@ -50,3 +50,4 @@
 - `toForecastKey(date)` e `groupItemsByDay` devem usar o mesmo fuso (local) para as chaves coincidirem.
 - O hook `useWeather` deve assinar `store.forecasts` diretamente (nao `getSnapshotForDate`) para garantir reatividade com Zustand.
 - O label de localizacao para `BR` prioriza `Cidade - UF` (ex.: `Plano Piloto - DF`).
+- Dicas do tipo "Check rápido" que falam em "luz extra" ou nuvens densas só entram quando a cobertura estiver em pelo menos 75%, evitando mensagens fora de contexto.

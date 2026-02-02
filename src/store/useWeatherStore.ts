@@ -109,11 +109,8 @@ export const useWeatherStore = create<WeatherStore>((set, get) => ({
       }
 
       const grouped = groupForecastByDay(forecastData);
-
       const todayKey = toForecastKey(new Date());
-      if (!grouped.has(todayKey)) {
-        grouped.set(todayKey, mapCurrentToSnapshot(currentData));
-      }
+      grouped.set(todayKey, mapCurrentToSnapshot(currentData));
 
       set((state) => ({
         ...state,

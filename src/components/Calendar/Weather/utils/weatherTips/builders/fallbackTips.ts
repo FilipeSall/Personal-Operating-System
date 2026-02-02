@@ -662,7 +662,9 @@ const buildQuickCheckTips = (signals: WeatherTipSignals): WeatherTip[] => {
         'fallback-check-partly-cloudy-1',
         'Check rápido',
         signals.isNight
-          ? 'Noite com nuvens alternando: luz extra ajuda. Sol não dá as caras, mas a segurança sim.'
+          ? signals.cloudCover >= 75
+            ? 'Noite com nuvens alternando: luz extra ajuda. Sol não dá as caras, mas a segurança sim.'
+            : 'Noite com nuvens leves: luz da rua e uma blusa extra bastam. Não precisa de holofote.'
           : 'Nuvens alternando: óculos escuros opcional. O sol aparece sem aviso prévio.',
         'generic'
       )

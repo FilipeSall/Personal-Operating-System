@@ -47,7 +47,10 @@ export const calendarLayout = css({
 
 export const calendarMain = css({
   display: 'grid',
-  gridTemplateRows: { base: 'minmax(0, 1fr) auto', bp800: 'minmax(0, 1fr) minmax(0, 0.45fr)' },
+  gridTemplateRows: {
+    base: 'minmax(0, 1fr) minmax(0, 0.55fr)',
+    bp800: 'minmax(0, 1fr) minmax(0, 0.45fr)',
+  },
   gap: { base: '12px', bp800: '16px' },
   minHeight: 0,
   backgroundColor: 'var(--calendar-main-bg, rgba(255, 255, 255, 0.6))',

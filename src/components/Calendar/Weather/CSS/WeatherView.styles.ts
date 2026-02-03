@@ -21,7 +21,7 @@ export const weatherPanel = css({
   backgroundColor: 'var(--weather-panel-bg, rgba(253, 232, 234, 0.6))',
   padding: '1em',
   display: 'grid',
-  gridTemplateRows: 'minmax(0, 1fr) auto',
+  gridTemplateRows: 'minmax(0, 1fr)',
   gap: { base: '0.75em', bp800: '1.25em' },
   transition: 'background-color 0.4s ease',
   width: '100%',
@@ -65,9 +65,10 @@ export const weatherTop = css({
   position: 'relative',
   zIndex: 1,
   display: 'grid',
-  gridTemplateColumns: '1fr 2fr',
-  alignItems: 'center',
+  gridTemplateColumns: '0.6fr 1.4fr',
+  alignItems: 'stretch',
   gap: { base: '0.75em', bp800: '1.25em' },
+  height: '100%',
   minHeight: 0,
   paddingTop: '0.5em',
   paddingBottom: '0.25em',
@@ -102,8 +103,8 @@ export const weatherStatusIcon = css({
 });
 
 export const weatherStatusIconLarge = css({
-  width: '12em',
-  height: '12em',
+  width: '10em',
+  height: '10em',
 });
 
 export const weatherStatusSpinner = css({

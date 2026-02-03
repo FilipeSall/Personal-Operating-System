@@ -3,17 +3,18 @@ import { weatherBorder, weatherCircle, weatherPill, weatherSoftShadow } from './
 
 export const weatherTipCard = css({
   width: '100%',
-  display: 'flex',
-  flexDirection: 'column',
+  display: 'grid',
+  gridTemplateRows: 'repeat(2, minmax(0, 1fr)) auto',
   gap: '0.75em',
-  flex: '0 0 auto',
-  minHeight: 'fit-content',
+  height: '100%',
+  minHeight: 0,
 });
 
 export const weatherTipItem = css({
   position: 'relative',
   width: '100%',
-  flex: '0 0 auto',
+  minHeight: 0,
+  height: '100%',
   backgroundColor: 'var(--weather-accent-light, #FDE8EA)',
   border: '0.125em solid',
   borderColor: 'var(--weather-accent-light, #FDE8EA)',
@@ -23,6 +24,7 @@ export const weatherTipItem = css({
   flexDirection: 'column',
   gap: '0.5em',
   ...weatherSoftShadow,
+  overflow: 'visible',
 });
 
 export const weatherTipIcon = css({
@@ -64,6 +66,10 @@ export const weatherTipText = css({
   fontWeight: '600',
   color: 'text.subtle',
   lineHeight: 1.4,
+  overflow: 'hidden',
+  display: '-webkit-box',
+  WebkitBoxOrient: 'vertical',
+  WebkitLineClamp: 3,
 });
 
 export const weatherTipFooter = css({

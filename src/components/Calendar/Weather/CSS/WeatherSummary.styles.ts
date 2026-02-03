@@ -3,12 +3,14 @@ import { weatherBorder, weatherPill } from './weatherTokens';
 
 export const weatherSummary = css({
   display: 'flex',
-  alignItems: 'center',
+  alignItems: 'stretch',
   gap: '1.75em',
   maxWidth: '100%',
   padding: '0 2em',
   borderRight: '0.0625em solid',
   borderColor: 'rgba(120, 124, 130, 0.15)',
+  minHeight: 0,
+  height: '100%',
   '@media (min-width: 768px) and (max-width: 1024px)': {
     padding: '0',
   },
@@ -55,7 +57,9 @@ export const weatherSummaryText = css({
   gap: '0.75em',
   flex: 1,
   minWidth: 0,
+  minHeight: 0,
   alignItems: 'flex-start',
+  justifyContent: 'space-between',
   width: '100%',
   padding: '0.35em 0.15em',
 });
@@ -116,6 +120,10 @@ export const weatherLocationRow = css({
   fontSize: '0.86em',
   fontWeight: '600',
   color: 'text.muted',
+  maxWidth: '100%',
+  overflow: 'hidden',
+  textOverflow: 'ellipsis',
+  whiteSpace: 'nowrap',
 });
 
 export const weatherLocationIcon = css({
@@ -135,6 +143,9 @@ export const weatherEmojiContainer = css({
   flexDirection: 'column',
   alignItems: 'center',
   gap: '0.65em',
+  height: '100%',
+  minHeight: 0,
+  justifyContent: 'space-between',
   padding: '0.85em 0.9em',
   borderRadius: '1.4em',
   backgroundColor: 'rgba(255, 255, 255, 0.5)',
@@ -148,7 +159,8 @@ export const weatherSummaryMeta = css({
   alignItems: 'center',
   gap: '0.5em',
   justifyContent: 'space-between',
-  flexWrap: 'wrap',
+  flexWrap: 'nowrap',
+  overflow: 'hidden',
 });
 
 export const weatherSummaryMetaLabel = css({
@@ -161,15 +173,20 @@ export const weatherSummaryMetaLabel = css({
   border: '0.0625em solid rgba(120, 124, 130, 0.2)',
   padding: '0.25em 0.5em',
   borderRadius: '999px',
+  whiteSpace: 'nowrap',
+  overflow: 'hidden',
+  textOverflow: 'ellipsis',
+  maxWidth: '100%',
 });
 
 export const weatherTagsRow = css({
   display: 'flex',
-  alignItems: 'center',
-  gap: '0.5em',
-  flexWrap: 'wrap',
+  flexDirection: 'column',
+  alignItems: 'flex-start',
+  gap: '0.35em',
   justifyContent: 'flex-start',
   marginTop: '0.3em',
+  maxWidth: '100%',
 });
 
 export const weatherTag = css({
@@ -184,6 +201,9 @@ export const weatherTag = css({
   alignItems: 'center',
   gap: '0.25em',
   whiteSpace: 'nowrap',
+  maxWidth: '100%',
+  overflow: 'hidden',
+  textOverflow: 'ellipsis',
   '@media (min-width: 1440px)': {
     fontSize: '0.8em',
     padding: '0.25em 0.6em',

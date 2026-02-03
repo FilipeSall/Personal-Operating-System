@@ -82,6 +82,9 @@ export const calendarTimeline = css({
   '--timeline-dot-size': { base: '8px', bp800: '10px' },
   '--timeline-dot-column': { base: '18px', bp800: '24px' },
   '--timeline-line-x': { base: '7px', bp800: '9px' },
+  scrollbarWidth: 'thin',
+  scrollbarColor:
+    'color-mix(in srgb, var(--weather-accent, rgba(214, 69, 80, 0.8)) 40%, transparent) rgba(0, 0, 0, 0.04)',
   _before: {
     content: '""',
     position: 'absolute',
@@ -90,6 +93,23 @@ export const calendarTimeline = css({
     right: 'var(--timeline-line-x)',
     width: '1px',
     background: 'linear-gradient(180deg, rgba(0,0,0,0.04), rgba(0,0,0,0.12), rgba(0,0,0,0.04))',
+  },
+  '&::-webkit-scrollbar': {
+    width: '6px',
+  },
+  '&::-webkit-scrollbar-track': {
+    background: 'rgba(0, 0, 0, 0.04)',
+    borderRadius: '999px',
+  },
+  '&::-webkit-scrollbar-thumb': {
+    background:
+      'color-mix(in srgb, var(--weather-accent, rgba(214, 69, 80, 0.8)) 40%, transparent)',
+    borderRadius: '999px',
+    border: '2px solid rgba(0, 0, 0, 0.04)',
+  },
+  '&::-webkit-scrollbar-thumb:hover': {
+    background:
+      'color-mix(in srgb, var(--weather-accent-hover, rgba(214, 69, 80, 0.95)) 55%, transparent)',
   },
 });
 

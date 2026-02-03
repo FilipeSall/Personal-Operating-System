@@ -24,6 +24,7 @@ type WeatherViewProps = {
  */
 export function WeatherView({ state, derived, actions }: WeatherViewProps) {
   const openDetails = useWeatherUiStore((store) => store.openDetails);
+
   const {
     updatedAtLabel,
     dateLabel,

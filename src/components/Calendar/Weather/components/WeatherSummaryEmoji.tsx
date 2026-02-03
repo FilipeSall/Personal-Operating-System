@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import Lottie from 'lottie-react';
 import { MdRefresh } from 'react-icons/md';
 import type { WeatherSnapshot } from '../../../../types/weather';
@@ -31,6 +32,12 @@ type WeatherSummaryEmojiProps = {
  * Exibe o emoji animado referente ao clima atual e a data do dia.
  */
 export function WeatherSummaryEmoji({ state, derived, actions }: WeatherSummaryEmojiProps) {
+  const [animationData, setAnimationData] = useState<unknown>(null);
+
+  useEffect(() => {
+    resolveWeatherEmoji(derived.snapshot).then(setAnimationData);
+  }, [derived.snapshot]);
+
   return (
     <div className={weatherEmojiContainer}>
       <div className={weatherSummaryMeta}>
@@ -51,12 +58,14 @@ export function WeatherSummaryEmoji({ state, derived, actions }: WeatherSummaryE
       </div>
       <span className={weatherDateBadge}>{derived.dateLabel}</span>
       <div className={weatherEmojiWrapper} role="img" aria-label={derived.description}>
-        <Lottie
-          animationData={resolveWeatherEmoji(derived.snapshot)}
-          className={weatherEmoji}
-          loop
-          autoplay
-        />
+        {animationData != null ? (
+          <Lottie
+            animationData={animationData}
+            className={weatherEmoji}
+            loop
+            autoplay
+          />
+        ) : null}
       </div>
     </div>
   );

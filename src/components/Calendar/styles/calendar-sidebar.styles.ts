@@ -141,31 +141,29 @@ export const timelineWeatherDot = css({
   backgroundColor: 'rgba(0, 0, 0, 0.2)',
   boxShadow: '0 0 0 5px rgba(0, 0, 0, 0.04)',
   transition: 'transform 0.2s ease, box-shadow 0.2s ease',
-  selectors: {
-    '&[data-tone="sunny"]': {
-      backgroundColor: 'rgba(248, 200, 72, 0.95)',
-      boxShadow: '0 0 0 5px rgba(248, 200, 72, 0.18)',
-    },
-    '&[data-tone="rain"]': {
-      backgroundColor: 'rgba(59, 130, 246, 0.95)',
-      boxShadow: '0 0 0 5px rgba(59, 130, 246, 0.18)',
-    },
-    '&[data-tone="cloudy"]': {
-      backgroundColor: 'rgba(148, 163, 184, 0.95)',
-      boxShadow: '0 0 0 5px rgba(148, 163, 184, 0.18)',
-    },
-    '&[data-tone="cold"]': {
-      backgroundColor: 'rgba(56, 189, 248, 0.95)',
-      boxShadow: '0 0 0 5px rgba(56, 189, 248, 0.18)',
-    },
-    '&[data-tone="night"]': {
-      backgroundColor: 'rgba(71, 85, 105, 0.9)',
-      boxShadow: '0 0 0 5px rgba(71, 85, 105, 0.18)',
-    },
-    '&[data-current="true"]': {
-      transform: 'scale(1.35)',
-      boxShadow: '0 0 0 7px var(--weather-accent-light, rgba(214, 69, 80, 0.2))',
-    },
+  '&[data-tone="sunny"]': {
+    backgroundColor: 'rgba(248, 200, 72, 0.95)',
+    boxShadow: '0 0 0 5px rgba(248, 200, 72, 0.18)',
+  },
+  '&[data-tone="rain"]': {
+    backgroundColor: 'rgba(59, 130, 246, 0.95)',
+    boxShadow: '0 0 0 5px rgba(59, 130, 246, 0.18)',
+  },
+  '&[data-tone="cloudy"]': {
+    backgroundColor: 'rgba(148, 163, 184, 0.95)',
+    boxShadow: '0 0 0 5px rgba(148, 163, 184, 0.18)',
+  },
+  '&[data-tone="cold"]': {
+    backgroundColor: 'rgba(56, 189, 248, 0.95)',
+    boxShadow: '0 0 0 5px rgba(56, 189, 248, 0.18)',
+  },
+  '&[data-tone="night"]': {
+    backgroundColor: 'rgba(71, 85, 105, 0.9)',
+    boxShadow: '0 0 0 5px rgba(71, 85, 105, 0.18)',
+  },
+  '&[data-current="true"]': {
+    transform: 'scale(1.35)',
+    boxShadow: '0 0 0 7px var(--weather-accent-light, rgba(214, 69, 80, 0.2))',
   },
 });
 

@@ -1,4 +1,4 @@
-import type { WeatherTip, WeatherTipKind } from '../../../../../../types/weather';
+import type { WeatherTip, WeatherTipKind } from '../../../../../types/weather';
 
 /**
  * Cria um id de dica consistente.

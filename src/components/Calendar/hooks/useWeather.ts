@@ -43,7 +43,12 @@ export const useWeather = () => {
   );
 
   useEffect(() => {
-    fetchWeather();
+    if ('requestIdleCallback' in window) {
+      const id = requestIdleCallback(() => fetchWeather());
+      return () => cancelIdleCallback(id);
+    }
+    const id = setTimeout(() => fetchWeather(), 100);
+    return () => clearTimeout(id);
   }, [fetchWeather]);
 
   /**

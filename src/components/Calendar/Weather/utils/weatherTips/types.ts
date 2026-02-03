@@ -1,4 +1,4 @@
-import type { WeatherSnapshot, WeatherTip } from '../../../../../../types/weather';
+import type { WeatherSnapshot, WeatherTip } from '../../../../../types/weather';
 
 export type WeatherTipsInput = {
   snapshot: WeatherSnapshot;

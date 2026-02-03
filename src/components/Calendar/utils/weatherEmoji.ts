@@ -1,9 +1,3 @@
-import atmosphereEmoji from '../../../assets/emojis/atmosphere.json';
-import cloundEmoji from '../../../assets/emojis/clound.json';
-import coldEmoji from '../../../assets/emojis/cold.json';
-import hotEmoji from '../../../assets/emojis/hot.json';
-import rainEmoji from '../../../assets/emojis/rain.json';
-import sunnyEmoji from '../../../assets/emojis/sunny.json';
 import type { WeatherSnapshot } from '../../../types/weather';
 
 const RAIN_KEYWORDS = ['chuva', 'garoa', 'tempestade', 'trovoada'];
@@ -24,45 +18,43 @@ const normalizeWeatherDescription = (value: string): string => {
 
 /**
  * Resolve o emoji animado que melhor representa o clima atual.
+ * Retorna uma Promise com o JSON do Lottie (dynamic import para code splitting).
  * PRIORIDADE: Temperatura extrema > Descrição do clima > Temperatura fallback
  */
-export const resolveWeatherEmoji = (snapshot: WeatherSnapshot | null) => {
+export const resolveWeatherEmoji = (snapshot: WeatherSnapshot | null): Promise<unknown> => {
   if (!snapshot) {
-    return sunnyEmoji;
+    return import('../../../assets/emojis/sunny.json').then(m => m.default);
   }
 
-  // PRIORIDADE 1: Temperatura extrema (independente da descrição)
   if (snapshot.temperature.current >= 30) {
-    return hotEmoji;
+    return import('../../../assets/emojis/hot.json').then(m => m.default);
   }
 
   if (snapshot.temperature.current <= 15) {
-    return coldEmoji;
+    return import('../../../assets/emojis/cold.json').then(m => m.default);
   }
 
-  // PRIORIDADE 2: Descrição do clima (quando temperatura está entre 15-30°C)
   const normalized = normalizeWeatherDescription(snapshot.description);
 
   if (RAIN_KEYWORDS.some((keyword) => normalized.includes(keyword))) {
-    return rainEmoji;
+    return import('../../../assets/emojis/rain.json').then(m => m.default);
   }
 
   if (SNOW_KEYWORDS.some((keyword) => normalized.includes(keyword))) {
-    return coldEmoji;
+    return import('../../../assets/emojis/cold.json').then(m => m.default);
   }
 
   if (ATMOSPHERE_KEYWORDS.some((keyword) => normalized.includes(keyword))) {
-    return atmosphereEmoji;
+    return import('../../../assets/emojis/atmosphere.json').then(m => m.default);
   }
 
   if (CLOUD_KEYWORDS.some((keyword) => normalized.includes(keyword))) {
-    return cloundEmoji;
+    return import('../../../assets/emojis/clound.json').then(m => m.default);
   }
 
   if (SUNNY_KEYWORDS.some((keyword) => normalized.includes(keyword))) {
-    return sunnyEmoji;
+    return import('../../../assets/emojis/sunny.json').then(m => m.default);
   }
 
-  // PRIORIDADE 3: Fallback padrão
-  return sunnyEmoji;
+  return import('../../../assets/emojis/sunny.json').then(m => m.default);
 };

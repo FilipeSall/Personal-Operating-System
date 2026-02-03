@@ -1,14 +1,25 @@
+import { lazy, Suspense } from "react";
 import { createBrowserRouter } from "react-router-dom";
 import App from "./App";
 import ErrorPage from "./pages/ErrorPage";
-import Home from "./pages/Home";
+
+const Home = lazy(() => import("./pages/Home"));
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <App />,
     errorElement: <ErrorPage />,
-    children: [{ index: true, element: <Home /> }],
+    children: [
+      {
+        index: true,
+        element: (
+          <Suspense>
+            <Home />
+          </Suspense>
+        ),
+      },
+    ],
   },
 ]);
 

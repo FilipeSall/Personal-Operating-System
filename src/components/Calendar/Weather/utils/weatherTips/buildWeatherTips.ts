@@ -1,4 +1,4 @@
-import type { WeatherTip } from '../../../../../../types/weather';
+import type { WeatherTip } from '../../../../../types/weather';
 import type { TipPool, WeatherTipsInput } from './types';
 import { buildAlertTip } from './builders/alertTip';
 import { buildMiseryTip, buildWindChillTip, buildBadHairDayTip, buildDeceptiveColdTip } from './builders/compositeTips';

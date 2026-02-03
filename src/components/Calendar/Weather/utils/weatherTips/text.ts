@@ -1,4 +1,4 @@
-import type { WeatherTip } from '../../../../../../types/weather';
+import type { WeatherTip } from '../../../../../types/weather';
 
 /**
  * Normaliza texto para comparacoes simples.

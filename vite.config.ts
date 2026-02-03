@@ -9,4 +9,17 @@ export default defineConfig({
   optimizeDeps: {
     exclude: ['styled-system'],
   },
+  build: {
+    target: 'esnext',
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'vendor-react': ['react', 'react-dom', 'react-router-dom'],
+          'vendor-lottie': ['lottie-react'],
+          'vendor-zustand': ['zustand'],
+          'vendor-date-fns': ['date-fns'],
+        },
+      },
+    },
+  },
 })

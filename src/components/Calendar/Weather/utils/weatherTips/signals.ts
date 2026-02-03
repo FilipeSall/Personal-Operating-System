@@ -1,4 +1,4 @@
-import type { WeatherSnapshot } from '../../../../../../types/weather';
+import type { WeatherSnapshot } from '../../../../../types/weather';
 import type { DaylightSignals, WeatherTipSignals } from './types';
 import { normalizeText } from './text';
 

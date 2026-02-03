@@ -26,7 +26,6 @@ export const dateCardWrapper = css({
 
 export const dateCardButton = css({
   position: 'relative',
-  border: 'none',
   borderRadius: '14px',
   padding: '10px 16px',
   textAlign: 'center',
@@ -68,7 +67,6 @@ export const datePickerDropdown = css({
   left: '0',
   zIndex: 100,
   backgroundColor: 'rgba(255, 255, 255, 0.98)',
-  border: 'none',
   borderRadius: '14px',
   padding: '16px',
   minWidth: '220px',

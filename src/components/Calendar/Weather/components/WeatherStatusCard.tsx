@@ -22,6 +22,8 @@ const loadAnimation = (kind: WeatherStatusState['kind']): Promise<unknown> => {
       return import('../../../../assets/icons/loading.json').then(m => m.default);
     case 'past':
       return import('../../../../assets/icons/time.json').then(m => m.default);
+    case 'no-data':
+      return import('../../../../assets/icons/wait.json').then(m => m.default);
     default:
       return import('../../../../assets/icons/alert.json').then(m => m.default);
   }

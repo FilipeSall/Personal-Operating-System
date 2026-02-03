@@ -1,7 +1,7 @@
 import type { WeatherDerived, WeatherState } from '../../hooks/useWeather';
 
 export type WeatherStatusState = {
-  kind: 'loading' | 'error' | 'past';
+  kind: 'loading' | 'error' | 'past' | 'no-data';
   title: string;
   message: string;
   detail?: string;
@@ -17,14 +17,29 @@ type WeatherNoForecastCopy = {
   message: string;
 };
 
+/**
+ * Normaliza a data para o inicio do dia local.
+ */
 const getStartOfDay = (date: Date): Date => {
   return new Date(date.getFullYear(), date.getMonth(), date.getDate());
 };
 
+/**
+ * Indica se a data alvo esta antes do dia atual.
+ */
 const isPastLocalDay = (target: Date, now: Date): boolean => {
   const today = getStartOfDay(now);
   const targetDay = getStartOfDay(target);
   return targetDay.getTime() < today.getTime();
+};
+
+/**
+ * Indica se a data alvo esta depois do dia atual.
+ */
+const isFutureLocalDay = (target: Date, now: Date): boolean => {
+  const today = getStartOfDay(now);
+  const targetDay = getStartOfDay(target);
+  return targetDay.getTime() > today.getTime();
 };
 
 /**
@@ -107,11 +122,22 @@ export function getWeatherStatusState(
       };
     }
 
-    if (isPastLocalDay(state.selectedDate, new Date())) {
+    const now = new Date();
+
+    if (isPastLocalDay(state.selectedDate, now)) {
       return {
         kind: 'past',
         title: 'Data no passado',
         message: 'Esse dia já foi e os meteorologistas também. Não temos previsão para datas antigas (nem DeLorean resolve).',
+      };
+    }
+
+    if (isFutureLocalDay(state.selectedDate, now)) {
+      const noForecastCopy = getRandomNoForecastCopy();
+      return {
+        kind: 'no-data',
+        title: noForecastCopy.title,
+        message: noForecastCopy.message,
       };
     }
 

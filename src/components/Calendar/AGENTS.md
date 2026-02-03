@@ -61,4 +61,5 @@
 - O hook `useWeather` deve assinar `store.forecasts` diretamente (nao `getSnapshotForDate`) para garantir reatividade com Zustand.
 - O label de localizacao para `BR` prioriza `Cidade - UF` (ex.: `Plano Piloto - DF`).
 - Dicas do tipo "Check rápido" que falam em "luz extra" ou nuvens densas só entram quando a cobertura estiver em pelo menos 75%, evitando mensagens fora de contexto.
-- Quando o usuário escolhe uma data passada sem snapshot, exibimos um card de status que avisa (com humor) que o dia já passou e usamos o Lottie `time.json`, diferente do alerta padrão para datas futuras.
+- Quando o usuário escolhe uma data passada sem snapshot, exibimos um card de status que avisa (com humor) que o dia já passou e usamos o Lottie `time.json`.
+- Quando o usuário escolhe uma data futura sem snapshot, exibimos o Lottie `wait.json`. Erros reais de API continuam usando `alert.json`.

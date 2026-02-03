@@ -66,10 +66,7 @@ export const weatherTipText = css({
   fontWeight: '600',
   color: 'text.subtle',
   lineHeight: 1.4,
-  overflow: 'hidden',
-  display: '-webkit-box',
-  WebkitBoxOrient: 'vertical',
-  WebkitLineClamp: 3,
+  lineClamp: 3,
 });
 
 export const weatherTipFooter = css({

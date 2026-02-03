@@ -7,10 +7,10 @@ O tema foi criado usando `stylex.defineVars()` conforme a documentação oficial
 ## Fontes
 
 O projeto utiliza duas fontes do Google Fonts:
-- **Montserrat**: Para títulos, headings e botões (display)
-- **Roboto**: Para texto corpo (body)
+- **Bricolage Grotesque**: Para títulos, headings e botões (display)
+- **Manrope**: Para texto corpo (body)
 
-As fontes são importadas automaticamente no `index.html` via Google Fonts CDN.
+As fontes são importadas automaticamente no `src/styles/index.css` via Google Fonts CDN.
 
 ### Arquivo: `theme.stylex.ts`
 
@@ -50,8 +50,8 @@ colors.cardDark       // #27272a - Card modo escuro
 ```typescript
 import { fonts } from './theme.stylex';
 
-fonts.display  // "Montserrat, sans-serif" - Para títulos e headings
-fonts.body     // "Roboto, sans-serif" - Para texto corpo
+fonts.display  // "Bricolage Grotesque, sans-serif" - Para títulos e headings
+fonts.body     // "Manrope, sans-serif" - Para texto corpo
 ```
 
 ### Border Radius (`borderRadius`)

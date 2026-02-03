@@ -5,45 +5,48 @@ export const eventItem = cva({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
-    padding: '2px 6px',
-    borderRadius: '4px',
+    padding: '3px 8px',
+    borderRadius: '8px',
     borderLeft: '2px solid',
     cursor: 'pointer',
     transition: 'all 0.15s ease',
+    backgroundColor: 'rgba(255, 255, 255, 0.75)',
+    border: '1px solid rgba(0, 0, 0, 0.04)',
     _hover: {
-      opacity: 0.85,
-      transform: 'translateX(1px)',
+      opacity: 0.95,
+      transform: 'translateX(2px)',
+      boxShadow: '0 6px 12px rgba(33, 26, 30, 0.12)',
     },
   },
   variants: {
     type: {
       work: {
-        backgroundColor: 'rgba(214, 69, 80, 0.08)',
-        borderColor: 'brand.500',
+        backgroundColor: 'rgba(253, 232, 234, 0.75)',
+        borderColor: 'rgba(214, 69, 80, 0.6)',
       },
       routine: {
-        backgroundColor: 'rgba(156, 163, 175, 0.1)',
-        borderColor: 'rgba(156, 163, 175, 0.5)',
+        backgroundColor: 'rgba(254, 243, 199, 0.75)',
+        borderColor: 'rgba(234, 179, 8, 0.55)',
       },
       reminder: {
-        backgroundColor: 'rgba(59, 130, 246, 0.08)',
-        borderColor: 'rgba(59, 130, 246, 0.6)',
+        backgroundColor: 'rgba(219, 234, 254, 0.75)',
+        borderColor: 'rgba(59, 130, 246, 0.55)',
       },
       personal: {
-        backgroundColor: 'rgba(168, 85, 247, 0.08)',
-        borderColor: 'rgba(168, 85, 247, 0.6)',
+        backgroundColor: 'rgba(237, 233, 254, 0.75)',
+        borderColor: 'rgba(168, 85, 247, 0.55)',
       },
       study: {
-        backgroundColor: 'rgba(59, 130, 246, 0.08)',
-        borderColor: 'rgba(59, 130, 246, 0.6)',
+        backgroundColor: 'rgba(209, 250, 229, 0.75)',
+        borderColor: 'rgba(16, 185, 129, 0.55)',
       },
       health: {
-        backgroundColor: 'rgba(167, 170, 41, 0.1)',
-        borderColor: 'rgba(167, 170, 41, 0.6)',
+        backgroundColor: 'rgba(254, 226, 226, 0.75)',
+        borderColor: 'rgba(239, 68, 68, 0.55)',
       },
       finance: {
-        backgroundColor: 'rgba(249, 115, 22, 0.08)',
-        borderColor: 'rgba(249, 115, 22, 0.6)',
+        backgroundColor: 'rgba(255, 237, 213, 0.75)',
+        borderColor: 'rgba(249, 115, 22, 0.55)',
       },
     },
   },
@@ -55,7 +58,7 @@ export const eventDot = cva({
     height: '4px',
     borderRadius: '50%',
     flexShrink: 0,
-    boxShadow: '0 0 3px currentColor',
+    boxShadow: '0 0 6px currentColor',
   },
   variants: {
     type: {
@@ -94,6 +97,7 @@ export const eventText = cva({
     flex: 1,
     marginLeft: '5px',
     lineHeight: '1.3',
+    color: 'text.primary',
   },
   variants: {
     type: {

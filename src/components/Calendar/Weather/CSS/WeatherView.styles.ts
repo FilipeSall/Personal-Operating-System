@@ -1,60 +1,64 @@
 import { css } from '../../../../../styled-system/css';
-import { weatherBorder } from './weatherTokens';
 
 export const weatherSection = css({
   position: 'relative',
   overflow: 'hidden',
-  borderRadius: '2.5em',
-  ...weatherBorder,
-  backgroundColor: 'surface.950',
-  padding: '0.25em',
-  boxShadow: '0 1.125em 2em rgba(33, 26, 30, 0.08)',
-  fontSize: 'clamp(0.65em, 1vmin, 1em)',
+  borderRadius: '18px',
+  border: '1px solid',
+  borderColor: 'var(--calendar-panel-border, token(colors.surface.700))',
+  backgroundColor: 'var(--calendar-card-bg, token(colors.surface.950))',
+  padding: '8px',
+  boxShadow: '0 16px 28px rgba(33, 26, 30, 0.12)',
+  fontSize: 'clamp(0.68em, 1vmin, 1em)',
   height: '100%',
   minHeight: 0,
 });
 
 export const weatherPanel = css({
   position: 'relative',
-  overflow: 'visible',
-  borderRadius: '2.25em',
+  overflow: 'hidden',
+  borderRadius: '16px',
   backgroundColor: 'var(--weather-panel-bg, rgba(253, 232, 234, 0.6))',
-  padding: '1em 1.25em',
+  padding: '1em',
   display: 'grid',
-  gridTemplateRows: '8fr 2fr',
-  gap: { base: '0.625em', bp800: '1.5em' },
+  gridTemplateRows: 'minmax(0, 1fr) auto',
+  gap: { base: '0.75em', bp800: '1.25em' },
   transition: 'background-color 0.4s ease',
   width: '100%',
   height: '100%',
-  maxHeight: '70vmin',
+  minHeight: 0,
+  backgroundImage:
+    'radial-gradient(circle at 15% 15%, rgba(255, 255, 255, 0.6), transparent 55%), radial-gradient(circle at 85% 85%, rgba(255, 255, 255, 0.35), transparent 60%)',
 });
 
 export const weatherDecorTop = css({
   position: 'absolute',
-  top: '-2.5em',
-  right: '-2.5em',
-  width: '10em',
-  height: '10em',
+  top: '-3em',
+  right: '-3em',
+  width: '9em',
+  height: '9em',
   borderRadius: '50%',
   backgroundColor: 'var(--weather-decor-top, rgba(214, 69, 80, 0.3))',
-  filter: 'blur(1.5em)',
+  filter: 'blur(2em)',
   pointerEvents: 'none',
   zIndex: 0,
   transition: 'background-color 0.4s ease',
+  opacity: 0.6,
 });
 
 export const weatherDecorBottom = css({
   position: 'absolute',
-  bottom: '0.75em',
-  left: '-2em',
-  width: '8em',
-  height: '8em',
+  bottom: '-1em',
+  left: '-2.5em',
+  width: '8.5em',
+  height: '8.5em',
   borderRadius: '50%',
   backgroundColor: 'var(--weather-decor-bottom, rgba(191, 58, 68, 0.25))',
   transition: 'background-color 0.4s ease',
-  filter: 'blur(1.5em)',
+  filter: 'blur(2em)',
   pointerEvents: 'none',
   zIndex: 0,
+  opacity: 0.6,
 });
 
 export const weatherTop = css({
@@ -63,8 +67,13 @@ export const weatherTop = css({
   display: 'grid',
   gridTemplateColumns: '1fr 2fr',
   alignItems: 'center',
-  gap: { base: '0.625em', bp800: '1.5em' },
+  gap: { base: '0.75em', bp800: '1.25em' },
   minHeight: 0,
+  paddingTop: '0.5em',
+  paddingBottom: '0.25em',
+  '@media (max-width: 900px)': {
+    gridTemplateColumns: '1fr',
+  },
 });
 
 export const weatherStatusCard = css({

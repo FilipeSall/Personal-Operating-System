@@ -15,6 +15,7 @@ import {
   MdUmbrella,
   MdWarning,
   MdWbSunny,
+  MdArrowForward,
 } from 'react-icons/md';
 import type { WeatherTip, WeatherTipKind } from '../../../../types/weather';
 import {
@@ -30,9 +31,12 @@ import {
   weatherTipNavButton,
   weatherTipCounter,
 } from '../CSS/WeatherTipPanel.styles';
+import { weatherDetailsButton } from '../CSS/WeatherFooter.styles';
 
 type WeatherTipPanelProps = {
   tips: WeatherTip[];
+  canOpenDetails: boolean;
+  onOpenDetails: () => void;
 };
 
 const tipIconElements: Record<WeatherTipKind, ReactElement> = {
@@ -63,15 +67,25 @@ const getTipIcon = (kind: WeatherTipKind): ReactElement => {
 /**
  * Painel principal das dicas do clima, com paginacao.
  */
-export function WeatherTipPanel({ tips }: WeatherTipPanelProps) {
+export function WeatherTipPanel({ tips, canOpenDetails, onOpenDetails }: WeatherTipPanelProps) {
   const tipCount = tips.length;
   const tipsSignature = useMemo(() => tips.map((tip) => tip.id).join('|'), [tips]);
-  return <WeatherTipPanelContent key={tipsSignature} tips={tips} tipCount={tipCount} />;
+  return (
+    <WeatherTipPanelContent
+      key={tipsSignature}
+      tips={tips}
+      tipCount={tipCount}
+      canOpenDetails={canOpenDetails}
+      onOpenDetails={onOpenDetails}
+    />
+  );
 }
 
 type WeatherTipPanelContentProps = {
   tips: WeatherTip[];
   tipCount: number;
+  canOpenDetails: boolean;
+  onOpenDetails: () => void;
 };
 
 const TIPS_PER_PAGE = 2;
@@ -79,7 +93,12 @@ const TIPS_PER_PAGE = 2;
 /**
  * Conteudo do painel de dicas, com estado interno de paginacao.
  */
-const WeatherTipPanelContent = ({ tips, tipCount }: WeatherTipPanelContentProps) => {
+const WeatherTipPanelContent = ({
+  tips,
+  tipCount,
+  canOpenDetails,
+  onOpenDetails,
+}: WeatherTipPanelContentProps) => {
   const [activeIndex, setActiveIndex] = useState(0);
   const clampedIndex = tipCount === 0 ? 0 : Math.min(activeIndex, tipCount - 1);
   const pageStart = Math.floor(clampedIndex / TIPS_PER_PAGE) * TIPS_PER_PAGE;
@@ -133,6 +152,15 @@ const WeatherTipPanelContent = ({ tips, tipCount }: WeatherTipPanelContentProps)
         </div>
       ))}
       <div className={weatherTipFooter}>
+        <button
+          type="button"
+          className={weatherDetailsButton}
+          disabled={!canOpenDetails}
+          onClick={onOpenDetails}
+        >
+          <span>Detalhes do clima</span>
+          <MdArrowForward size={16} />
+        </button>
         <div className={weatherTipNav}>
           <button
             type="button"

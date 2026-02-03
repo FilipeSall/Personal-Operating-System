@@ -10,6 +10,16 @@
 - Funcoes com mais de 5 props devem separar tipos (ex.: `state`, `derived`, `actions`).
 - Se uma alteracao impactar o fluxo do Calendar, atualizar este AGENTS.md.
 - Ao clicar em um dia fora do mes atual, o calendario deve mudar para o mes daquele dia e selecionar a data.
+- O layout principal do calendario organiza um painel lateral fixo (`CalendarSidebar`) e a area principal (grid + clima).
+- O botão "Detalhes do clima" fica no painel de dicas do clima e abre o modal via `useWeatherUiStore`.
+
+## Painel lateral (CalendarSidebar)
+
+- Container: `src/components/Calendar/CalendarSidebar/CalendarSidebar.tsx`.
+- View: `src/components/Calendar/CalendarSidebar/CalendarSidebarView.tsx`.
+- Hook: `src/components/Calendar/hooks/useCalendarSidebar.ts`.
+- Helpers: `src/components/Calendar/utils/calendarSidebar.ts`.
+- Responsavel por timeline de 24h e tarefas do dia (eventos especiais temporariamente desativados na UI).
 
 ## Weather (Clima)
 

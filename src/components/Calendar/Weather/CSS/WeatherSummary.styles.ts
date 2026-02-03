@@ -142,6 +142,27 @@ export const weatherEmojiContainer = css({
   border: '0.0625em solid rgba(120, 124, 130, 0.18)',
 });
 
+export const weatherSummaryMeta = css({
+  width: '100%',
+  display: 'flex',
+  alignItems: 'center',
+  gap: '0.5em',
+  justifyContent: 'space-between',
+  flexWrap: 'wrap',
+});
+
+export const weatherSummaryMetaLabel = css({
+  fontSize: '0.6em',
+  fontWeight: '700',
+  letterSpacing: '0.08em',
+  textTransform: 'uppercase',
+  color: 'text.dim',
+  backgroundColor: 'rgba(255, 255, 255, 0.7)',
+  border: '0.0625em solid rgba(120, 124, 130, 0.2)',
+  padding: '0.25em 0.5em',
+  borderRadius: '999px',
+});
+
 export const weatherTagsRow = css({
   display: 'flex',
   alignItems: 'center',

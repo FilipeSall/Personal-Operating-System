@@ -3,19 +3,17 @@ import { weatherBorder, weatherCircle, weatherPill, weatherSoftShadow } from './
 
 export const weatherTipCard = css({
   width: '100%',
-  height: '100%',
   display: 'flex',
   flexDirection: 'column',
   gap: '0.75em',
-  flex: 1,
-  minHeight: 0,
+  flex: '0 0 auto',
+  minHeight: 'fit-content',
 });
 
 export const weatherTipItem = css({
   position: 'relative',
   width: '100%',
-  flex: 1,
-  minHeight: 0,
+  flex: '0 0 auto',
   backgroundColor: 'var(--weather-accent-light, #FDE8EA)',
   border: '0.125em solid',
   borderColor: 'var(--weather-accent-light, #FDE8EA)',
@@ -58,11 +56,11 @@ export const weatherTipLabel = css({
   fontWeight: '800',
   letterSpacing: '0.16em',
   color: 'var(--weather-accent, #D64550)',
-  fontSize: { base: '0.625em', bp1400: '0.88em', bp1440: '1em' },
+  fontSize: { base: '0.56em', bp1400: '0.78em', bp1440: '0.9em' },
 });
 
 export const weatherTipText = css({
-  fontSize: { base: '0.8125em', bp1400: '1.2em', bp1440: '1.4em' },
+  fontSize: { base: '0.75em', bp1400: '1.05em', bp1440: '1.2em' },
   fontWeight: '600',
   color: 'text.subtle',
   lineHeight: 1.4,
@@ -72,7 +70,9 @@ export const weatherTipFooter = css({
   marginTop: 'auto',
   display: 'flex',
   alignItems: 'center',
-  justifyContent: 'flex-end',
+  justifyContent: 'space-between',
+  paddingTop: '0.25em',
+  gap: '0.75em',
 });
 
 export const weatherTipNav = css({

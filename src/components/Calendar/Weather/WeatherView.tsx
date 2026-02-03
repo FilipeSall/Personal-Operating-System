@@ -6,9 +6,9 @@ import {
   weatherSection,
   weatherTop,
 } from './CSS/WeatherView.styles';
+import { useWeatherUiStore } from '../../../store/useWeatherUiStore';
 import { getWeatherStatusState } from './utils/getWeatherStatusMessage';
 import { buildWeatherViewModel } from './utils/weatherViewModel';
-import { WeatherFooter } from './components/WeatherFooter';
 import { WeatherSummary } from './components/WeatherSummary';
 import { WeatherTipPanel } from './components/WeatherTipPanel';
 import { WeatherStatusCard } from './components/WeatherStatusCard';
@@ -17,13 +17,13 @@ type WeatherViewProps = {
   state: WeatherState;
   derived: WeatherDerived;
   actions: WeatherActions;
-  onOpenDetails: () => void;
 };
 
 /**
  * View do componente de clima, renderiza o resumo com metricas e dica do dia.
  */
-export function WeatherView({ state, derived, actions, onOpenDetails }: WeatherViewProps) {
+export function WeatherView({ state, derived, actions }: WeatherViewProps) {
+  const openDetails = useWeatherUiStore((store) => store.openDetails);
   const {
     updatedAtLabel,
     dateLabel,
@@ -47,22 +47,28 @@ export function WeatherView({ state, derived, actions, onOpenDetails }: WeatherV
           <>
             <div className={weatherTop}>
               <WeatherSummary
-                snapshot={derived.snapshot}
-                description={description}
-                dateLabel={dateLabel}
-                temperatureValue={temperatureValue}
-                locationLabel={state.locationLabel}
+                state={{
+                  locationLabel: state.locationLabel,
+                  isLoading: state.isLoading,
+                  updatedAtLabel,
+                }}
+                derived={{
+                  snapshot: derived.snapshot,
+                  description,
+                  dateLabel,
+                  temperatureValue,
+                }}
+                actions={{ refreshWeather: actions.refreshWeather }}
               />
-              <WeatherTipPanel tips={tips} />
+              <WeatherTipPanel
+                tips={tips}
+                canOpenDetails={Boolean(derived.snapshot)}
+                onOpenDetails={() => {
+                  if (!derived.snapshot) return;
+                  openDetails();
+                }}
+              />
             </div>
-
-            <WeatherFooter
-              actions={actions}
-              derived={derived}
-              state={state}
-              onOpenDetails={onOpenDetails}
-              updatedAtLabel={updatedAtLabel}
-            />
           </>
         )}
       </div>

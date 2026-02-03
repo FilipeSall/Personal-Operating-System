@@ -11,7 +11,7 @@ export default defineConfig({
 
   globalCss: {
     'html, body': {
-      fontFamily: 'Montserrat, sans-serif',
+      fontFamily: 'Manrope, sans-serif',
     },
   },
 
@@ -32,11 +32,32 @@ export default defineConfig({
           '0%, 100%': { boxShadow: '0 0 0 0 rgba(214, 69, 80, 0.35)' },
           '50%': { boxShadow: '0 0 0 0.35em rgba(214, 69, 80, 0.12)' },
         },
+        floatSlow: {
+          '0%, 100%': { transform: 'translate3d(0, 0, 0)' },
+          '50%': { transform: 'translate3d(0, -6px, 0)' },
+        },
+        drift: {
+          '0%': { transform: 'translate3d(0, 0, 0)' },
+          '100%': { transform: 'translate3d(12px, -12px, 0)' },
+        },
+        rainFall: {
+          '0%': { transform: 'translateY(-10%)', opacity: 0 },
+          '50%': { opacity: 0.7 },
+          '100%': { transform: 'translateY(110%)', opacity: 0 },
+        },
+        cloudFloat: {
+          '0%, 100%': { transform: 'translateX(0)' },
+          '50%': { transform: 'translateX(6px)' },
+        },
+        sunPulse: {
+          '0%, 100%': { transform: 'scale(1)', opacity: 0.7 },
+          '50%': { transform: 'scale(1.08)', opacity: 1 },
+        },
       },
       tokens: {
         fonts: {
-          montserrat: { value: 'Montserrat, sans-serif' },
-          roboto: { value: 'Roboto, sans-serif' },
+          bricolage: { value: 'Bricolage Grotesque, sans-serif' },
+          manrope: { value: 'Manrope, sans-serif' },
         },
         colors: {
           brand: {

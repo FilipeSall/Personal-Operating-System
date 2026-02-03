@@ -1,5 +1,5 @@
-import { useState } from 'react';
 import { useWeather } from '../hooks/useWeather';
+import { useWeatherUiStore } from '../../../store/useWeatherUiStore';
 import { WeatherDetailsModal } from './WeatherDetailsModal';
 import { WeatherView } from './WeatherView';
 
@@ -8,30 +8,15 @@ import { WeatherView } from './WeatherView';
  */
 export function Weather() {
   const { state, derived, actions } = useWeather();
-  const [isDetailsOpen, setIsDetailsOpen] = useState(false);
-
-  const handleOpenDetails = () => {
-    if (!derived.snapshot) {
-      return;
-    }
-    setIsDetailsOpen(true);
-  };
-
-  const handleCloseDetails = () => {
-    setIsDetailsOpen(false);
-  };
+  const isDetailsOpen = useWeatherUiStore((store) => store.isDetailsOpen);
+  const closeDetails = useWeatherUiStore((store) => store.closeDetails);
 
   return (
     <>
-      <WeatherView
-        state={state}
-        derived={derived}
-        actions={actions}
-        onOpenDetails={handleOpenDetails}
-      />
+      <WeatherView state={state} derived={derived} actions={actions} />
       <WeatherDetailsModal
         isOpen={isDetailsOpen}
-        onClose={handleCloseDetails}
+        onClose={closeDetails}
         state={state}
         derived={derived}
       />

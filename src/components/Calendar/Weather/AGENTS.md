@@ -3,17 +3,17 @@
 O Weather organiza a lógica e a visualização em camadas claras, o que facilita manter a separação entre serviços, estados e elementos visuais.
 
 ## Camadas principais
-- **Weather**: container que usa o hook `useWeather` para fornecer `state`, `derived` e `actions` e abre o modal de detalhes.
-- **WeatherView**: refaz o layout geral, exibe o status ou monta o painel superior (resumo + dica) e o rodapé de ações. A lógica de apresentação (como a label de data ou o `updatedAtLabel`) permanece aqui.
+- **Weather**: container que usa o hook `useWeather` para fornecer `state`, `derived` e `actions`, e consome o `useWeatherUiStore` para abrir/fechar o modal de detalhes.
+- **WeatherView**: refaz o layout geral, exibe o status ou monta o painel superior (resumo + dica). A lógica de apresentação (como a label de data ou o `updatedAtLabel`) permanece aqui.
 - **AGENTS deste fluxo**: atualize este arquivo sempre que o comportamento geral ou o fluxo de renderização mudar.
 
 ## Componentes UI
-- **WeatherSummary**: resumo com emoji animado, temperatura, condição, tags contextuais e localização. Recebe `snapshot`, `description`, `dateLabel`, `temperatureValue` e `locationLabel` e delega o emoji e as informações para `WeatherSummaryEmoji.tsx` e `WeatherSummaryInfo.tsx`.
-  - **WeatherSummaryEmoji**: exibe a data acima do emoji animado em um container flexível.
+- **WeatherSummary**: resumo com emoji animado, temperatura, condição, tags contextuais e localização. Recebe `state`, `derived` e `actions` e delega o emoji e as informações para `WeatherSummaryEmoji.tsx` e `WeatherSummaryInfo.tsx`.
+  - **WeatherSummaryEmoji**: exibe o botão de atualizar + horário acima do painel do emoji.
   - **WeatherSummaryInfo**: exibe temperatura, condição, tags contextuais e localização alinhados à esquerda.
   - **WeatherTagsRow**: renderiza tags de contexto do clima (sensação térmica, umidade, vento, etc.) com ícones emoji.
 - **WeatherTipPanel**: painel principal de dicas, exibe 4 dicas com paginacao e icones relevantes para cada tipo. Dicas agora usam sistema de weighted pools com detectores de condições compostas (sufoco, vento cortante, etc.).
-- **WeatherFooter**: agrupa o botão de atualizar e o botão de detalhes, reutilizando os estilos já existentes.
+- **Botão de detalhes**: fica no rodapé das dicas, oposto aos botões de paginação.
 
 ## Utilitários
 - **getWeatherStatusMessage** (em `utils/`): centraliza a mensagem exibida quando o snapshot não está disponível ou quando há erro.
@@ -47,5 +47,5 @@ As dicas agora usam um sistema de **weighted pools** que prioriza automaticament
 - Itens de dica (`weatherTipItem`) agora usam `flex: 1` para ocupar altura igual
 - Breakpoint `bp1440` adicionado para aumentar fontes em telas largas (> 1440px)
 - Estilos consolidados em `CSS/` folder, sem style inline (Panda CSS)
-- O `weatherPanel` usa grid em proporção `80/20` (conteúdo/rodapé) e respeita o slot do container (`height: 100%` com `maxHeight: 70vmin`), mantendo unidades em `em` para escalar com o viewport.
+- O `weatherPanel` usa grid para acomodar apenas o conteúdo principal (resumo + dicas), removendo o rodapé para evitar cortes.
 - 02/02/2026: Ao substituir o snapshot do dia atual pelo dado em tempo real, agora herdamos a probabilidade de chuva agregada do forecast para evitar mostrar "Chance de chuva 0%" quando já há chuva leve.

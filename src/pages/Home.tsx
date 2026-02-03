@@ -3,19 +3,22 @@ import { css } from '../../styled-system/css';
 
 const homeContainer = css({
   height: '100vh',
-  backgroundColor: '#FDFFFC',
+  backgroundColor: '#F6F2EA',
   color: '#211A1E',
-  padding: { base: '12px', bp800: '32px' },
+  padding: { base: '12px', bp800: '28px' },
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'stretch',
   overflow: 'hidden',
+  backgroundImage:
+    'radial-gradient(circle at 10% 20%, rgba(255, 255, 255, 0.8), transparent 55%), radial-gradient(circle at 80% 0%, rgba(255, 255, 255, 0.6), transparent 60%)',
 });
 
 const calendarWidget = css({
-  width: { base: '100%', bp800: '50%' },
+  width: '100%',
   height: '100%',
-  minWidth: { bp800: '400px' },
+  maxWidth: { base: '100%', bp1024: '1200px' },
+  minWidth: { bp800: '600px' },
 });
 
 function Home() {

@@ -4,31 +4,46 @@ import { WeatherSummaryEmoji } from './WeatherSummaryEmoji';
 import { WeatherSummaryInfo } from './WeatherSummaryInfo';
 
 type WeatherSummaryProps = {
-  snapshot: WeatherSnapshot | null;
-  description: string;
-  dateLabel: string;
-  temperatureValue: number | null;
-  locationLabel: string;
+  state: {
+    locationLabel: string;
+    isLoading: boolean;
+    updatedAtLabel: string | null;
+  };
+  derived: {
+    snapshot: WeatherSnapshot | null;
+    description: string;
+    dateLabel: string;
+    temperatureValue: number | null;
+  };
+  actions: {
+    refreshWeather: () => Promise<void>;
+  };
 };
 
 /**
  * Painel que exibe o resumo principal do clima (emoji, temperatura e local).
  */
 export function WeatherSummary({
-  snapshot,
-  description,
-  dateLabel,
-  temperatureValue,
-  locationLabel,
+  state,
+  derived,
+  actions,
 }: WeatherSummaryProps) {
   return (
     <div className={weatherSummary}>
-      <WeatherSummaryEmoji snapshot={snapshot} description={description} dateLabel={dateLabel} />
+      <WeatherSummaryEmoji
+        state={{ isLoading: state.isLoading, updatedAtLabel: state.updatedAtLabel }}
+        derived={{
+          snapshot: derived.snapshot,
+          description: derived.description,
+          dateLabel: derived.dateLabel,
+        }}
+        actions={{ refreshWeather: actions.refreshWeather }}
+      />
       <WeatherSummaryInfo
-        snapshot={snapshot}
-        temperatureValue={temperatureValue}
-        description={description}
-        locationLabel={locationLabel}
+        snapshot={derived.snapshot}
+        temperatureValue={derived.temperatureValue}
+        description={derived.description}
+        locationLabel={state.locationLabel}
       />
     </div>
   );

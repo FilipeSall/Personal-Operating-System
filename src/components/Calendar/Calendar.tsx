@@ -5,23 +5,33 @@ import { toForecastKey } from '../../utils/forecastGrouper';
 import { resolveWeatherTheme, weatherThemeToCssVars } from './utils/weatherTheme';
 import { CalendarGrid } from './CalendarGrid/CalendarGrid';
 import { Weather } from './Weather/Weather';
-import { calendarContainer } from './styles/calendar-layout.styles';
+import { CalendarSidebar } from './CalendarSidebar/CalendarSidebar';
+import {
+  calendarShell,
+  calendarLayout,
+  calendarMain,
+} from './styles/calendar-layout.styles';
 
 export function Calendar() {
   const selectedDate = useCalendarStore((s) => s.selectedDate);
   const forecasts = useWeatherStore((s) => s.forecasts);
 
-  const cssVars = useMemo(() => {
+  const { cssVars, tone } = useMemo(() => {
     const key = toForecastKey(selectedDate);
     const snapshot = forecasts.get(key) ?? null;
     const theme = resolveWeatherTheme(snapshot);
-    return weatherThemeToCssVars(theme);
+    return { cssVars: weatherThemeToCssVars(theme), tone: theme.tone };
   }, [selectedDate, forecasts]);
 
   return (
-    <div className={calendarContainer} style={cssVars as React.CSSProperties}>
-      <CalendarGrid />
-      <Weather />
+    <div className={calendarShell} style={cssVars as React.CSSProperties} data-tone={tone}>
+      <div className={calendarLayout}>
+        <div className={calendarMain}>
+          <CalendarGrid />
+          <Weather />
+        </div>
+        <CalendarSidebar />
+      </div>
     </div>
   );
 }

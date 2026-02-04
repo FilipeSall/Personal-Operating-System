@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { format, isSameDay } from 'date-fns';
+import { format, isSameDay, addDays } from 'date-fns';
 import { useCalendarStore } from '../../../store/useCalendarStore';
 import { useWeatherStore } from '../../../store/useWeatherStore';
 import { toForecastKey } from '../../../utils/forecastGrouper';
@@ -20,6 +20,7 @@ export type CalendarSidebarState = {
 
 export type CalendarSidebarDerived = {
   timeline: TimelineSlot[];
+  nextDayTimeline: TimelineSlot[];
   tasks: Todo[];
 };
 
@@ -34,21 +35,35 @@ export const useCalendarSidebar = () => {
   const forecasts = useWeatherStore((state) => state.forecasts);
 
   const dateKey = useMemo(() => format(selectedDate, 'yyyy-MM-dd'), [selectedDate]);
+  const nextDate = useMemo(() => addDays(selectedDate, 1), [selectedDate]);
+  const nextDateKey = useMemo(() => format(nextDate, 'yyyy-MM-dd'), [nextDate]);
   const tasks = useMemo(() => {
     const items = todos[dateKey] ?? [];
     return [...items].sort((a, b) => a.startTime.localeCompare(b.startTime));
   }, [dateKey, todos]);
+  const nextDayTasks = useMemo(() => {
+    const items = todos[nextDateKey] ?? [];
+    return [...items].sort((a, b) => a.startTime.localeCompare(b.startTime));
+  }, [nextDateKey, todos]);
 
   const snapshot = useMemo<WeatherSnapshot | null>(() => {
     const key = toForecastKey(selectedDate);
     return forecasts.get(key) ?? null;
   }, [forecasts, selectedDate]);
+  const nextSnapshot = useMemo<WeatherSnapshot | null>(() => {
+    const key = toForecastKey(nextDate);
+    return forecasts.get(key) ?? null;
+  }, [forecasts, nextDate]);
 
   const theme = useMemo(() => resolveWeatherTheme(snapshot), [snapshot]);
+  const nextTheme = useMemo(() => resolveWeatherTheme(nextSnapshot), [nextSnapshot]);
 
   const timeline = useMemo(() => {
     return buildHourlyTimeline(tasks, theme.tone, selectedDate);
   }, [tasks, theme.tone, selectedDate]);
+  const nextDayTimeline = useMemo(() => {
+    return buildHourlyTimeline(nextDayTasks, nextTheme.tone, nextDate);
+  }, [nextDate, nextDayTasks, nextTheme.tone]);
 
 
   const dateLabel = useMemo(() => formatSidebarDateLabel(selectedDate), [selectedDate]);
@@ -62,6 +77,7 @@ export const useCalendarSidebar = () => {
 
   const derived: CalendarSidebarDerived = {
     timeline,
+    nextDayTimeline,
     tasks,
   };
 

@@ -3,7 +3,7 @@ import { css, cva } from '../../../../styled-system/css';
 export const calendarSidebar = css({
   position: 'relative',
   display: 'grid',
-  gridTemplateRows: 'auto 1fr',
+  gridTemplateRows: 'auto auto 1fr',
   gap: { base: '12px', bp800: '16px' },
   padding: { base: '12px', bp800: '18px' },
   borderRadius: { base: '18px', bp800: '22px' },
@@ -69,12 +69,64 @@ export const sidebarMeta = css({
   fontWeight: '500',
 });
 
+export const timelineControls = css({
+  position: 'relative',
+  zIndex: 1,
+  display: 'flex',
+  flexWrap: 'wrap',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  gap: '10px',
+  padding: '8px 10px',
+  borderRadius: '14px',
+  border: '1px solid rgba(0, 0, 0, 0.08)',
+  background:
+    'linear-gradient(120deg, rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.7))',
+  boxShadow: '0 12px 18px rgba(33, 26, 30, 0.08)',
+});
+
+export const timelineControlsGroup = css({
+  display: 'flex',
+  alignItems: 'center',
+  gap: '8px',
+  flex: '1 1 auto',
+  justifyContent: 'space-between',
+});
+
+export const timelineControlsRange = css({
+  fontSize: '12px',
+  fontWeight: '700',
+  color: 'text.primary',
+  letterSpacing: '0.04em',
+});
+
+export const timelineControlsButton = css({
+  height: '32px',
+  width: '32px',
+  borderRadius: '10px',
+  border: '1px solid rgba(0, 0, 0, 0.08)',
+  backgroundColor: 'rgba(255, 255, 255, 0.9)',
+  color: 'text.primary',
+  display: 'grid',
+  placeItems: 'center',
+  transition: 'transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease',
+  _hover: {
+    transform: 'translateY(-1px)',
+    boxShadow: '0 6px 12px rgba(33, 26, 30, 0.12)',
+  },
+  _disabled: {
+    opacity: 0.45,
+    cursor: 'not-allowed',
+    boxShadow: 'none',
+    transform: 'none',
+  },
+});
+
+
 export const calendarTimeline = css({
   position: 'relative',
   zIndex: 1,
-  overflowY: 'auto',
-  overflowX: 'hidden',
-  paddingRight: '4px',
+  overflow: 'hidden',
   paddingBottom: '8px',
   display: 'grid',
   gap: { base: '10px', bp800: '14px' },
@@ -82,9 +134,6 @@ export const calendarTimeline = css({
   '--timeline-dot-size': { base: '8px', bp800: '10px' },
   '--timeline-dot-column': { base: '18px', bp800: '24px' },
   '--timeline-line-x': { base: '7px', bp800: '9px' },
-  scrollbarWidth: 'thin',
-  scrollbarColor:
-    'color-mix(in srgb, var(--weather-accent, rgba(214, 69, 80, 0.8)) 40%, transparent) rgba(0, 0, 0, 0.04)',
   _before: {
     content: '""',
     position: 'absolute',
@@ -93,23 +142,6 @@ export const calendarTimeline = css({
     right: 'var(--timeline-line-x)',
     width: '1px',
     background: 'linear-gradient(180deg, rgba(0,0,0,0.04), rgba(0,0,0,0.12), rgba(0,0,0,0.04))',
-  },
-  '&::-webkit-scrollbar': {
-    width: '6px',
-  },
-  '&::-webkit-scrollbar-track': {
-    background: 'rgba(0, 0, 0, 0.04)',
-    borderRadius: '999px',
-  },
-  '&::-webkit-scrollbar-thumb': {
-    background:
-      'color-mix(in srgb, var(--weather-accent, rgba(214, 69, 80, 0.8)) 40%, transparent)',
-    borderRadius: '999px',
-    border: '2px solid rgba(0, 0, 0, 0.04)',
-  },
-  '&::-webkit-scrollbar-thumb:hover': {
-    background:
-      'color-mix(in srgb, var(--weather-accent-hover, rgba(214, 69, 80, 0.95)) 55%, transparent)',
   },
 });
 
@@ -132,6 +164,17 @@ export const timelineHour = css({
   fontVariantNumeric: 'tabular-nums',
   position: 'relative',
   paddingTop: '2px',
+});
+
+export const timelineHourButton = css({
+  border: 'none',
+  background: 'transparent',
+  padding: 0,
+  fontSize: '12px',
+  fontWeight: '700',
+  color: 'text.dim',
+  cursor: 'pointer',
+  textDecoration: 'none',
 });
 
 export const timelineConnector = css({
@@ -190,6 +233,22 @@ export const timelineWeatherDot = css({
 export const timelineTasks = css({
   display: 'grid',
   gap: '8px',
+});
+
+export const timelineTaskToggle = css({
+  width: 'fit-content',
+  padding: '6px 10px',
+  borderRadius: '999px',
+  border: '1px dashed rgba(0, 0, 0, 0.12)',
+  backgroundColor: 'rgba(255, 255, 255, 0.6)',
+  fontSize: '11px',
+  fontWeight: '600',
+  color: 'text.primary',
+  transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+  _hover: {
+    transform: 'translateY(-1px)',
+    boxShadow: '0 6px 12px rgba(33, 26, 30, 0.12)',
+  },
 });
 
 export const timelineTask = cva({

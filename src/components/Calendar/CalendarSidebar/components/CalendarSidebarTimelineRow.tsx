@@ -1,36 +1,63 @@
-import type { TimelineSlot } from '../../utils/calendarSidebar';
+import type { VisibleTimelineSlot } from '../../hooks/useTimelineNavigation';
 import {
   timelineRow,
   timelineHour,
   timelineTasks,
-  timelineTaskTime,
+  timelineTaskToggle,
+  timelineHourButton,
   timelineDotWrapper,
   timelineWeatherDot,
   timelineConnector,
 } from '../../styles/calendar-sidebar.styles';
-import { useTimelineSlotTasks } from '../hooks/useTimelineSlotTasks';
+import { useTimelineTaskExpansion } from '../../hooks/useTimelineTaskExpansion';
 import { TimelineTaskCard } from './TimelineTaskCard';
 
 type CalendarSidebarTimelineRowProps = {
-  slot: TimelineSlot;
+  slot: VisibleTimelineSlot;
+  onSelectNextDay: (hour: number) => void;
 };
 
 /**
  * Renderiza uma linha de horário da timeline.
  */
-export function CalendarSidebarTimelineRow({ slot }: CalendarSidebarTimelineRowProps) {
-  const { visibleTasks, remaining } = useTimelineSlotTasks(slot);
+export function CalendarSidebarTimelineRow({
+  slot,
+  onSelectNextDay,
+}: CalendarSidebarTimelineRowProps) {
+  const { state, actions } = useTimelineTaskExpansion(slot.tasks, 3);
 
   return (
     <div className={timelineRow}>
       <div className={timelineHour}>
-        <span>{slot.label}</span>
+        {slot.dayOffset === 1 ? (
+          <button
+            type="button"
+            className={timelineHourButton}
+            onClick={() => onSelectNextDay(slot.hour)}
+            aria-label="Ir para o proximo dia"
+          >
+            {slot.label}
+          </button>
+        ) : (
+          <span>{slot.label}</span>
+        )}
       </div>
       <div className={timelineTasks}>
-        {visibleTasks.map((task) => (
+        {state.visibleTasks.map((task) => (
           <TimelineTaskCard key={task.id} task={task} />
         ))}
-        {remaining > 0 && <span className={timelineTaskTime}>+{remaining} tarefas</span>}
+        {state.hasOverflow && (
+          <button
+            type="button"
+            className={timelineTaskToggle}
+            onClick={actions.toggle}
+            aria-expanded={state.isExpanded}
+          >
+            {state.isExpanded
+              ? 'Mostrar menos'
+              : `Ver mais ${state.hiddenCount} tarefas`}
+          </button>
+        )}
       </div>
       <div className={timelineDotWrapper}>
         <span

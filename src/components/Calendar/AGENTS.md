@@ -20,6 +20,11 @@
 - Hook: `src/components/Calendar/hooks/useCalendarSidebar.ts`.
 - Helpers: `src/components/Calendar/utils/calendarSidebar.ts`.
 - Responsavel por timeline de 24h e tarefas do dia (eventos especiais temporariamente desativados na UI).
+- A timeline nao usa scroll; a navegacao e feita por controles (setas + jump) em janelas fixas de horas.
+- A janela padrao exibe 8 horas por vez e inicia na hora atual quando disponivel.
+- Tarefas por hora podem ser expandidas/recolhidas localmente dentro do bloco.
+- Quando a janela excede o fim do dia, as horas restantes sao exibidas como proximo dia.
+- Ao selecionar uma hora do proximo dia, o calendario avanca a data selecionada.
 
 ## Weather (Clima)
 

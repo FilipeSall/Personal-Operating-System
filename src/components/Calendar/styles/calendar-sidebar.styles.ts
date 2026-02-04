@@ -147,12 +147,16 @@ export const calendarTimeline = css({
 
 export const timelineRow = css({
   display: 'grid',
-  gridTemplateColumns:
-    'var(--timeline-hour-column) minmax(0, 1fr) var(--timeline-dot-column)',
+  gridTemplateColumns: 'minmax(0, 1fr) var(--timeline-dot-column)',
+  gridTemplateRows: 'auto auto',
   gap: { base: '8px', bp800: '14px' },
-  alignItems: 'flex-start',
+  alignItems: 'center',
   minHeight: '40px',
   position: 'relative',
+  paddingTop: '4px',
+  paddingBottom: '4px',
+  paddingRight: '4px',
+  '--timeline-hour-line-y': '18px',
 });
 
 export const timelineHour = css({
@@ -163,7 +167,9 @@ export const timelineHour = css({
   color: 'text.dim',
   fontVariantNumeric: 'tabular-nums',
   position: 'relative',
-  paddingTop: '2px',
+  paddingTop: 0,
+  gridColumn: '1',
+  gridRow: '1',
 });
 
 export const timelineHourButton = css({
@@ -179,8 +185,8 @@ export const timelineHourButton = css({
 
 export const timelineConnector = css({
   position: 'absolute',
-  top: '7px',
-  left: 'calc(var(--timeline-hour-column) + 6px)',
+  top: 'var(--timeline-hour-line-y)',
+  left: 'var(--timeline-hour-column)',
   right: 'var(--timeline-line-x)',
   height: '1px',
   background:
@@ -194,16 +200,28 @@ export const timelineDotWrapper = css({
   alignItems: 'center',
   justifyContent: 'flex-end',
   paddingRight: '4px',
-  paddingTop: '2px',
+  paddingTop: 0,
+  position: 'relative',
+  zIndex: 2,
+  gridColumn: '2',
+  gridRow: '1 / span 2',
+  alignSelf: 'start',
+  marginTop: 'calc(var(--timeline-hour-line-y) - (var(--timeline-dot-size) / 2))',
 });
 
 export const timelineWeatherDot = css({
+  position: 'relative',
+  zIndex: 2,
   width: 'var(--timeline-dot-size)',
   height: 'var(--timeline-dot-size)',
   borderRadius: '999px',
   backgroundColor: 'rgba(0, 0, 0, 0.2)',
   boxShadow: '0 0 0 5px rgba(0, 0, 0, 0.04)',
   transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+  '&[data-next-day="true"]': {
+    backgroundColor: 'rgba(71, 85, 105, 0.55)',
+    boxShadow: '0 0 0 5px rgba(71, 85, 105, 0.12)',
+  },
   '&[data-tone="sunny"]': {
     backgroundColor: 'rgba(248, 200, 72, 0.95)',
     boxShadow: '0 0 0 5px rgba(248, 200, 72, 0.18)',
@@ -224,6 +242,26 @@ export const timelineWeatherDot = css({
     backgroundColor: 'rgba(71, 85, 105, 0.9)',
     boxShadow: '0 0 0 5px rgba(71, 85, 105, 0.18)',
   },
+  '&[data-next-day="true"][data-tone="sunny"]': {
+    backgroundColor: 'rgba(248, 200, 72, 0.45)',
+    boxShadow: '0 0 0 5px rgba(248, 200, 72, 0.12)',
+  },
+  '&[data-next-day="true"][data-tone="rain"]': {
+    backgroundColor: 'rgba(59, 130, 246, 0.45)',
+    boxShadow: '0 0 0 5px rgba(59, 130, 246, 0.12)',
+  },
+  '&[data-next-day="true"][data-tone="cloudy"]': {
+    backgroundColor: 'rgba(148, 163, 184, 0.55)',
+    boxShadow: '0 0 0 5px rgba(148, 163, 184, 0.12)',
+  },
+  '&[data-next-day="true"][data-tone="cold"]': {
+    backgroundColor: 'rgba(56, 189, 248, 0.45)',
+    boxShadow: '0 0 0 5px rgba(56, 189, 248, 0.12)',
+  },
+  '&[data-next-day="true"][data-tone="night"]': {
+    backgroundColor: 'rgba(71, 85, 105, 0.55)',
+    boxShadow: '0 0 0 5px rgba(71, 85, 105, 0.12)',
+  },
   '&[data-current="true"]': {
     transform: 'scale(1.35)',
     boxShadow: '0 0 0 7px var(--weather-accent-light, rgba(214, 69, 80, 0.2))',
@@ -233,6 +271,8 @@ export const timelineWeatherDot = css({
 export const timelineTasks = css({
   display: 'grid',
   gap: '8px',
+  gridColumn: '1',
+  gridRow: '2',
 });
 
 export const timelineTaskToggle = css({
@@ -254,7 +294,7 @@ export const timelineTaskToggle = css({
 export const timelineTask = cva({
   base: {
     display: 'grid',
-    gridTemplateColumns: 'auto 1fr auto',
+    gridTemplateColumns: '1fr auto auto',
     alignItems: 'center',
     gap: { base: '6px', bp800: '8px' },
     padding: { base: '6px 8px', bp800: '8px 12px' },
@@ -305,14 +345,11 @@ export const timelineTask = cva({
   },
 });
 
-export const timelineTaskTime = css({
-  fontSize: '11px',
-  fontWeight: '700',
-  color: 'text.muted',
-  fontVariantNumeric: 'tabular-nums',
+export const timelineTaskTitle = css({
+  whiteSpace: 'nowrap',
 });
 
-export const timelineTaskTitle = css({
+export const timelineTaskTitleTruncate = css({
   overflow: 'hidden',
   textOverflow: 'ellipsis',
   whiteSpace: 'nowrap',

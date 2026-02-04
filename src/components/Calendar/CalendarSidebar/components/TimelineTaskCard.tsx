@@ -12,8 +12,8 @@ import type { Todo } from '../../../../types/calendar';
 import type { TimelineTask } from '../../utils/calendarSidebar';
 import {
   timelineTask,
-  timelineTaskTime,
   timelineTaskTitle,
+  timelineTaskTitleTruncate,
   timelineTaskIcon,
 } from '../../styles/calendar-sidebar.styles';
 
@@ -36,11 +36,15 @@ const TODO_TYPE_ICONS: Record<Todo['type'], IconType> = {
  */
 export function TimelineTaskCard({ task }: TimelineTaskCardProps) {
   const Icon = TODO_TYPE_ICONS[task.type];
+  const shouldTruncateTitle = task.title.length > 10;
 
   return (
     <div className={timelineTask({ type: task.type })}>
-      <span className={timelineTaskTime}>{task.time}</span>
-      <span className={timelineTaskTitle}>{task.title}</span>
+      <span
+        className={shouldTruncateTitle ? timelineTaskTitleTruncate : timelineTaskTitle}
+      >
+        {task.title}
+      </span>
       <span className={timelineTaskIcon}>
         <Icon size={14} />
       </span>

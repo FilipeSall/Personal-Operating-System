@@ -64,6 +64,7 @@ export function CalendarSidebarTimelineRow({
           className={timelineWeatherDot}
           data-tone={slot.tone}
           data-current={slot.isCurrentHour ? 'true' : 'false'}
+          data-next-day={slot.dayOffset === 1 ? 'true' : 'false'}
         />
       </div>
       <span className={timelineConnector} aria-hidden="true" />

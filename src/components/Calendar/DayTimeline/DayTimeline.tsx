@@ -51,7 +51,8 @@ export const DayTimeline = () => {
     return new Map(hourlyData.points.map((point) => [point.hour, point]));
   }, [hourlyData]);
 
-  const [currentHour, setCurrentHour] = useState(() => new Date().getHours());
+  const [hourTick, setHourTick] = useState(0);
+  const currentHour = useMemo(() => new Date().getHours(), [hourTick]);
 
   useEffect(() => {
     const now = new Date();
@@ -60,9 +61,9 @@ export const DayTimeline = () => {
     let intervalId: number | null = null;
 
     const timeoutId = window.setTimeout(() => {
-      setCurrentHour(new Date().getHours());
+      setHourTick((value) => value + 1);
       intervalId = window.setInterval(() => {
-        setCurrentHour(new Date().getHours());
+        setHourTick((value) => value + 1);
       }, 60 * 1000);
     }, msToNextMinute);
 

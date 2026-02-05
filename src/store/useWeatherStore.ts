@@ -276,6 +276,7 @@ export const useWeatherStore = create<WeatherStore>((set, get) => ({
    * Busca forecast horario do Open-Meteo para um dia especifico.
    */
   fetchHourly: async ({ dateKey, lat, lon, source, signal, force }) => {
+    const isDev = import.meta.env.DEV;
     const cacheKey = buildHourlyCacheKey(lat, lon, dateKey, source);
     const { hourlyForecasts, hourlyStatus } = get();
     const status = hourlyStatus.get(cacheKey);
@@ -288,6 +289,9 @@ export const useWeatherStore = create<WeatherStore>((set, get) => ({
     if (cached && !force) {
       const age = now - cached.fetchedAt;
       if (age < HOURLY_CACHE_TTL_MS) {
+        if (isDev) {
+          console.log('[hourly] cache hit', { cacheKey, ageMs: age });
+        }
         if (status?.error) {
           set((state) => ({
             hourlyStatus: updateHourlyStatus(state.hourlyStatus, cacheKey, {
@@ -306,6 +310,9 @@ export const useWeatherStore = create<WeatherStore>((set, get) => ({
         error: null,
       }),
     }));
+    if (isDev) {
+      console.log('[hourly] fetch start', { cacheKey, dateKey, source, force: Boolean(force) });
+    }
 
     try {
       const response = await fetchHourlyForecast({ lat, lon, date: dateKey, signal, source });
@@ -339,6 +346,12 @@ export const useWeatherStore = create<WeatherStore>((set, get) => ({
         persistHourlyCache(newMap);
         return nextState;
       });
+      if (isDev) {
+        console.log('[hourly] fetch success', {
+          cacheKey,
+          points: hourly.points.length,
+        });
+      }
 
       return hourly;
     } catch (error) {
@@ -349,6 +362,9 @@ export const useWeatherStore = create<WeatherStore>((set, get) => ({
             error: null,
           }),
         }));
+        if (isDev) {
+          console.log('[hourly] fetch aborted', { cacheKey });
+        }
         return null;
       }
 
@@ -362,6 +378,9 @@ export const useWeatherStore = create<WeatherStore>((set, get) => ({
           error: message,
         }),
       }));
+      if (isDev) {
+        console.log('[hourly] fetch error', { cacheKey, message });
+      }
       return null;
     }
   },

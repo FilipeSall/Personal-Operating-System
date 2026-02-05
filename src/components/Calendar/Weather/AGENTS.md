@@ -65,5 +65,3 @@ As dicas agora usam um sistema de **weighted pools** que prioriza automaticament
 - 05/02/2026: Dica de umidade alta agora considera sensação/índice de calor antes de recomendar evitar atividade intensa; em temperaturas amenas usa mensagem neutra.
 - 05/02/2026: Dicas principais e recomendações da tabela agora cruzam fatores (UV, calor, vento, chuva, nuvens) para evitar mensagens incoerentes com o contexto.
 - 05/02/2026: Chance de chuva agora considera precipitação atual (ex.: "Chuva agora") e o POP é corrigido quando o clima atual vem com chuva/neve.
-- 05/02/2026: Lottie do resumo/status agora é carregado em idle (lazy import + Suspense) para reduzir bloqueio de render e melhorar LCP.
-- 05/02/2026: WeatherView memoiza o view model e o status para evitar recomputar dicas e textos a cada render.

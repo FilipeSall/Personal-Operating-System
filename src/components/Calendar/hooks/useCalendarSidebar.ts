@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { format, isSameDay, addDays } from 'date-fns';
 import { useShallow } from 'zustand/react/shallow';
 import { useCalendarStore } from '../../../store/useCalendarStore';
@@ -32,7 +32,9 @@ export type CalendarSidebarActions = Record<string, never>;
  * Hook que prepara o conteúdo do painel lateral do calendário.
  */
 export const useCalendarSidebar = () => {
-  const [now, setNow] = useState(() => new Date());
+  const isDev = import.meta.env.DEV;
+  const logRef = useRef<string | null>(null);
+  const [hourTick, setHourTick] = useState(0);
   const { selectedDate, todos } = useCalendarStore(
     useShallow((state) => ({
       selectedDate: state.selectedDate,
@@ -100,10 +102,9 @@ export const useCalendarSidebar = () => {
       selectedDate,
       hourlyData,
       currentPopPercent,
-      isHourlyLoading,
-      now
+      isHourlyLoading
     );
-  }, [tasks, theme.tone, selectedDate, hourlyData, currentPopPercent, isHourlyLoading, now]);
+  }, [tasks, theme.tone, selectedDate, hourlyData, currentPopPercent, isHourlyLoading, hourTick]);
   const nextDayTimeline = useMemo(() => {
     return buildHourlyTimeline(
       nextDayTasks,
@@ -111,10 +112,23 @@ export const useCalendarSidebar = () => {
       nextDate,
       nextDayHourlyData,
       null,
-      isNextDayHourlyLoading,
-      now
+      isNextDayHourlyLoading
     );
-  }, [nextDate, nextDayTasks, nextTheme.tone, nextDayHourlyData, isNextDayHourlyLoading, now]);
+  }, [nextDate, nextDayTasks, nextTheme.tone, nextDayHourlyData, isNextDayHourlyLoading]);
+
+  useEffect(() => {
+    if (!isDev) return;
+    const slot = timeline[23];
+    const token = `${dateKey}|${slot?.precipProbability ?? 'null'}|${hourlyData?.dateKey ?? 'none'}`;
+    if (logRef.current === token) return;
+    logRef.current = token;
+    console.log('[hourly] timeline slot 23', {
+      dateKey,
+      hourlyDateKey: hourlyData?.dateKey ?? null,
+      precipProbability: slot?.precipProbability ?? null,
+      weatherCode: slot?.weatherCode ?? null,
+    });
+  }, [dateKey, hourlyData, isDev, timeline]);
 
   useEffect(() => {
     const now = new Date();
@@ -123,9 +137,9 @@ export const useCalendarSidebar = () => {
     let intervalId: number | null = null;
 
     const timeoutId = window.setTimeout(() => {
-      setNow(new Date());
+      setHourTick((value) => value + 1);
       intervalId = window.setInterval(() => {
-        setNow(new Date());
+        setHourTick((value) => value + 1);
       }, 60 * 1000);
     }, msToNextMinute);
 

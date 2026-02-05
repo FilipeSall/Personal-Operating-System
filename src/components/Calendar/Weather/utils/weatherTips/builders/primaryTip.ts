@@ -16,7 +16,6 @@ export const buildPrimaryTip = (snapshot: WeatherSnapshot, selectedDate: Date): 
   const minTemp = Math.round(snapshot.temperature.min);
   const feelsLike = Math.round(snapshot.feelsLike);
   const clouds = Math.round(snapshot.clouds);
-  const humidity = Math.round(snapshot.humidity);
   const windKmh = Math.round(snapshot.wind.speed * 3.6);
   const now = new Date();
   const isToday = isSameLocalDay(selectedDate, now);
@@ -58,11 +57,15 @@ export const buildPrimaryTip = (snapshot: WeatherSnapshot, selectedDate: Date): 
     normalized.includes('drizzle') ||
     normalized.includes('rain')
   ) {
-    const chanceLabel = popPercent > 0 ? `${popPercent}%` : 'considerável';
+    const chanceLabel = popPercent > 0
+      ? `${popPercent}%`
+      : precipitationTotal > 0
+        ? `${precipitationTotal.toFixed(1)} mm`
+        : 'confirmada';
     return createTip(
       'primary-rain',
       'Dica do dia',
-      `Com ${descriptionText}, a chance de chuva é ${chanceLabel}. Leve guarda-chuva para evitar surpresas.`,
+      `Com ${descriptionText}, a chuva está ${chanceLabel === 'confirmada' ? 'confirmada' : `em ${chanceLabel}`}. Leve guarda-chuva para evitar surpresas.`,
       'rain'
     );
   }
@@ -90,7 +93,7 @@ export const buildPrimaryTip = (snapshot: WeatherSnapshot, selectedDate: Date): 
     return createTip(
       'primary-fog',
       'Dica do dia',
-      `Com ${descriptionText} e umidade em ${humidity}%, dirija com atenção redobrada e farol baixo.`,
+      `Com ${descriptionText}, a visibilidade tende a ficar reduzida. Dirija com atenção redobrada e farol baixo.`,
       'fog'
     );
   }
@@ -120,10 +123,16 @@ export const buildPrimaryTip = (snapshot: WeatherSnapshot, selectedDate: Date): 
     }
     const sunTiming = isToday ? (isAfternoon ? 'À tarde' : 'Durante o dia') : '';
     const sunPrefix = sunTiming ? `${sunTiming}, ` : '';
+    const hasHighUv = snapshot.uvIndex >= 6;
+    const isHot = maxTemp >= 28 || feelsLike >= 28;
+    const sunSafety = [
+      hasHighUv ? 'Use protetor solar' : 'Proteção leve já ajuda',
+      isHot ? 'mantenha-se bem hidratado' : 'hidrate-se ao longo do dia',
+    ].join(' e ');
     return createTip(
       'primary-sun',
       'Dica do dia',
-      `${sunPrefix}com ${descriptionText}, a máxima chega a ${maxTemp}°C. Use protetor solar e mantenha-se bem hidratado.`,
+      `${sunPrefix}com ${descriptionText}, a máxima chega a ${maxTemp}°C. ${sunSafety}.`,
       'sun'
     );
   }

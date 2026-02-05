@@ -117,7 +117,7 @@ export const useTimelineNavigation = ({
   const visibleSlots = useMemo(() => {
     return Array.from({ length: visibleCount }, (_, index) => {
       const absoluteHour = startHour + index;
-      const dayOffset = absoluteHour >= 24 ? 1 : 0;
+      const dayOffset = (absoluteHour >= 24 ? 1 : 0) as 0 | 1;
       const hour = absoluteHour % 24;
       const baseTimeline = dayOffset === 1 ? nextDayTimeline : timeline;
       const slot = baseTimeline[hour];

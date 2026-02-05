@@ -1,16 +1,23 @@
 import type { VisibleTimelineSlot } from '../../hooks/useTimelineNavigation';
 import {
   timelineRow,
+  timelineMeta,
   timelineHour,
   timelineTasks,
   timelineTaskToggle,
   timelineHourButton,
-  timelineDotWrapper,
-  timelineWeatherDot,
   timelineConnector,
+  timelineWeather,
+  timelineWeatherIcon,
+  timelineWeatherValue,
 } from '../../styles/calendar-sidebar.styles';
 import { useTimelineTaskExpansion } from '../../hooks/useTimelineTaskExpansion';
 import { TimelineTaskCard } from './TimelineTaskCard';
+import {
+  adjustToneForNight,
+  getWmoMapping,
+  WeatherToneIcon,
+} from '../../DayTimeline/utils/wmoWeatherIcon';
 
 type CalendarSidebarTimelineRowProps = {
   slot: VisibleTimelineSlot;
@@ -25,22 +32,46 @@ export function CalendarSidebarTimelineRow({
   onSelectNextDay,
 }: CalendarSidebarTimelineRowProps) {
   const { state, actions } = useTimelineTaskExpansion(slot.tasks, 3);
+  const wmoMapping = slot.weatherCode !== null ? getWmoMapping(slot.weatherCode) : null;
+  const tone = wmoMapping
+    ? adjustToneForNight(wmoMapping.tone, slot.hour, slot.precipProbability)
+    : slot.tone === 'default'
+      ? 'cloudy'
+      : slot.tone;
+  const precipValue =
+    slot.precipProbability !== null ? Math.round(slot.precipProbability) : null;
+  const hasPrecipData = precipValue !== null;
+  const weatherLabel = hasPrecipData ? `${precipValue}%` : '—';
+  const weatherTitle = hasPrecipData
+    ? `${wmoMapping?.label ? `${wmoMapping.label} · ` : ''}${weatherLabel} de chuva`
+    : 'Dados horarios indisponiveis';
 
   return (
     <div className={timelineRow}>
-      <div className={timelineHour}>
-        {slot.dayOffset === 1 ? (
-          <button
-            type="button"
-            className={timelineHourButton}
-            onClick={() => onSelectNextDay(slot.hour)}
-            aria-label="Ir para o proximo dia"
-          >
-            {slot.label}
-          </button>
-        ) : (
-          <span>{slot.label}</span>
-        )}
+      <div className={timelineMeta}>
+        <div className={timelineHour}>
+          {slot.dayOffset === 1 ? (
+            <button
+              type="button"
+              className={timelineHourButton}
+              onClick={() => onSelectNextDay(slot.hour)}
+              aria-label="Ir para o proximo dia"
+            >
+              {slot.label}
+            </button>
+          ) : (
+            <span>{slot.label}</span>
+          )}
+        </div>
+        <span
+          className={timelineWeather}
+          data-tone={tone}
+          data-empty={hasPrecipData ? 'false' : 'true'}
+          title={weatherTitle}
+        >
+          <WeatherToneIcon tone={tone} className={timelineWeatherIcon} aria-hidden="true" />
+          <span className={timelineWeatherValue}>{weatherLabel}</span>
+        </span>
       </div>
       <div className={timelineTasks}>
         {state.visibleTasks.map((task) => (
@@ -58,14 +89,6 @@ export function CalendarSidebarTimelineRow({
               : `Ver mais ${state.hiddenCount} tarefas`}
           </button>
         )}
-      </div>
-      <div className={timelineDotWrapper}>
-        <span
-          className={timelineWeatherDot}
-          data-tone={slot.tone}
-          data-current={slot.isCurrentHour ? 'true' : 'false'}
-          data-next-day={slot.dayOffset === 1 ? 'true' : 'false'}
-        />
       </div>
       <span className={timelineConnector} aria-hidden="true" />
     </div>

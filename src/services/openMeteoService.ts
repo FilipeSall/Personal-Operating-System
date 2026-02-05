@@ -1,6 +1,8 @@
 import type { OpenMeteoHourlyResponse } from '../types/openMeteo';
+import type { HourlySource } from '../types/weather';
 
-const OPEN_METEO_BASE_URL = 'https://api.open-meteo.com/v1/forecast';
+const OPEN_METEO_FORECAST_URL = 'https://api.open-meteo.com/v1/forecast';
+const OPEN_METEO_ARCHIVE_URL = 'https://archive-api.open-meteo.com/v1/archive';
 
 const HOURLY_PARAMS = [
   'precipitation_probability',
@@ -13,11 +15,26 @@ type FetchHourlyForecastParams = {
   lat: number;
   lon: number;
   date: string;
+  source?: HourlySource;
   signal?: AbortSignal;
 };
 
-const buildHourlyUrl = (lat: number, lon: number, date: string): string => {
-  const url = new URL(OPEN_METEO_BASE_URL);
+/**
+ * Monta a URL do Open-Meteo para o forecast horario de um dia.
+ *
+ * @param lat Latitude.
+ * @param lon Longitude.
+ * @param date Data no formato YYYY-MM-DD.
+ * @param source Origem do dado (forecast ou archive).
+ */
+const buildHourlyUrl = (
+  lat: number,
+  lon: number,
+  date: string,
+  source: HourlySource
+): string => {
+  const baseUrl = source === 'archive' ? OPEN_METEO_ARCHIVE_URL : OPEN_METEO_FORECAST_URL;
+  const url = new URL(baseUrl);
   url.searchParams.set('latitude', lat.toString());
   url.searchParams.set('longitude', lon.toString());
   url.searchParams.set('hourly', HOURLY_PARAMS);
@@ -27,19 +44,40 @@ const buildHourlyUrl = (lat: number, lon: number, date: string): string => {
   return url.toString();
 };
 
+/**
+ * Busca o forecast horario no Open-Meteo.
+ *
+ * @param params Coordenadas, data e sinal de cancelamento.
+ */
 export const fetchHourlyForecast = async ({
   lat,
   lon,
   date,
+  source = 'forecast',
   signal,
 }: FetchHourlyForecastParams): Promise<OpenMeteoHourlyResponse> => {
-  const url = buildHourlyUrl(lat, lon, date);
+  const url = buildHourlyUrl(lat, lon, date, source);
+  const isDev = import.meta.env.DEV;
+  if (isDev) {
+    console.log('[hourly] request', { source, date, url });
+  }
 
   const response = await fetch(url, { signal });
 
   if (!response.ok) {
+    if (isDev) {
+      console.log('[hourly] response error', { source, date, status: response.status });
+    }
     throw new Error(`Open-Meteo error: ${response.status}`);
   }
 
-  return (await response.json()) as OpenMeteoHourlyResponse;
+  const data = (await response.json()) as OpenMeteoHourlyResponse;
+  if (isDev) {
+    console.log('[hourly] response ok', {
+      source,
+      date,
+      hours: data.hourly?.time?.length ?? 0,
+    });
+  }
+  return data;
 };

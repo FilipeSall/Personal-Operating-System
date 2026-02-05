@@ -25,6 +25,19 @@
 - Tarefas por hora podem ser expandidas/recolhidas localmente dentro do bloco.
 - Quando a janela excede o fim do dia, as horas restantes sao exibidas como proximo dia.
 - Ao selecionar uma hora do proximo dia, o calendario avanca a data selecionada.
+- A timeline agora injeta probabilidade de chuva e codigo WMO por hora (Open-Meteo) para mostrar icone + % ao lado do horario.
+
+### Hourly precipitation timeline
+
+- Service: `src/services/openMeteoService.ts` (`fetchHourlyForecast`).
+- Mapper: `src/utils/hourlyForecastMapper.ts` (`mapOpenMeteoToHourly`, `buildHourlyCacheKey`).
+- Store: `src/store/useWeatherStore.ts` (`hourlyForecasts`, `hourlyStatus` por chave, TTL 30min, max 20 entradas).
+- Hook: `src/components/Calendar/hooks/useHourlyForecast.ts` (debounce 300ms, AbortController, range D-1 ate D+16).
+- UI: `CalendarSidebarTimelineRow` consome `precipProbability` e `weatherCode` dos slots montados por `buildHourlyTimeline`.
+- Cache key: `${lat.toFixed(2)}|${lon.toFixed(2)}|YYYY-MM-DD|source` (source = `forecast` ou `archive`).
+- Datas passadas usam o endpoint archive da Open-Meteo (limitado pelo range do hook).
+- Se o archive falhar, o hook tenta fallback com o endpoint forecast para a mesma data.
+- Evitar spam: nao refazer requests quando cache estiver fresco, usar debounce e cancelar chamadas anteriores.
 
 ## Weather (Clima)
 

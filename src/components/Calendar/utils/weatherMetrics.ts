@@ -85,9 +85,16 @@ const formatSunTimes = (sunrise: number, sunset: number): string => {
 };
 
 /**
- * Formata a chance de chuva em porcentagem.
+ * Formata a chance de chuva em porcentagem ou status atual.
  */
-const formatRainChance = (pop: number): string => {
+const formatRainChance = (
+  pop: number,
+  precipitation: WeatherSnapshot['precipitation']
+): string => {
+  const isRainingNow = precipitation.rain > 0 || precipitation.snow > 0;
+  if (isRainingNow) {
+    return '100%';
+  }
   return `${Math.round(pop * 100)}%`;
 };
 
@@ -247,7 +254,19 @@ const getFeelsLikeRecommendation = (feelsLike: number): string => {
 /**
  * Gera recomendacao baseada na chance de chuva.
  */
-const getRainChanceRecommendation = (pop: number): string => {
+const getRainChanceRecommendation = (
+  pop: number,
+  precipitation: WeatherSnapshot['precipitation'],
+  description: string
+): string => {
+  const isRainingNow = precipitation.rain > 0 || precipitation.snow > 0;
+  if (isRainingNow) {
+    const normalized = normalizeText(description);
+    if (normalized.includes('neve') || normalized.includes('granizo')) {
+      return 'Neve agora. Redobre o cuidado com o piso e use calçado aderente.';
+    }
+    return 'Chovendo agora. Leve capa e evite áreas que acumulam água.';
+  }
   if (pop >= 0.6) {
     return 'Vai chover! Guarda-chuva no bolso ou prepare-se pra virar peixe na rua.';
   }
@@ -260,13 +279,25 @@ const getRainChanceRecommendation = (pop: number): string => {
 /**
  * Gera recomendacao baseada no vento.
  */
-const getWindRecommendation = (speed: number): string => {
+/**
+ * Gera recomendacao baseada no vento.
+ */
+const getWindRecommendation = (speed: number, temp: number, pop: number): string => {
   const speedKmh = speed * 3.6;
   if (speedKmh >= 35) {
+    if (temp <= 12) {
+      return 'Ventania forte e frio combinando. Casaco corta-vento e atenção redobrada em áreas abertas.';
+    }
     return 'Ventania braba! Evita áreas abertas e prende tudo que pode voar. Chapéu? Nem pensar.';
   }
   if (speedKmh >= 20) {
+    if (pop >= 0.4) {
+      return 'Vento forte com chance de chuva. Proteja-se e leve capa, respingos podem aparecer.';
+    }
     return 'Vento chatinho. Prende objetos leves e segura bem o cabelo (ou o que sobrou dele).';
+  }
+  if (temp >= 28) {
+    return 'Brisa leve ajuda no conforto. Aproveite para arejar ambientes.';
   }
   return 'Ventinho gostoso. Dá até pra arejar a casa.';
 };
@@ -274,9 +305,12 @@ const getWindRecommendation = (speed: number): string => {
 /**
  * Gera recomendacao baseada na umidade.
  */
-const getHumidityRecommendation = (humidity: number): string => {
+const getHumidityRecommendation = (humidity: number, feelsLike: number, windKmh: number): string => {
   if (humidity >= 80) {
-    return 'Úmido demais! Abre as janelas, liga o ventilador ou vira barata de praia mesmo.';
+    if (feelsLike >= 28 || windKmh <= 10) {
+      return 'Umidade muito alta. Ventile o ambiente, beba água e evite esforço intenso se estiver quente.';
+    }
+    return 'Umidade alta, mas temperatura amena. Ventile o ambiente e prefira roupas leves.';
   }
   if (humidity <= 30) {
     return 'Ar seco! Bebe água, passa hidratante e considera um umidificador (ou toalha molhada).';
@@ -316,7 +350,13 @@ const getCloudsRecommendation = (clouds: number): string => {
 /**
  * Gera recomendacao baseada nos horarios de sol.
  */
-const getSunTimesRecommendation = (): string => {
+const getSunTimesRecommendation = (clouds: number, pop: number): string => {
+  if (pop >= 0.6) {
+    return 'Chuva no radar. Use as janelas de luz quando possível e planeje o dia com margem.';
+  }
+  if (clouds >= 70) {
+    return 'Céu fechado: a luz é difusa, mas ainda ajuda. Aproveite os horários de maior claridade.';
+  }
   return 'Aproveita a luz natural entre esses horários. Vitamina D de graça!';
 };
 
@@ -336,9 +376,21 @@ const getAlertsRecommendation = (alerts: string[]): string => {
 const getPrecipitationRecommendation = (rain: number, snow: number): string => {
   const total = rain + snow;
   if (total >= 5) {
+    if (snow > 0 && rain === 0) {
+      return 'Neve intensa prevista. Evite deslocamentos longos e use calçado aderente.';
+    }
+    if (snow > 0 && rain > 0) {
+      return 'Chuva e neve acumuladas. Redobre a atenção ao sair e evite áreas escorregadias.';
+    }
     return 'Vai cair muita água! Guarda-chuva reforçado e evita áreas que alagam fácil.';
   }
   if (total > 0) {
+    if (snow > 0 && rain === 0) {
+      return 'Neve leve prevista. Casaco adequado e passos mais curtos ajudam.';
+    }
+    if (snow > 0 && rain > 0) {
+      return 'Precipitação mista prevista. Prepare-se para piso escorregadio.';
+    }
     return 'Chuva leve prevista. Leva o guarda-chuva ou prepara pra molhar o cabelo.';
   }
   return 'Sem previsão de chuva. Pode deixar o guarda-chuva guardado mesmo.';
@@ -373,20 +425,35 @@ export const buildWeatherRows = (snapshot: WeatherSnapshot): WeatherRow[] => {
     {
       id: 'rainChance',
       label: 'Chance de chuva',
-      value: formatRainChance(snapshot.pop),
-      recommendation: getRainChanceRecommendation(snapshot.pop),
+      value: formatRainChance(
+        snapshot.pop,
+        snapshot.precipitation
+      ),
+      recommendation: getRainChanceRecommendation(
+        snapshot.pop,
+        snapshot.precipitation,
+        snapshot.description
+      ),
     },
     {
       id: 'wind',
       label: 'Vento',
       value: formatWind(snapshot.wind.speed, snapshot.wind.deg),
-      recommendation: getWindRecommendation(snapshot.wind.speed),
+      recommendation: getWindRecommendation(
+        snapshot.wind.speed,
+        snapshot.temperature.current,
+        snapshot.pop
+      ),
     },
     {
       id: 'humidity',
       label: 'Umidade',
       value: `${Math.round(snapshot.humidity)}%`,
-      recommendation: getHumidityRecommendation(snapshot.humidity),
+      recommendation: getHumidityRecommendation(
+        snapshot.humidity,
+        snapshot.feelsLike,
+        snapshot.wind.speed * 3.6
+      ),
     },
     {
       id: 'uvIndex',
@@ -404,7 +471,7 @@ export const buildWeatherRows = (snapshot: WeatherSnapshot): WeatherRow[] => {
       id: 'sunTimes',
       label: 'Nascer e por do sol',
       value: formatSunTimes(snapshot.sunrise, snapshot.sunset),
-      recommendation: getSunTimesRecommendation(),
+      recommendation: getSunTimesRecommendation(snapshot.clouds, snapshot.pop),
     },
     {
       id: 'alerts',

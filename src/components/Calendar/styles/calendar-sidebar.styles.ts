@@ -159,6 +159,18 @@ export const timelineRow = css({
   '--timeline-hour-line-y': '18px',
 });
 
+export const timelineMeta = css({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  gap: { base: '8px', bp800: '12px' },
+  gridColumn: '1 / span 2',
+  gridRow: '1',
+  minWidth: 0,
+  position: 'relative',
+  zIndex: 2,
+});
+
 export const timelineHour = css({
   display: 'flex',
   alignItems: 'center',
@@ -168,8 +180,6 @@ export const timelineHour = css({
   fontVariantNumeric: 'tabular-nums',
   position: 'relative',
   paddingTop: 0,
-  gridColumn: '1',
-  gridRow: '1',
 });
 
 export const timelineHourButton = css({
@@ -193,79 +203,56 @@ export const timelineConnector = css({
     'linear-gradient(90deg, rgba(0,0,0,0.08), rgba(0,0,0,0.12), rgba(0,0,0,0.2))',
   opacity: 0.8,
   pointerEvents: 'none',
+  zIndex: 1,
 });
 
-export const timelineDotWrapper = css({
-  display: 'flex',
+export const timelineWeather = css({
+  display: 'inline-flex',
   alignItems: 'center',
-  justifyContent: 'flex-end',
-  paddingRight: '4px',
-  paddingTop: 0,
-  position: 'relative',
-  zIndex: 2,
-  gridColumn: '2',
-  gridRow: '1 / span 2',
-  alignSelf: 'start',
-  marginTop: 'calc(var(--timeline-hour-line-y) - (var(--timeline-dot-size) / 2))',
-});
-
-export const timelineWeatherDot = css({
-  position: 'relative',
-  zIndex: 2,
-  width: 'var(--timeline-dot-size)',
-  height: 'var(--timeline-dot-size)',
+  gap: '6px',
+  padding: '2px 8px',
   borderRadius: '999px',
-  backgroundColor: 'rgba(0, 0, 0, 0.2)',
-  boxShadow: '0 0 0 5px rgba(0, 0, 0, 0.04)',
-  transition: 'transform 0.2s ease, box-shadow 0.2s ease',
-  '&[data-next-day="true"]': {
-    backgroundColor: 'rgba(71, 85, 105, 0.55)',
-    boxShadow: '0 0 0 5px rgba(71, 85, 105, 0.12)',
-  },
+  border: '1px solid rgba(0, 0, 0, 0.08)',
+  backgroundColor: 'rgba(255, 255, 255, 0.75)',
+  fontSize: '12px',
+  fontWeight: '600',
+  color: 'text.primary',
+  whiteSpace: 'nowrap',
+  fontVariantNumeric: 'tabular-nums',
+  '--weather-accent': 'rgba(148, 163, 184, 0.9)',
   '&[data-tone="sunny"]': {
-    backgroundColor: 'rgba(248, 200, 72, 0.95)',
-    boxShadow: '0 0 0 5px rgba(248, 200, 72, 0.18)',
+    '--weather-accent': 'rgba(248, 200, 72, 0.95)',
   },
   '&[data-tone="rain"]': {
-    backgroundColor: 'rgba(59, 130, 246, 0.95)',
-    boxShadow: '0 0 0 5px rgba(59, 130, 246, 0.18)',
+    '--weather-accent': 'rgba(59, 130, 246, 0.95)',
   },
   '&[data-tone="cloudy"]': {
-    backgroundColor: 'rgba(148, 163, 184, 0.95)',
-    boxShadow: '0 0 0 5px rgba(148, 163, 184, 0.18)',
+    '--weather-accent': 'rgba(148, 163, 184, 0.95)',
   },
   '&[data-tone="cold"]': {
-    backgroundColor: 'rgba(56, 189, 248, 0.95)',
-    boxShadow: '0 0 0 5px rgba(56, 189, 248, 0.18)',
+    '--weather-accent': 'rgba(56, 189, 248, 0.95)',
   },
   '&[data-tone="night"]': {
-    backgroundColor: 'rgba(71, 85, 105, 0.9)',
-    boxShadow: '0 0 0 5px rgba(71, 85, 105, 0.18)',
+    '--weather-accent': 'rgba(71, 85, 105, 0.95)',
   },
-  '&[data-next-day="true"][data-tone="sunny"]': {
-    backgroundColor: 'rgba(248, 200, 72, 0.45)',
-    boxShadow: '0 0 0 5px rgba(248, 200, 72, 0.12)',
+  '&[data-empty="true"]': {
+    opacity: 0.55,
   },
-  '&[data-next-day="true"][data-tone="rain"]': {
-    backgroundColor: 'rgba(59, 130, 246, 0.45)',
-    boxShadow: '0 0 0 5px rgba(59, 130, 246, 0.12)',
-  },
-  '&[data-next-day="true"][data-tone="cloudy"]': {
-    backgroundColor: 'rgba(148, 163, 184, 0.55)',
-    boxShadow: '0 0 0 5px rgba(148, 163, 184, 0.12)',
-  },
-  '&[data-next-day="true"][data-tone="cold"]': {
-    backgroundColor: 'rgba(56, 189, 248, 0.45)',
-    boxShadow: '0 0 0 5px rgba(56, 189, 248, 0.12)',
-  },
-  '&[data-next-day="true"][data-tone="night"]': {
-    backgroundColor: 'rgba(71, 85, 105, 0.55)',
-    boxShadow: '0 0 0 5px rgba(71, 85, 105, 0.12)',
-  },
-  '&[data-current="true"]': {
-    transform: 'scale(1.35)',
-    boxShadow: '0 0 0 7px var(--weather-accent-light, rgba(214, 69, 80, 0.2))',
-  },
+});
+
+export const timelineWeatherIcon = css({
+  fontSize: { base: '20px', bp800: '22px' },
+  lineHeight: 1,
+  color: 'var(--weather-accent)',
+  display: 'inline-flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+});
+
+export const timelineWeatherValue = css({
+  fontSize: '12px',
+  fontWeight: '700',
+  color: 'text.primary',
 });
 
 export const timelineTasks = css({
@@ -273,6 +260,7 @@ export const timelineTasks = css({
   gap: '8px',
   gridColumn: '1',
   gridRow: '2',
+  minWidth: 0,
 });
 
 export const timelineTaskToggle = css({

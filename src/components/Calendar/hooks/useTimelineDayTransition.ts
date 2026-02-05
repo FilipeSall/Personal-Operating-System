@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useRef, useSyncExternalStore } from 'react';
 import { addDays } from 'date-fns';
 import { useCalendarStore } from '../../../store/useCalendarStore';
 
@@ -20,23 +20,32 @@ export const useTimelineDayTransition = (): {
   const selectedDate = useCalendarStore((state) => state.selectedDate);
   const setSelectedDate = useCalendarStore((state) => state.setSelectedDate);
   const setCurrentMonth = useCalendarStore((state) => state.setCurrentMonth);
-  const [startHourOverride, setStartHourOverride] = useState<number | null>(null);
+  const overrideRef = useRef<number | null>(null);
+  const subscribersRef = useRef(new Set<() => void>());
+
+  const subscribe = useCallback((callback: () => void) => {
+    subscribersRef.current.add(callback);
+    return () => subscribersRef.current.delete(callback);
+  }, []);
+
+  const getSnapshot = useCallback(() => overrideRef.current, []);
+
+  const startHourOverride = useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
 
   const enterNextDayAtHour = useCallback(
     (hour: number) => {
       const nextDate = addDays(selectedDate, 1);
+      overrideRef.current = hour;
+      subscribersRef.current.forEach((cb) => cb());
       setSelectedDate(nextDate);
       setCurrentMonth(nextDate);
-      setStartHourOverride(hour);
+      queueMicrotask(() => {
+        overrideRef.current = null;
+        subscribersRef.current.forEach((cb) => cb());
+      });
     },
     [selectedDate, setCurrentMonth, setSelectedDate]
   );
-
-  useEffect(() => {
-    if (startHourOverride !== null) {
-      setStartHourOverride(null);
-    }
-  }, [selectedDate, startHourOverride]);
 
   return {
     state: { startHourOverride },

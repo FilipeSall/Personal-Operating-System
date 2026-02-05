@@ -1,16 +1,29 @@
 import { create } from 'zustand';
 import { fetchForecast, fetchCurrentWeather, fetchReverseGeocode } from '../services/openWeatherService';
+import { fetchHourlyForecast } from '../services/openMeteoService';
 import { resolveWeatherCoordinates } from '../utils/weatherLocation';
 import { groupForecastByDay, toForecastKey } from '../utils/forecastGrouper';
+import { mapOpenMeteoToHourly, buildHourlyCacheKey } from '../utils/hourlyForecastMapper';
 import { formatLocationLabel } from '../utils/formatLocationLabel';
-import type { WeatherSnapshot } from '../types/weather';
+import type { WeatherSnapshot, HourlyForecast, HourlySource } from '../types/weather';
 import type { OpenWeatherCurrentResponse } from '../types/openWeather';
+
+const HOURLY_CACHE_TTL_MS = 30 * 60 * 1000;
+const HOURLY_CACHE_MAX_ENTRIES = 20;
+
+type HourlyStatus = {
+  isLoading: boolean;
+  error: string | null;
+};
 
 type WeatherStoreState = {
   forecasts: Map<string, WeatherSnapshot>;
+  hourlyForecasts: Map<string, HourlyForecast>;
+  hourlyStatus: Map<string, HourlyStatus>;
   isLoading: boolean;
   error: string | null;
   locationLabel: string;
+  coordinates: { lat: number; lon: number } | null;
   lastUpdatedAt: Date | null;
 };
 
@@ -19,9 +32,21 @@ type FetchWeatherParams = {
   signal?: AbortSignal;
 };
 
+type FetchHourlyParams = {
+  dateKey: string;
+  lat: number;
+  lon: number;
+  source: HourlySource;
+  signal?: AbortSignal;
+  force?: boolean;
+};
+
 type WeatherStoreActions = {
   fetchWeather: (params?: FetchWeatherParams) => Promise<void>;
+  fetchHourly: (params: FetchHourlyParams) => Promise<HourlyForecast | null>;
   getSnapshotForDate: (date: Date) => WeatherSnapshot | null;
+  getHourlyForDate: (cacheKey: string) => HourlyForecast | null;
+  isHourlyStale: (cacheKey: string) => boolean;
   resetWeather: () => void;
 };
 
@@ -51,7 +76,13 @@ const mapCurrentToSnapshot = (
     max: data.main.temp_max,
   },
   feelsLike: data.main.feels_like,
-  pop: options?.inheritedPop ?? 0,
+  pop: Math.max(
+    options?.inheritedPop ?? 0,
+    (data.rain?.['1h'] ?? data.rain?.['3h'] ?? 0) > 0 ||
+      (data.snow?.['1h'] ?? data.snow?.['3h'] ?? 0) > 0
+      ? 1
+      : 0
+  ),
   wind: {
     speed: data.wind.speed,
     deg: data.wind.deg,
@@ -69,13 +100,33 @@ const mapCurrentToSnapshot = (
 });
 
 /**
+ * Atualiza o status de uma chave hourly mantendo imutabilidade.
+ *
+ * @param currentStatus Map atual de status.
+ * @param cacheKey Chave do cache hourly.
+ * @param status Novo status da chave.
+ */
+const updateHourlyStatus = (
+  currentStatus: Map<string, HourlyStatus>,
+  cacheKey: string,
+  status: HourlyStatus
+): Map<string, HourlyStatus> => {
+  const next = new Map(currentStatus);
+  next.set(cacheKey, status);
+  return next;
+};
+
+/**
  * Store global do clima para compartilhar dados no app.
  */
 export const useWeatherStore = create<WeatherStore>((set, get) => ({
   forecasts: new Map(),
+  hourlyForecasts: new Map(),
+  hourlyStatus: new Map(),
   isLoading: false,
   error: null,
   locationLabel: 'Localizacao atual',
+  coordinates: null,
   lastUpdatedAt: null,
 
   /**
@@ -137,6 +188,7 @@ export const useWeatherStore = create<WeatherStore>((set, get) => ({
         isLoading: false,
         error: null,
         locationLabel,
+        coordinates: { lat: coordinates.lat, lon: coordinates.lon },
         lastUpdatedAt: new Date(),
       }));
     } catch (error) {
@@ -169,11 +221,140 @@ export const useWeatherStore = create<WeatherStore>((set, get) => ({
   },
 
   /**
+   * Busca forecast horario do Open-Meteo para um dia especifico.
+   */
+  fetchHourly: async ({ dateKey, lat, lon, source, signal, force }) => {
+    const isDev = import.meta.env.DEV;
+    const cacheKey = buildHourlyCacheKey(lat, lon, dateKey, source);
+    const { hourlyForecasts, hourlyStatus } = get();
+    const status = hourlyStatus.get(cacheKey);
+
+    if (status?.isLoading) return null;
+
+    const cached = hourlyForecasts.get(cacheKey);
+    const now = Date.now();
+
+    if (cached && !force) {
+      const age = now - cached.fetchedAt;
+      if (age < HOURLY_CACHE_TTL_MS) {
+        if (isDev) {
+          console.log('[hourly] cache hit', { cacheKey, ageMs: age });
+        }
+        if (status?.error) {
+          set((state) => ({
+            hourlyStatus: updateHourlyStatus(state.hourlyStatus, cacheKey, {
+              isLoading: false,
+              error: null,
+            }),
+          }));
+        }
+        return cached;
+      }
+    }
+
+    set((state) => ({
+      hourlyStatus: updateHourlyStatus(state.hourlyStatus, cacheKey, {
+        isLoading: true,
+        error: null,
+      }),
+    }));
+    if (isDev) {
+      console.log('[hourly] fetch start', { cacheKey, dateKey, source, force: Boolean(force) });
+    }
+
+    try {
+      const response = await fetchHourlyForecast({ lat, lon, date: dateKey, signal, source });
+      const hourly = mapOpenMeteoToHourly(response, dateKey, cacheKey);
+
+      set((state) => {
+        const newMap = new Map(state.hourlyForecasts);
+        const newStatusMap = new Map(state.hourlyStatus);
+        if (newMap.size >= HOURLY_CACHE_MAX_ENTRIES) {
+          let oldestKey = '';
+          let oldestTime = Infinity;
+          newMap.forEach((entry, key) => {
+            if (entry.fetchedAt < oldestTime) {
+              oldestTime = entry.fetchedAt;
+              oldestKey = key;
+            }
+          });
+          if (oldestKey) {
+            newMap.delete(oldestKey);
+            newStatusMap.delete(oldestKey);
+          }
+        }
+
+        newMap.set(cacheKey, hourly);
+        newStatusMap.set(cacheKey, { isLoading: false, error: null });
+
+        return {
+          hourlyForecasts: newMap,
+          hourlyStatus: newStatusMap,
+        };
+      });
+      if (isDev) {
+        console.log('[hourly] fetch success', {
+          cacheKey,
+          points: hourly.points.length,
+        });
+      }
+
+      return hourly;
+    } catch (error) {
+      if (error instanceof Error && error.name === 'AbortError') {
+        set((state) => ({
+          hourlyStatus: updateHourlyStatus(state.hourlyStatus, cacheKey, {
+            isLoading: false,
+            error: null,
+          }),
+        }));
+        if (isDev) {
+          console.log('[hourly] fetch aborted', { cacheKey });
+        }
+        return null;
+      }
+
+      const message = error instanceof Error
+        ? error.message
+        : 'Dados horarios indisponiveis';
+
+      set((state) => ({
+        hourlyStatus: updateHourlyStatus(state.hourlyStatus, cacheKey, {
+          isLoading: false,
+          error: message,
+        }),
+      }));
+      if (isDev) {
+        console.log('[hourly] fetch error', { cacheKey, message });
+      }
+      return null;
+    }
+  },
+
+  /**
+   * Retorna forecast horario do cache.
+   */
+  getHourlyForDate: (cacheKey) => {
+    return get().hourlyForecasts.get(cacheKey) ?? null;
+  },
+
+  /**
+   * Verifica se o cache hourly esta expirado.
+   */
+  isHourlyStale: (cacheKey) => {
+    const cached = get().hourlyForecasts.get(cacheKey);
+    if (!cached) return true;
+    return Date.now() - cached.fetchedAt >= HOURLY_CACHE_TTL_MS;
+  },
+
+  /**
    * Limpa os dados de clima armazenados.
    */
   resetWeather: () => {
     set({
       forecasts: new Map(),
+      hourlyForecasts: new Map(),
+      hourlyStatus: new Map(),
       isLoading: false,
       error: null,
       lastUpdatedAt: null,

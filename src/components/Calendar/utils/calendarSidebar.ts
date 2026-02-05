@@ -1,6 +1,7 @@
 import { format, isSameDay } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import type { Todo } from '../../../types/calendar';
+import type { HourlyForecast } from '../../../types/weather';
 import type { WeatherTone } from './weatherTheme';
 
 export type TimelineTone = 'sunny' | 'rain' | 'cloudy' | 'cold' | 'default' | 'night';
@@ -18,6 +19,8 @@ export type TimelineSlot = {
   tasks: TimelineTask[];
   tone: TimelineTone;
   isCurrentHour: boolean;
+  precipProbability: number | null;
+  weatherCode: number | null;
 };
 
 /**
@@ -79,15 +82,22 @@ export const resolveTimelineTone = (tone: WeatherTone, hour: number): TimelineTo
  * - todos: tarefas do dia selecionado.
  * - tone: tom do clima do dia.
  * - selectedDate: data selecionada no calendário.
+ * - hourlyForecast: dados hourly do Open-Meteo (opcional).
+ * - currentPopPercent: probabilidade de chuva atual (OpenWeather) para fallback (0-100).
  */
 export const buildHourlyTimeline = (
   todos: Todo[],
   tone: WeatherTone,
-  selectedDate: Date
+  selectedDate: Date,
+  hourlyForecast?: HourlyForecast | null,
+  currentPopPercent?: number | null
 ): TimelineSlot[] => {
   const now = new Date();
   const currentHour = now.getHours();
   const isToday = isSameDay(selectedDate, now);
+  const hourlyByHour = hourlyForecast
+    ? new Map(hourlyForecast.points.map((point) => [point.hour, point]))
+    : null;
 
   const tasksByHour = todos.reduce<Record<number, TimelineTask[]>>((acc, todo) => {
     const hour = parseHourFromTime(todo.startTime);
@@ -108,12 +118,21 @@ export const buildHourlyTimeline = (
   }, {});
 
   return Array.from({ length: 24 }, (_, hour) => {
+    const hourlyPoint =
+      hourlyByHour?.get(hour) ?? hourlyForecast?.points[hour] ?? null;
+    const isCurrentSlot = isToday && hour === currentHour;
+    const fallbackPop = isCurrentSlot && currentPopPercent !== null
+      ? currentPopPercent
+      : null;
+
     return {
       hour,
       label: formatTimelineHour(hour),
       tasks: tasksByHour[hour] ?? [],
       tone: resolveTimelineTone(tone, hour),
-      isCurrentHour: isToday && hour === currentHour,
+      isCurrentHour: isCurrentSlot,
+      precipProbability: fallbackPop ?? hourlyPoint?.precipProbability ?? null,
+      weatherCode: hourlyPoint?.weatherCode ?? null,
     };
   });
 };

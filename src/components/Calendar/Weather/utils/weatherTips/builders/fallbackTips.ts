@@ -35,11 +35,18 @@ export const buildFallbackTips = (snapshot: WeatherSnapshot, selectedDate: Date)
     );
   }
 
+  const isWeatherImpactful = signals.isStorm ||
+    signals.isSnowy ||
+    signals.isRainy ||
+    signals.isWindy;
+  const balanceMessage = isWeatherImpactful
+    ? `Sensação de ${feelsLike}°C. O clima pede atenção; adapte o ritmo e combine com as condições do dia.`
+    : `Sensação de ${feelsLike}°C. Temperatura agradável para atividades diversas.`;
   tips.push(
     createTip(
       'fallback-balance',
       'Ritmo leve',
-      `Sensação de ${feelsLike}°C. Temperatura agradável para atividades diversas.`,
+      balanceMessage,
       'generic'
     )
   );

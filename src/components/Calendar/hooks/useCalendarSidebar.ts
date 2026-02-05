@@ -1,8 +1,10 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { format, isSameDay, addDays } from 'date-fns';
+import { useShallow } from 'zustand/react/shallow';
 import { useCalendarStore } from '../../../store/useCalendarStore';
 import { useWeatherStore } from '../../../store/useWeatherStore';
 import { toForecastKey } from '../../../utils/forecastGrouper';
+import { useHourlyForecast } from './useHourlyForecast';
 import type { Todo } from '../../../types/calendar';
 import type { WeatherSnapshot } from '../../../types/weather';
 import {
@@ -30,9 +32,20 @@ export type CalendarSidebarActions = Record<string, never>;
  * Hook que prepara o conteúdo do painel lateral do calendário.
  */
 export const useCalendarSidebar = () => {
-  const selectedDate = useCalendarStore((state) => state.selectedDate);
-  const todos = useCalendarStore((state) => state.todos);
-  const forecasts = useWeatherStore((state) => state.forecasts);
+  const isDev = import.meta.env.DEV;
+  const logRef = useRef<string | null>(null);
+  const { selectedDate, todos } = useCalendarStore(
+    useShallow((state) => ({
+      selectedDate: state.selectedDate,
+      todos: state.todos,
+    }))
+  );
+  const { forecasts, coordinates } = useWeatherStore(
+    useShallow((state) => ({
+      forecasts: state.forecasts,
+      coordinates: state.coordinates,
+    }))
+  );
 
   const dateKey = useMemo(() => format(selectedDate, 'yyyy-MM-dd'), [selectedDate]);
   const nextDate = useMemo(() => addDays(selectedDate, 1), [selectedDate]);
@@ -57,14 +70,52 @@ export const useCalendarSidebar = () => {
 
   const theme = useMemo(() => resolveWeatherTheme(snapshot), [snapshot]);
   const nextTheme = useMemo(() => resolveWeatherTheme(nextSnapshot), [nextSnapshot]);
+  const currentPopPercent = useMemo(() => {
+    if (!snapshot) return null;
+    return Math.round(snapshot.pop * 100);
+  }, [snapshot]);
+
+  const lat = coordinates?.lat ?? null;
+  const lon = coordinates?.lon ?? null;
+
+  const { hourlyData } = useHourlyForecast({
+    selectedDate,
+    lat,
+    lon,
+  });
+
+  const { hourlyData: nextDayHourlyData } = useHourlyForecast({
+    selectedDate: nextDate,
+    lat,
+    lon,
+  });
 
   const timeline = useMemo(() => {
-    return buildHourlyTimeline(tasks, theme.tone, selectedDate);
-  }, [tasks, theme.tone, selectedDate]);
+    return buildHourlyTimeline(
+      tasks,
+      theme.tone,
+      selectedDate,
+      hourlyData,
+      currentPopPercent
+    );
+  }, [tasks, theme.tone, selectedDate, hourlyData, currentPopPercent]);
   const nextDayTimeline = useMemo(() => {
-    return buildHourlyTimeline(nextDayTasks, nextTheme.tone, nextDate);
-  }, [nextDate, nextDayTasks, nextTheme.tone]);
+    return buildHourlyTimeline(nextDayTasks, nextTheme.tone, nextDate, nextDayHourlyData);
+  }, [nextDate, nextDayTasks, nextTheme.tone, nextDayHourlyData]);
 
+  useEffect(() => {
+    if (!isDev) return;
+    const slot = timeline[23];
+    const token = `${dateKey}|${slot?.precipProbability ?? 'null'}|${hourlyData?.dateKey ?? 'none'}`;
+    if (logRef.current === token) return;
+    logRef.current = token;
+    console.log('[hourly] timeline slot 23', {
+      dateKey,
+      hourlyDateKey: hourlyData?.dateKey ?? null,
+      precipProbability: slot?.precipProbability ?? null,
+      weatherCode: slot?.weatherCode ?? null,
+    });
+  }, [dateKey, hourlyData, isDev, timeline]);
 
   const dateLabel = useMemo(() => formatSidebarDateLabel(selectedDate), [selectedDate]);
   const isToday = useMemo(() => isSameDay(selectedDate, new Date()), [selectedDate]);

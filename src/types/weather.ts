@@ -73,3 +73,21 @@ export type WeatherCoordinates = {
   label: string;
   isFallback: boolean;
 };
+
+export type HourlySource = 'forecast' | 'archive';
+
+export type HourlyDataPoint = {
+  hour: number;
+  time: string;
+  precipProbability: number;
+  precipitation: number;
+  temperature: number;
+  weatherCode: number;
+};
+
+export type HourlyForecast = {
+  dateKey: string;
+  cacheKey: string;
+  points: HourlyDataPoint[];
+  fetchedAt: number;
+};

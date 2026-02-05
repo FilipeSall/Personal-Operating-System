@@ -1,5 +1,6 @@
 import type { WeatherSnapshot, WeatherTip, WeatherTipKind } from '../../../../../../types/weather';
 import { buildWeatherTipSignals } from '../signals';
+import { calculateHeatIndex } from '../metrics';
 import { createTip, pushUniqueTip } from '../tipUtils';
 
 /**
@@ -14,6 +15,9 @@ export const buildSecondaryTips = (
   const usedKinds = new Set<WeatherTipKind>([primaryKind]);
   const windKmh = Math.round(snapshot.wind.speed * 3.6);
   const humidity = Math.round(snapshot.humidity);
+  const temp = Math.round(snapshot.temperature.current);
+  const feelsLike = Math.round(snapshot.feelsLike);
+  const heatIndex = calculateHeatIndex(temp, humidity);
   const uvIndex = snapshot.uvIndex;
   const tempRange = Math.round(snapshot.temperature.max - snapshot.temperature.min);
   const precipitationTotal = snapshot.precipitation.rain + snapshot.precipitation.snow;
@@ -77,12 +81,17 @@ export const buildSecondaryTips = (
   }
 
   if (humidity >= 75 && windKmh <= 10) {
+    const isMuggyHot = heatIndex >= 30 || feelsLike >= 30;
+    const humidityLabel = isMuggyHot ? 'Ar abafado' : 'Umidade alta';
+    const humidityMessage = isMuggyHot
+      ? `Umidade em ${humidity}%. Sensação de ${heatIndex}°C com pouco vento. Beba bastante água e evite atividades físicas intensas.`
+      : `Umidade em ${humidity}% com pouco vento. O ar fica pesado; ventile os ambientes e prefira roupas leves.`;
     pushUniqueTip(
       tips,
       createTip(
         'humidity-high',
-        'Ar abafado',
-        `Umidade em ${humidity}%. Beba bastante água e evite atividades físicas intensas.`,
+        humidityLabel,
+        humidityMessage,
         'humidity'
       ),
       usedKinds

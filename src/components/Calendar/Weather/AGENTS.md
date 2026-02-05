@@ -21,6 +21,18 @@ O Weather organiza a lógica e a visualização em camadas claras, o que facilit
 - **weatherTags** (em `utils/`) - gera 3 tags de contexto do clima (sensação térmica, umidade, vento, UV, visibilidade). Prioriza sensação térmica, depois umidade extrema, vento significativo e UV alto. Se faltar tag, preenche com versões neutras (ex.: Umidade ok, Calmaria).
 - **weatherViewModel** (em `utils/`): integra dicas e tags no modelo de view.
 
+## Hourly precipitation timeline (Open-Meteo)
+
+- **Service**: `src/services/openMeteoService.ts` (`fetchHourlyForecast`) para dados horarios.
+- **Mapper**: `src/utils/hourlyForecastMapper.ts` converte `OpenMeteoHourlyResponse` em `HourlyForecast`.
+- **Cache key**: `${lat.toFixed(2)}|${lon.toFixed(2)}|YYYY-MM-DD|source` via `buildHourlyCacheKey`.
+- **Datas passadas**: usam Open-Meteo Archive (`source = archive`) quando a data selecionada e menor que hoje.
+- **Fallback**: se o Archive falhar, o hook tenta o Forecast para a mesma data.
+- **Store**: `src/store/useWeatherStore.ts` guarda `hourlyForecasts` e `hourlyStatus` por chave, com TTL de 30min e limite de 20 entradas (remove a mais antiga).
+- **Hook**: `src/components/Calendar/hooks/useHourlyForecast.ts` aplica debounce (300ms), valida range D-1 ate D+16 e cancela com `AbortController`.
+- **UI**: `CalendarSidebarTimelineRow` renderiza icone de clima + % de chuva ao lado do horario; `buildHourlyTimeline` injeta `precipProbability` e `weatherCode`.
+- **Evitar excesso**: nao refazer request se o cache estiver valido e sempre cancelar a requisicao anterior ao trocar de dia rapidamente.
+
 ## Sistema de Dicas Inteligentes (v2)
 
 ### Arquitetura
@@ -49,3 +61,6 @@ As dicas agora usam um sistema de **weighted pools** que prioriza automaticament
 - Estilos consolidados em `CSS/` folder, sem style inline (Panda CSS)
 - O `weatherPanel` usa grid para acomodar apenas o conteúdo principal (resumo + dicas), removendo o rodapé para evitar cortes.
 - 02/02/2026: Ao substituir o snapshot do dia atual pelo dado em tempo real, agora herdamos a probabilidade de chuva agregada do forecast para evitar mostrar "Chance de chuva 0%" quando já há chuva leve.
+- 05/02/2026: Dica de umidade alta agora considera sensação/índice de calor antes de recomendar evitar atividade intensa; em temperaturas amenas usa mensagem neutra.
+- 05/02/2026: Dicas principais e recomendações da tabela agora cruzam fatores (UV, calor, vento, chuva, nuvens) para evitar mensagens incoerentes com o contexto.
+- 05/02/2026: Chance de chuva agora considera precipitação atual (ex.: "Chuva agora") e o POP é corrigido quando o clima atual vem com chuva/neve.

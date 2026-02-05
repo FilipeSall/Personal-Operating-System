@@ -92,10 +92,9 @@ export const useHourlyForecast = ({
   }, [selectedDate]);
 
   const canRequest = lat !== null && lon !== null && isValidDate();
+  const isLoadingRaw = Boolean(status?.isLoading || fallbackStatus?.isLoading);
   const isLoading = Boolean(
-    status?.isLoading ||
-      fallbackStatus?.isLoading ||
-      (canRequest && hourlyData === null && isStale && !hasError)
+    isLoadingRaw || (canRequest && hourlyData === null && isStale && !hasError)
   );
 
   /**
@@ -133,7 +132,7 @@ export const useHourlyForecast = ({
   useEffect(() => {
     if (lat === null || lon === null) return;
     if (!isValidDate()) return;
-    if (isLoading) return;
+    if (isLoadingRaw) return;
     if (hourlyData && !isStale) return;
     if (isOutOfRangeError) return;
 

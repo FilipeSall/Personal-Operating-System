@@ -10,6 +10,7 @@ import {
   timelineWeather,
   timelineWeatherIcon,
   timelineWeatherValue,
+  timelineWeatherSpinner,
 } from '../../styles/calendar-sidebar.styles';
 import {
   adjustToneForNight,
@@ -26,7 +27,7 @@ type TimelineHourSlotProps = {
  * Slot horario com clima e tarefas.
  */
 export const TimelineHourSlot = ({ slot }: TimelineHourSlotProps) => {
-  const { hour, time, weather, todos } = slot;
+  const { hour, time, weather, todos, isLoading } = slot;
 
   const wmoMapping = weather ? getWmoMapping(weather.weatherCode) : null;
   const precipProbability = weather?.precipProbability ?? null;
@@ -35,7 +36,7 @@ export const TimelineHourSlot = ({ slot }: TimelineHourSlotProps) => {
     : 'cloudy';
   const precipValue = weather ? Math.round(weather.precipProbability) : null;
   const hasPrecipData = precipValue !== null;
-  const weatherLabel = hasPrecipData ? `${precipValue}%` : '—';
+  const weatherLabel = hasPrecipData ? `${precipValue}%` : isLoading ? '' : '—';
   const weatherTitle = hasPrecipData
     ? `${wmoMapping?.label ? `${wmoMapping.label} · ` : ''}${weatherLabel} de chuva`
     : 'Dados horarios indisponiveis';
@@ -47,11 +48,17 @@ export const TimelineHourSlot = ({ slot }: TimelineHourSlotProps) => {
         <span
           className={timelineWeather}
           data-tone={tone}
-          data-empty={hasPrecipData ? 'false' : 'true'}
-          title={weatherTitle}
+          data-empty={hasPrecipData || isLoading ? 'false' : 'true'}
+          title={isLoading ? 'Carregando...' : weatherTitle}
         >
           <WeatherToneIcon tone={tone} className={timelineWeatherIcon} aria-hidden="true" />
-          <span className={timelineWeatherValue}>{weatherLabel}</span>
+          {isLoading ? (
+            <span className={timelineWeatherValue} aria-live="polite">
+              <span className={timelineWeatherSpinner} aria-hidden="true" />
+            </span>
+          ) : (
+            <span className={timelineWeatherValue}>{weatherLabel}</span>
+          )}
         </span>
       </div>
       <span className={timelineConnector} />

@@ -28,6 +28,7 @@ O Weather organiza a lógica e a visualização em camadas claras, o que facilit
 - **Cache key**: `${lat.toFixed(2)}|${lon.toFixed(2)}|YYYY-MM-DD|source` via `buildHourlyCacheKey`.
 - **Datas passadas**: usam Open-Meteo Archive (`source = archive`) quando a data selecionada e menor que hoje.
 - **Fallback**: se o Archive falhar, o hook tenta o Forecast para a mesma data.
+- **Persistencia**: `hourlyForecasts` ficam em `localStorage` (key `personal-os:weather-hourly-cache:v1`) com TTL do cache.
 - **Store**: `src/store/useWeatherStore.ts` guarda `hourlyForecasts` e `hourlyStatus` por chave, com TTL de 30min e limite de 20 entradas (remove a mais antiga).
 - **Hook**: `src/components/Calendar/hooks/useHourlyForecast.ts` aplica debounce (300ms), valida range D-1 ate D+16 e cancela com `AbortController`.
 - **UI**: `CalendarSidebarTimelineRow` renderiza icone de clima + % de chuva ao lado do horario; `buildHourlyTimeline` injeta `precipProbability` e `weatherCode`.

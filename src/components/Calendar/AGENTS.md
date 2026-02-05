@@ -37,6 +37,7 @@
 - Cache key: `${lat.toFixed(2)}|${lon.toFixed(2)}|YYYY-MM-DD|source` (source = `forecast` ou `archive`).
 - Datas passadas usam o endpoint archive da Open-Meteo (limitado pelo range do hook).
 - Se o archive falhar, o hook tenta fallback com o endpoint forecast para a mesma data.
+- O cache hourly e persistido no `localStorage` (key `personal-os:weather-hourly-cache:v1`) e respeita TTL.
 - Evitar spam: nao refazer requests quando cache estiver fresco, usar debounce e cancelar chamadas anteriores.
 
 ## Weather (Clima)

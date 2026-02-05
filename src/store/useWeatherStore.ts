@@ -10,10 +10,62 @@ import type { OpenWeatherCurrentResponse } from '../types/openWeather';
 
 const HOURLY_CACHE_TTL_MS = 30 * 60 * 1000;
 const HOURLY_CACHE_MAX_ENTRIES = 20;
+const HOURLY_STORAGE_KEY = 'personal-os:weather-hourly-cache:v1';
 
 type HourlyStatus = {
   isLoading: boolean;
   error: string | null;
+};
+
+/**
+ * Remove entradas expiradas do cache horario.
+ *
+ * @param cache Cache horario atual.
+ */
+const pruneHourlyCache = (cache: Map<string, HourlyForecast>): Map<string, HourlyForecast> => {
+  const now = Date.now();
+  const next = new Map<string, HourlyForecast>();
+  cache.forEach((entry, key) => {
+    if (now - entry.fetchedAt < HOURLY_CACHE_TTL_MS) {
+      next.set(key, entry);
+    }
+  });
+  return next;
+};
+
+/**
+ * Persiste o cache horario no localStorage.
+ *
+ * @param cache Cache horario atual.
+ */
+const persistHourlyCache = (cache: Map<string, HourlyForecast>): void => {
+  if (typeof window === 'undefined') return;
+  const payload = JSON.stringify(Array.from(cache.entries()));
+  try {
+    window.localStorage.setItem(HOURLY_STORAGE_KEY, payload);
+  } catch {
+    // Ignore quota errors.
+  }
+};
+
+/**
+ * Carrega o cache horario salvo no localStorage.
+ */
+const loadHourlyCache = (): Map<string, HourlyForecast> => {
+  if (typeof window === 'undefined') return new Map();
+  const raw = window.localStorage.getItem(HOURLY_STORAGE_KEY);
+  if (!raw) return new Map();
+  try {
+    const parsed = JSON.parse(raw) as Array<[string, HourlyForecast]>;
+    const cache = new Map(parsed);
+    const pruned = pruneHourlyCache(cache);
+    if (pruned.size !== cache.size) {
+      persistHourlyCache(pruned);
+    }
+    return pruned;
+  } catch {
+    return new Map();
+  }
 };
 
 type WeatherStoreState = {
@@ -121,7 +173,7 @@ const updateHourlyStatus = (
  */
 export const useWeatherStore = create<WeatherStore>((set, get) => ({
   forecasts: new Map(),
-  hourlyForecasts: new Map(),
+  hourlyForecasts: loadHourlyCache(),
   hourlyStatus: new Map(),
   isLoading: false,
   error: null,
@@ -287,10 +339,12 @@ export const useWeatherStore = create<WeatherStore>((set, get) => ({
         newMap.set(cacheKey, hourly);
         newStatusMap.set(cacheKey, { isLoading: false, error: null });
 
-        return {
+        const nextState = {
           hourlyForecasts: newMap,
           hourlyStatus: newStatusMap,
         };
+        persistHourlyCache(newMap);
+        return nextState;
       });
       if (isDev) {
         console.log('[hourly] fetch success', {
@@ -351,6 +405,9 @@ export const useWeatherStore = create<WeatherStore>((set, get) => ({
    * Limpa os dados de clima armazenados.
    */
   resetWeather: () => {
+    if (typeof window !== 'undefined') {
+      window.localStorage.removeItem(HOURLY_STORAGE_KEY);
+    }
     set({
       forecasts: new Map(),
       hourlyForecasts: new Map(),

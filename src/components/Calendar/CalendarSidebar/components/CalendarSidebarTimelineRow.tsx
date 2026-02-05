@@ -10,6 +10,7 @@ import {
   timelineWeather,
   timelineWeatherIcon,
   timelineWeatherValue,
+  timelineWeatherSpinner,
 } from '../../styles/calendar-sidebar.styles';
 import { useTimelineTaskExpansion } from '../../hooks/useTimelineTaskExpansion';
 import { TimelineTaskCard } from './TimelineTaskCard';
@@ -41,7 +42,7 @@ export function CalendarSidebarTimelineRow({
   const precipValue =
     slot.precipProbability !== null ? Math.round(slot.precipProbability) : null;
   const hasPrecipData = precipValue !== null;
-  const weatherLabel = hasPrecipData ? `${precipValue}%` : '—';
+  const weatherLabel = hasPrecipData ? `${precipValue}%` : slot.isLoading ? '' : '—';
   const weatherTitle = hasPrecipData
     ? `${wmoMapping?.label ? `${wmoMapping.label} · ` : ''}${weatherLabel} de chuva`
     : 'Dados horarios indisponiveis';
@@ -66,11 +67,17 @@ export function CalendarSidebarTimelineRow({
         <span
           className={timelineWeather}
           data-tone={tone}
-          data-empty={hasPrecipData ? 'false' : 'true'}
-          title={weatherTitle}
+          data-empty={hasPrecipData || slot.isLoading ? 'false' : 'true'}
+          title={slot.isLoading ? 'Carregando...' : weatherTitle}
         >
           <WeatherToneIcon tone={tone} className={timelineWeatherIcon} aria-hidden="true" />
-          <span className={timelineWeatherValue}>{weatherLabel}</span>
+          {slot.isLoading ? (
+            <span className={timelineWeatherValue} aria-live="polite">
+              <span className={timelineWeatherSpinner} aria-hidden="true" />
+            </span>
+          ) : (
+            <span className={timelineWeatherValue}>{weatherLabel}</span>
+          )}
         </span>
       </div>
       <div className={timelineTasks}>

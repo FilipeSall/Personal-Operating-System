@@ -19,6 +19,7 @@ export type TimelineSlot = {
   tasks: TimelineTask[];
   tone: TimelineTone;
   isCurrentHour: boolean;
+  isLoading: boolean;
   precipProbability: number | null;
   weatherCode: number | null;
 };
@@ -84,13 +85,15 @@ export const resolveTimelineTone = (tone: WeatherTone, hour: number): TimelineTo
  * - selectedDate: data selecionada no calendário.
  * - hourlyForecast: dados hourly do Open-Meteo (opcional).
  * - currentPopPercent: probabilidade de chuva atual (OpenWeather) para fallback (0-100).
+ * - isHourlyLoading: status de carregamento do forecast horario.
  */
 export const buildHourlyTimeline = (
   todos: Todo[],
   tone: WeatherTone,
   selectedDate: Date,
   hourlyForecast?: HourlyForecast | null,
-  currentPopPercent?: number | null
+  currentPopPercent?: number | null,
+  isHourlyLoading?: boolean
 ): TimelineSlot[] => {
   const now = new Date();
   const currentHour = now.getHours();
@@ -124,6 +127,7 @@ export const buildHourlyTimeline = (
     const fallbackPop = isCurrentSlot && currentPopPercent !== null
       ? currentPopPercent
       : null;
+    const isLoading = Boolean(isHourlyLoading && !hourlyForecast && isCurrentSlot);
 
     return {
       hour,
@@ -131,6 +135,7 @@ export const buildHourlyTimeline = (
       tasks: tasksByHour[hour] ?? [],
       tone: resolveTimelineTone(tone, hour),
       isCurrentHour: isCurrentSlot,
+      isLoading,
       precipProbability: fallbackPop ?? hourlyPoint?.precipProbability ?? null,
       weatherCode: hourlyPoint?.weatherCode ?? null,
     };

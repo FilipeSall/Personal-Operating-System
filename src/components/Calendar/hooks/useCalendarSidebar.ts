@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { format, isSameDay, addDays } from 'date-fns';
 import { useShallow } from 'zustand/react/shallow';
 import { useCalendarStore } from '../../../store/useCalendarStore';
@@ -34,16 +34,18 @@ export type CalendarSidebarActions = Record<string, never>;
 export const useCalendarSidebar = () => {
   const isDev = import.meta.env.DEV;
   const logRef = useRef<string | null>(null);
+  const [hourTick, setHourTick] = useState(0);
   const { selectedDate, todos } = useCalendarStore(
     useShallow((state) => ({
       selectedDate: state.selectedDate,
       todos: state.todos,
     }))
   );
-  const { forecasts, coordinates } = useWeatherStore(
+  const { forecasts, coordinates, fetchWeather } = useWeatherStore(
     useShallow((state) => ({
       forecasts: state.forecasts,
       coordinates: state.coordinates,
+      fetchWeather: state.fetchWeather,
     }))
   );
 
@@ -78,13 +80,16 @@ export const useCalendarSidebar = () => {
   const lat = coordinates?.lat ?? null;
   const lon = coordinates?.lon ?? null;
 
-  const { hourlyData } = useHourlyForecast({
+  const { hourlyData, isLoading: isHourlyLoading } = useHourlyForecast({
     selectedDate,
     lat,
     lon,
   });
 
-  const { hourlyData: nextDayHourlyData } = useHourlyForecast({
+  const {
+    hourlyData: nextDayHourlyData,
+    isLoading: isNextDayHourlyLoading,
+  } = useHourlyForecast({
     selectedDate: nextDate,
     lat,
     lon,
@@ -96,12 +101,20 @@ export const useCalendarSidebar = () => {
       theme.tone,
       selectedDate,
       hourlyData,
-      currentPopPercent
+      currentPopPercent,
+      isHourlyLoading
     );
-  }, [tasks, theme.tone, selectedDate, hourlyData, currentPopPercent]);
+  }, [tasks, theme.tone, selectedDate, hourlyData, currentPopPercent, isHourlyLoading, hourTick]);
   const nextDayTimeline = useMemo(() => {
-    return buildHourlyTimeline(nextDayTasks, nextTheme.tone, nextDate, nextDayHourlyData);
-  }, [nextDate, nextDayTasks, nextTheme.tone, nextDayHourlyData]);
+    return buildHourlyTimeline(
+      nextDayTasks,
+      nextTheme.tone,
+      nextDate,
+      nextDayHourlyData,
+      null,
+      isNextDayHourlyLoading
+    );
+  }, [nextDate, nextDayTasks, nextTheme.tone, nextDayHourlyData, isNextDayHourlyLoading]);
 
   useEffect(() => {
     if (!isDev) return;
@@ -116,6 +129,50 @@ export const useCalendarSidebar = () => {
       weatherCode: slot?.weatherCode ?? null,
     });
   }, [dateKey, hourlyData, isDev, timeline]);
+
+  useEffect(() => {
+    const now = new Date();
+    const msToNextMinute =
+      (60 - now.getSeconds()) * 1000 - now.getMilliseconds();
+    let intervalId: number | null = null;
+
+    const timeoutId = window.setTimeout(() => {
+      setHourTick((value) => value + 1);
+      intervalId = window.setInterval(() => {
+        setHourTick((value) => value + 1);
+      }, 60 * 1000);
+    }, msToNextMinute);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+      if (intervalId !== null) {
+        window.clearInterval(intervalId);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    const now = new Date();
+    const msToNextHour =
+      (60 - now.getMinutes()) * 60 * 1000 -
+      now.getSeconds() * 1000 -
+      now.getMilliseconds();
+    let intervalId: number | null = null;
+
+    const timeoutId = window.setTimeout(() => {
+      fetchWeather({ force: true });
+      intervalId = window.setInterval(() => {
+        fetchWeather({ force: true });
+      }, 60 * 60 * 1000);
+    }, msToNextHour);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+      if (intervalId !== null) {
+        window.clearInterval(intervalId);
+      }
+    };
+  }, [fetchWeather]);
 
   const dateLabel = useMemo(() => formatSidebarDateLabel(selectedDate), [selectedDate]);
   const isToday = useMemo(() => isSameDay(selectedDate, new Date()), [selectedDate]);

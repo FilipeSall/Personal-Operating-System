@@ -255,6 +255,16 @@ export const timelineWeatherValue = css({
   color: 'text.primary',
 });
 
+export const timelineWeatherSpinner = css({
+  width: '12px',
+  height: '12px',
+  borderRadius: '999px',
+  border: '2px solid rgba(0, 0, 0, 0.12)',
+  borderTopColor: 'var(--weather-accent)',
+  animation: 'spin 0.9s linear infinite',
+  display: 'inline-block',
+});
+
 export const timelineTasks = css({
   display: 'grid',
   gap: '8px',

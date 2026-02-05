@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { useShallow } from 'zustand/react/shallow';
@@ -15,6 +15,7 @@ export type TimelineSlotData = {
   time: string;
   weather: HourlyDataPoint | null;
   todos: Todo[];
+  isLoading: boolean;
 };
 
 /**
@@ -37,7 +38,7 @@ export const DayTimeline = () => {
   const lat = coordinates?.lat ?? null;
   const lon = coordinates?.lon ?? null;
 
-  const { hourlyData, error } = useHourlyForecast({
+  const { hourlyData, isLoading, error } = useHourlyForecast({
     selectedDate,
     lat,
     lon,
@@ -50,6 +51,30 @@ export const DayTimeline = () => {
     return new Map(hourlyData.points.map((point) => [point.hour, point]));
   }, [hourlyData]);
 
+  const [hourTick, setHourTick] = useState(0);
+  const currentHour = useMemo(() => new Date().getHours(), [hourTick]);
+
+  useEffect(() => {
+    const now = new Date();
+    const msToNextMinute =
+      (60 - now.getSeconds()) * 1000 - now.getMilliseconds();
+    let intervalId: number | null = null;
+
+    const timeoutId = window.setTimeout(() => {
+      setHourTick((value) => value + 1);
+      intervalId = window.setInterval(() => {
+        setHourTick((value) => value + 1);
+      }, 60 * 1000);
+    }, msToNextMinute);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+      if (intervalId !== null) {
+        window.clearInterval(intervalId);
+      }
+    };
+  }, []);
+
   const slots: TimelineSlotData[] = useMemo(() => {
     return Array.from({ length: 24 }, (_, hour) => {
       const weatherPoint = hourlyByHour?.get(hour) ?? null;
@@ -60,9 +85,10 @@ export const DayTimeline = () => {
         time: `${hour.toString().padStart(2, '0')}:00`,
         weather: weatherPoint,
         todos: todosForHour,
+        isLoading: Boolean(isLoading && !hourlyData && hour === currentHour),
       };
     });
-  }, [hourlyByHour, todos]);
+  }, [currentHour, hourlyByHour, hourlyData, isLoading, todos]);
 
   const formattedDate = useMemo(
     () => format(selectedDate, "EEEE, d 'de' MMMM", { locale: ptBR }),

@@ -153,6 +153,7 @@ export const useHourlyForecast = ({
     hourlyData,
     isStale,
     doFetch,
+    isLoadingRaw,
     primaryKey,
     fallbackKey,
     isOutOfRangeError,

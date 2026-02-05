@@ -33,7 +33,6 @@ export const useHourlyForecast = ({
   lat,
   lon,
 }: UseHourlyForecastParams): UseHourlyForecastReturn => {
-  const isDev = import.meta.env.DEV;
   const hourlySelector = useShallow((state: ReturnType<typeof useWeatherStore.getState>) => ({
     fetchHourly: state.fetchHourly,
     hourlyForecasts: state.hourlyForecasts,
@@ -78,13 +77,6 @@ export const useHourlyForecast = ({
   const fallbackStatus = fallbackKey ? hourlyStatus.get(fallbackKey) : null;
   const isLoading = Boolean(status?.isLoading || fallbackStatus?.isLoading);
   const error = hourlyData ? null : status?.error ?? fallbackStatus?.error ?? null;
-  const dataSource =
-    hourlyData && primaryKey && hourlyForecasts.get(primaryKey)
-      ? source
-      : hourlyData && fallbackKey
-        ? fallbackSource
-        : null;
-
   /**
    * Verifica se a data esta dentro do range suportado pelo Open-Meteo.
    */
@@ -140,15 +132,6 @@ export const useHourlyForecast = ({
     }
 
     debounceRef.current = setTimeout(() => {
-      if (isDev) {
-        console.log('[hourly] trigger fetch', {
-          dateKey,
-          source,
-          primaryKey,
-          fallbackKey,
-          isStale,
-        });
-      }
       doFetch(source);
     }, DEBOUNCE_MS);
   }, [
@@ -161,7 +144,6 @@ export const useHourlyForecast = ({
     hourlyData,
     isStale,
     doFetch,
-    isDev,
     primaryKey,
     fallbackKey,
   ]);
@@ -178,14 +160,6 @@ export const useHourlyForecast = ({
     if (fallbackAttemptedRef.current.has(token)) return;
     fallbackAttemptedRef.current.add(token);
 
-    if (isDev) {
-      console.log('[hourly] fallback attempt', {
-        dateKey,
-        source,
-        fallbackSource,
-        error: status?.error,
-      });
-    }
     doFetch(fallbackSource, true);
   }, [
     dateKey,
@@ -196,35 +170,6 @@ export const useHourlyForecast = ({
     lon,
     source,
     status?.error,
-    isDev,
-  ]);
-
-  useEffect(() => {
-    if (!isDev) return;
-    console.log('[hourly] state', {
-      dateKey,
-      source,
-      fallbackSource,
-      primaryKey,
-      fallbackKey,
-      hasData: Boolean(hourlyData),
-      dataSource,
-      isLoading,
-      isStale,
-      error,
-    });
-  }, [
-    dateKey,
-    source,
-    fallbackSource,
-    primaryKey,
-    fallbackKey,
-    hourlyData,
-    dataSource,
-    isLoading,
-    isStale,
-    error,
-    isDev,
   ]);
 
   /**

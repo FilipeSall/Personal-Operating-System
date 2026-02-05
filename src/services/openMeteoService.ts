@@ -57,27 +57,12 @@ export const fetchHourlyForecast = async ({
   signal,
 }: FetchHourlyForecastParams): Promise<OpenMeteoHourlyResponse> => {
   const url = buildHourlyUrl(lat, lon, date, source);
-  const isDev = import.meta.env.DEV;
-  if (isDev) {
-    console.log('[hourly] request', { source, date, url });
-  }
-
   const response = await fetch(url, { signal });
 
   if (!response.ok) {
-    if (isDev) {
-      console.log('[hourly] response error', { source, date, status: response.status });
-    }
     throw new Error(`Open-Meteo error: ${response.status}`);
   }
 
   const data = (await response.json()) as OpenMeteoHourlyResponse;
-  if (isDev) {
-    console.log('[hourly] response ok', {
-      source,
-      date,
-      hours: data.hourly?.time?.length ?? 0,
-    });
-  }
   return data;
 };

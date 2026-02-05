@@ -1,4 +1,5 @@
 import type { WeatherActions, WeatherDerived, WeatherState } from '../hooks/useWeather';
+import { useMemo } from 'react';
 import {
   weatherDecorBottom,
   weatherDecorTop,
@@ -31,9 +32,15 @@ export function WeatherView({ state, derived, actions }: WeatherViewProps) {
     description,
     temperatureValue,
     tips,
-  } = buildWeatherViewModel({ state, derived });
+  } = useMemo(
+    () => buildWeatherViewModel({ state, derived }),
+    [state, derived]
+  );
 
-  const statusState = getWeatherStatusState(state, derived);
+  const statusState = useMemo(
+    () => getWeatherStatusState(state, derived),
+    [state, derived]
+  );
 
   return (
     <section className={weatherSection}>

@@ -86,6 +86,7 @@ export const resolveTimelineTone = (tone: WeatherTone, hour: number): TimelineTo
  * - hourlyForecast: dados hourly do Open-Meteo (opcional).
  * - currentPopPercent: probabilidade de chuva atual (OpenWeather) para fallback (0-100).
  * - isHourlyLoading: status de carregamento do forecast horario.
+ * - now: data atual (injecao para testes ou revalidacao periodica).
  */
 export const buildHourlyTimeline = (
   todos: Todo[],
@@ -93,11 +94,12 @@ export const buildHourlyTimeline = (
   selectedDate: Date,
   hourlyForecast?: HourlyForecast | null,
   currentPopPercent?: number | null,
-  isHourlyLoading?: boolean
+  isHourlyLoading?: boolean,
+  now?: Date
 ): TimelineSlot[] => {
-  const now = new Date();
-  const currentHour = now.getHours();
-  const isToday = isSameDay(selectedDate, now);
+  const resolvedNow = now ?? new Date();
+  const currentHour = resolvedNow.getHours();
+  const isToday = isSameDay(selectedDate, resolvedNow);
   const hourlyByHour = hourlyForecast
     ? new Map(hourlyForecast.points.map((point) => [point.hour, point]))
     : null;

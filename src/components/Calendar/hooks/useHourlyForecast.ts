@@ -6,7 +6,7 @@ import { buildHourlyCacheKey } from '../../../utils/hourlyForecastMapper';
 import type { HourlyForecast, HourlySource } from '../../../types/weather';
 
 const DEBOUNCE_MS = 300;
-const MAX_FUTURE_DAYS = 16;
+const MAX_FUTURE_DAYS = 15;
 const MAX_PAST_DAYS = 30;
 
 type UseHourlyForecastParams = {
@@ -33,7 +33,6 @@ export const useHourlyForecast = ({
   lat,
   lon,
 }: UseHourlyForecastParams): UseHourlyForecastReturn => {
-  const isDev = import.meta.env.DEV;
   const hourlySelector = useShallow((state: ReturnType<typeof useWeatherStore.getState>) => ({
     fetchHourly: state.fetchHourly,
     hourlyForecasts: state.hourlyForecasts,
@@ -78,13 +77,7 @@ export const useHourlyForecast = ({
   const fallbackStatus = fallbackKey ? hourlyStatus.get(fallbackKey) : null;
   const isLoading = Boolean(status?.isLoading || fallbackStatus?.isLoading);
   const error = hourlyData ? null : status?.error ?? fallbackStatus?.error ?? null;
-  const dataSource =
-    hourlyData && primaryKey && hourlyForecasts.get(primaryKey)
-      ? source
-      : hourlyData && fallbackKey
-        ? fallbackSource
-        : null;
-
+  const isOutOfRangeError = Boolean(status?.error?.includes('out of allowed range'));
   /**
    * Verifica se a data esta dentro do range suportado pelo Open-Meteo.
    */
@@ -134,21 +127,13 @@ export const useHourlyForecast = ({
     if (!isValidDate()) return;
     if (isLoading) return;
     if (hourlyData && !isStale) return;
+    if (isOutOfRangeError) return;
 
     if (debounceRef.current) {
       clearTimeout(debounceRef.current);
     }
 
     debounceRef.current = setTimeout(() => {
-      if (isDev) {
-        console.log('[hourly] trigger fetch', {
-          dateKey,
-          source,
-          primaryKey,
-          fallbackKey,
-          isStale,
-        });
-      }
       doFetch(source);
     }, DEBOUNCE_MS);
   }, [
@@ -161,9 +146,9 @@ export const useHourlyForecast = ({
     hourlyData,
     isStale,
     doFetch,
-    isDev,
     primaryKey,
     fallbackKey,
+    isOutOfRangeError,
   ]);
 
   const fallbackAttemptedRef = useRef(new Set<string>());
@@ -173,19 +158,11 @@ export const useHourlyForecast = ({
     if (lat === null || lon === null) return;
     if (hourlyData) return;
     if (!status?.error) return;
+    if (isOutOfRangeError) return;
 
     const token = `${dateKey}|${source}`;
     if (fallbackAttemptedRef.current.has(token)) return;
     fallbackAttemptedRef.current.add(token);
-
-    if (isDev) {
-      console.log('[hourly] fallback attempt', {
-        dateKey,
-        source,
-        fallbackSource,
-        error: status?.error,
-      });
-    }
     doFetch(fallbackSource, true);
   }, [
     dateKey,
@@ -196,35 +173,7 @@ export const useHourlyForecast = ({
     lon,
     source,
     status?.error,
-    isDev,
-  ]);
-
-  useEffect(() => {
-    if (!isDev) return;
-    console.log('[hourly] state', {
-      dateKey,
-      source,
-      fallbackSource,
-      primaryKey,
-      fallbackKey,
-      hasData: Boolean(hourlyData),
-      dataSource,
-      isLoading,
-      isStale,
-      error,
-    });
-  }, [
-    dateKey,
-    source,
-    fallbackSource,
-    primaryKey,
-    fallbackKey,
-    hourlyData,
-    dataSource,
-    isLoading,
-    isStale,
-    error,
-    isDev,
+    isOutOfRangeError,
   ]);
 
   /**

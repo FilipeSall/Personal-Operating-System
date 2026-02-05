@@ -127,7 +127,7 @@ export const buildHourlyTimeline = (
     const fallbackPop = isCurrentSlot && currentPopPercent !== null
       ? currentPopPercent
       : null;
-    const isLoading = Boolean(isHourlyLoading && !hourlyForecast && isCurrentSlot);
+    const isLoading = Boolean(isHourlyLoading);
 
     return {
       hour,
@@ -149,5 +149,6 @@ export const buildHourlyTimeline = (
  * - date: data selecionada.
  */
 export const formatSidebarDateLabel = (date: Date): string => {
-  return format(date, "EEEE, d 'de' MMMM", { locale: ptBR });
+  const label = format(date, 'EEEE', { locale: ptBR });
+  return label.charAt(0).toUpperCase() + label.slice(1);
 };

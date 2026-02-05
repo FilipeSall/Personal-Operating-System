@@ -30,7 +30,7 @@ O Weather organiza a lógica e a visualização em camadas claras, o que facilit
 - **Fallback**: se o Archive falhar, o hook tenta o Forecast para a mesma data.
 - **Persistencia**: `hourlyForecasts` ficam em `localStorage` (key `personal-os:weather-hourly-cache:v1`) com TTL do cache.
 - **Store**: `src/store/useWeatherStore.ts` guarda `hourlyForecasts` e `hourlyStatus` por chave, com TTL de 30min e limite de 20 entradas (remove a mais antiga).
-- **Hook**: `src/components/Calendar/hooks/useHourlyForecast.ts` aplica debounce (300ms), valida range D-1 ate D+16 e cancela com `AbortController`.
+- **Hook**: `src/components/Calendar/hooks/useHourlyForecast.ts` aplica debounce (300ms), valida range D-1 ate D+15 e cancela com `AbortController`.
 - **UI**: `CalendarSidebarTimelineRow` renderiza icone de clima + % de chuva ao lado do horario; `buildHourlyTimeline` injeta `precipProbability` e `weatherCode`.
 - **Evitar excesso**: nao refazer request se o cache estiver valido e sempre cancelar a requisicao anterior ao trocar de dia rapidamente.
 
@@ -65,3 +65,4 @@ As dicas agora usam um sistema de **weighted pools** que prioriza automaticament
 - 05/02/2026: Dica de umidade alta agora considera sensação/índice de calor antes de recomendar evitar atividade intensa; em temperaturas amenas usa mensagem neutra.
 - 05/02/2026: Dicas principais e recomendações da tabela agora cruzam fatores (UV, calor, vento, chuva, nuvens) para evitar mensagens incoerentes com o contexto.
 - 05/02/2026: Chance de chuva agora considera precipitação atual (ex.: "Chuva agora") e o POP é corrigido quando o clima atual vem com chuva/neve.
+- 05/02/2026: Quando o hourly do Open-Meteo termina, o POP do dia atual pode ser ajustado pela probabilidade da hora atual (se não estiver chovendo agora).

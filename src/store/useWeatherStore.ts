@@ -112,6 +112,18 @@ type MapCurrentToSnapshotOptions = {
 };
 
 /**
+ * Extrai a probabilidade de chuva da hora atual (Open-Meteo) em formato 0-1.
+ *
+ * @param hourly Dados horarios do Open-Meteo.
+ */
+const getCurrentHourPop = (hourly: HourlyForecast): number | null => {
+  const nowHour = new Date().getHours();
+  const point = hourly.points.find((entry) => entry.hour === nowHour);
+  if (!point || point.precipProbability == null) return null;
+  return Math.min(Math.max(point.precipProbability / 100, 0), 1);
+};
+
+/**
  * Converte a resposta do clima atual para WeatherSnapshot.
  *
  * @param data Resposta atual da OpenWeatherMap.
@@ -276,7 +288,6 @@ export const useWeatherStore = create<WeatherStore>((set, get) => ({
    * Busca forecast horario do Open-Meteo para um dia especifico.
    */
   fetchHourly: async ({ dateKey, lat, lon, source, signal, force }) => {
-    const isDev = import.meta.env.DEV;
     const cacheKey = buildHourlyCacheKey(lat, lon, dateKey, source);
     const { hourlyForecasts, hourlyStatus } = get();
     const status = hourlyStatus.get(cacheKey);
@@ -289,9 +300,6 @@ export const useWeatherStore = create<WeatherStore>((set, get) => ({
     if (cached && !force) {
       const age = now - cached.fetchedAt;
       if (age < HOURLY_CACHE_TTL_MS) {
-        if (isDev) {
-          console.log('[hourly] cache hit', { cacheKey, ageMs: age });
-        }
         if (status?.error) {
           set((state) => ({
             hourlyStatus: updateHourlyStatus(state.hourlyStatus, cacheKey, {
@@ -310,10 +318,6 @@ export const useWeatherStore = create<WeatherStore>((set, get) => ({
         error: null,
       }),
     }));
-    if (isDev) {
-      console.log('[hourly] fetch start', { cacheKey, dateKey, source, force: Boolean(force) });
-    }
-
     try {
       const response = await fetchHourlyForecast({ lat, lon, date: dateKey, signal, source });
       const hourly = mapOpenMeteoToHourly(response, dateKey, cacheKey);
@@ -339,20 +343,32 @@ export const useWeatherStore = create<WeatherStore>((set, get) => ({
         newMap.set(cacheKey, hourly);
         newStatusMap.set(cacheKey, { isLoading: false, error: null });
 
-        const nextState = {
+        const nextState: Partial<WeatherStoreState> = {
           hourlyForecasts: newMap,
           hourlyStatus: newStatusMap,
         };
+
+        if (source === 'forecast') {
+          const todayKey = toForecastKey(new Date());
+          if (dateKey === todayKey) {
+            const current = state.forecasts.get(todayKey);
+            const popFromHourly = getCurrentHourPop(hourly);
+            const hasCurrentPrecip = Boolean(
+              current?.precipitation.rain || current?.precipitation.snow
+            );
+
+            if (current && popFromHourly !== null && !hasCurrentPrecip) {
+              const updated = { ...current, pop: popFromHourly };
+              const updatedForecasts = new Map(state.forecasts);
+              updatedForecasts.set(todayKey, updated);
+              nextState.forecasts = updatedForecasts;
+            }
+          }
+        }
+
         persistHourlyCache(newMap);
         return nextState;
       });
-      if (isDev) {
-        console.log('[hourly] fetch success', {
-          cacheKey,
-          points: hourly.points.length,
-        });
-      }
-
       return hourly;
     } catch (error) {
       if (error instanceof Error && error.name === 'AbortError') {
@@ -362,9 +378,6 @@ export const useWeatherStore = create<WeatherStore>((set, get) => ({
             error: null,
           }),
         }));
-        if (isDev) {
-          console.log('[hourly] fetch aborted', { cacheKey });
-        }
         return null;
       }
 
@@ -378,9 +391,6 @@ export const useWeatherStore = create<WeatherStore>((set, get) => ({
           error: message,
         }),
       }));
-      if (isDev) {
-        console.log('[hourly] fetch error', { cacheKey, message });
-      }
       return null;
     }
   },

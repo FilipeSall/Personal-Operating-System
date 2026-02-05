@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { format, isSameDay, addDays } from 'date-fns';
 import { useShallow } from 'zustand/react/shallow';
 import { useCalendarStore } from '../../../store/useCalendarStore';
@@ -32,8 +32,6 @@ export type CalendarSidebarActions = Record<string, never>;
  * Hook que prepara o conteúdo do painel lateral do calendário.
  */
 export const useCalendarSidebar = () => {
-  const isDev = import.meta.env.DEV;
-  const logRef = useRef<string | null>(null);
   const [hourTick, setHourTick] = useState(0);
   const { selectedDate, todos } = useCalendarStore(
     useShallow((state) => ({
@@ -115,20 +113,6 @@ export const useCalendarSidebar = () => {
       isNextDayHourlyLoading
     );
   }, [nextDate, nextDayTasks, nextTheme.tone, nextDayHourlyData, isNextDayHourlyLoading]);
-
-  useEffect(() => {
-    if (!isDev) return;
-    const slot = timeline[23];
-    const token = `${dateKey}|${slot?.precipProbability ?? 'null'}|${hourlyData?.dateKey ?? 'none'}`;
-    if (logRef.current === token) return;
-    logRef.current = token;
-    console.log('[hourly] timeline slot 23', {
-      dateKey,
-      hourlyDateKey: hourlyData?.dateKey ?? null,
-      precipProbability: slot?.precipProbability ?? null,
-      weatherCode: slot?.weatherCode ?? null,
-    });
-  }, [dateKey, hourlyData, isDev, timeline]);
 
   useEffect(() => {
     const now = new Date();

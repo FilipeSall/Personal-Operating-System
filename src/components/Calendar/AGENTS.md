@@ -32,8 +32,10 @@
 - Service: `src/services/openMeteoService.ts` (`fetchHourlyForecast`).
 - Mapper: `src/utils/hourlyForecastMapper.ts` (`mapOpenMeteoToHourly`, `buildHourlyCacheKey`).
 - Store: `src/store/useWeatherStore.ts` (`hourlyForecasts`, `hourlyStatus` por chave, TTL 30min, max 20 entradas).
-- Hook: `src/components/Calendar/hooks/useHourlyForecast.ts` (debounce 300ms, AbortController, range D-1 ate D+16).
-- UI: `CalendarSidebarTimelineRow` consome `precipProbability` e `weatherCode` dos slots montados por `buildHourlyTimeline`.
+- Hook: `src/components/Calendar/hooks/useHourlyForecast.ts` (debounce 300ms, AbortController, range D-1 ate D+15).
+- UI: `CalendarSidebarTimelineRow` consome `precipProbability` e `weatherCode` dos slots montados por `buildHourlyTimeline`. Quando `isHourlyLoading` estiver ativo, todos os slots exibem spinner.
+- O cabeçalho da Agenda do dia mostra apenas o dia da semana, sem dia do mês nem mês.
+- O rótulo da Agenda do dia capitaliza a primeira letra do dia (`Segunda`, `Terça`, etc.).
 - Cache key: `${lat.toFixed(2)}|${lon.toFixed(2)}|YYYY-MM-DD|source` (source = `forecast` ou `archive`).
 - Datas passadas usam o endpoint archive da Open-Meteo (limitado pelo range do hook).
 - Se o archive falhar, o hook tenta fallback com o endpoint forecast para a mesma data.

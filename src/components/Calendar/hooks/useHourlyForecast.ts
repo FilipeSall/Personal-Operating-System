@@ -4,10 +4,11 @@ import { format, isAfter, isBefore, addDays, subDays, startOfDay } from 'date-fn
 import { useWeatherStore } from '../../../store/useWeatherStore';
 import { buildHourlyCacheKey } from '../../../utils/hourlyForecastMapper';
 import type { HourlyForecast, HourlySource } from '../../../types/weather';
-
-const DEBOUNCE_MS = 300;
-const MAX_FUTURE_DAYS = 15;
-const MAX_PAST_DAYS = 30;
+import {
+  HOURLY_FORECAST_DEBOUNCE_MS,
+  HOURLY_FORECAST_MAX_FUTURE_DAYS,
+  HOURLY_FORECAST_MAX_PAST_DAYS,
+} from '../consts/hourlyForecast';
 
 type UseHourlyForecastParams = {
   selectedDate: Date;
@@ -75,7 +76,7 @@ export const useHourlyForecast = ({
   const isStale = primaryStale && fallbackStale;
   const status = primaryKey ? hourlyStatus.get(primaryKey) : null;
   const fallbackStatus = fallbackKey ? hourlyStatus.get(fallbackKey) : null;
-  const isLoading = Boolean(status?.isLoading || fallbackStatus?.isLoading);
+  const hasError = Boolean(status?.error || fallbackStatus?.error);
   const error = hourlyData ? null : status?.error ?? fallbackStatus?.error ?? null;
   const isOutOfRangeError = Boolean(status?.error?.includes('out of allowed range'));
   /**
@@ -84,11 +85,18 @@ export const useHourlyForecast = ({
   const isValidDate = useCallback(() => {
     const today = startOfDay(new Date());
     const selectedDay = startOfDay(selectedDate);
-    const minDate = subDays(today, MAX_PAST_DAYS);
-    const maxDate = addDays(today, MAX_FUTURE_DAYS);
+    const minDate = subDays(today, HOURLY_FORECAST_MAX_PAST_DAYS);
+    const maxDate = addDays(today, HOURLY_FORECAST_MAX_FUTURE_DAYS);
 
     return !isBefore(selectedDay, minDate) && !isAfter(selectedDay, maxDate);
   }, [selectedDate]);
+
+  const canRequest = lat !== null && lon !== null && isValidDate();
+  const isLoading = Boolean(
+    status?.isLoading ||
+      fallbackStatus?.isLoading ||
+      (canRequest && hourlyData === null && isStale && !hasError)
+  );
 
   /**
    * Executa a busca do forecast horario (com cancelamento do anterior).
@@ -135,7 +143,7 @@ export const useHourlyForecast = ({
 
     debounceRef.current = setTimeout(() => {
       doFetch(source);
-    }, DEBOUNCE_MS);
+    }, HOURLY_FORECAST_DEBOUNCE_MS);
   }, [
     dateKey,
     lat,

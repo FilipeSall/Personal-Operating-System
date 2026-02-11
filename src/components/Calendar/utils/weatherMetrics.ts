@@ -85,17 +85,30 @@ const formatSunTimes = (sunrise: number, sunset: number): string => {
 };
 
 /**
- * Formata a chance de chuva em porcentagem ou status atual.
+ * Formata a chance de chuva em porcentagem.
+ * Usa a descricao do clima como verdade sobre o momento atual.
+ * A precipitacao pode ser herdada do forecast e nao reflete necessariamente o agora.
  */
 const formatRainChance = (
   pop: number,
-  precipitation: WeatherSnapshot['precipitation']
+  description: string
 ): string => {
-  const isRainingNow = precipitation.rain > 0 || precipitation.snow > 0;
-  if (isRainingNow) {
+  const normalized = normalizeText(description);
+  const isRainDescription =
+    normalized.includes('chuva') ||
+    normalized.includes('garoa') ||
+    normalized.includes('tempestade') ||
+    normalized.includes('trovoada');
+
+  if (isRainDescription) {
     return '100%';
   }
-  return `${Math.round(pop * 100)}%`;
+
+  const popPercent = Math.round(pop * 100);
+  if (popPercent > 0) {
+    return `~${popPercent}%`;
+  }
+  return `${popPercent}%`;
 };
 
 /**
@@ -256,22 +269,27 @@ const getFeelsLikeRecommendation = (feelsLike: number): string => {
  */
 const getRainChanceRecommendation = (
   pop: number,
-  precipitation: WeatherSnapshot['precipitation'],
   description: string
 ): string => {
-  const isRainingNow = precipitation.rain > 0 || precipitation.snow > 0;
-  if (isRainingNow) {
-    const normalized = normalizeText(description);
+  const normalized = normalizeText(description);
+  const isRainDescription =
+    normalized.includes('chuva') ||
+    normalized.includes('garoa') ||
+    normalized.includes('tempestade') ||
+    normalized.includes('trovoada');
+
+  if (isRainDescription) {
     if (normalized.includes('neve') || normalized.includes('granizo')) {
       return 'Neve agora. Redobre o cuidado com o piso e use calçado aderente.';
     }
     return 'Chovendo agora. Leve capa e evite áreas que acumulam água.';
   }
+
   if (pop >= 0.6) {
-    return 'Vai chover! Guarda-chuva no bolso ou prepare-se pra virar peixe na rua.';
+    return 'Chuva provável mais tarde. Ajuste compromissos externos e tenha proteção por perto.';
   }
   if (pop >= 0.3) {
-    return 'Talvez chova. Melhor levar uma capa de chuva, vai que né?';
+    return 'Chance moderada de chuva. Planeje alternativas cobertas.';
   }
   return 'Chance baixa de chuva. Pode deixar o guarda-chuva em casa tranquilo.';
 };
@@ -427,11 +445,10 @@ export const buildWeatherRows = (snapshot: WeatherSnapshot): WeatherRow[] => {
       label: 'Chance de chuva',
       value: formatRainChance(
         snapshot.pop,
-        snapshot.precipitation
+        snapshot.description
       ),
       recommendation: getRainChanceRecommendation(
         snapshot.pop,
-        snapshot.precipitation,
         snapshot.description
       ),
     },

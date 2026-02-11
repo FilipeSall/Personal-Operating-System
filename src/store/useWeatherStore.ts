@@ -105,10 +105,8 @@ type WeatherStoreActions = {
 export type WeatherStore = WeatherStoreState & WeatherStoreActions;
 
 type MapCurrentToSnapshotOptions = {
-  /**
-   * Probabilidade de precipitação herdada de um snapshot de forecast diário (opcional).
-   */
   inheritedPop?: number;
+  inheritedPrecipitation?: { rain: number; snow: number };
 };
 
 /**
@@ -119,12 +117,15 @@ type MapCurrentToSnapshotOptions = {
 const getCurrentHourPop = (hourly: HourlyForecast): number | null => {
   const nowHour = new Date().getHours();
   const point = hourly.points.find((entry) => entry.hour === nowHour);
+
   if (!point || point.precipProbability == null) return null;
   return Math.min(Math.max(point.precipProbability / 100, 0), 1);
 };
 
 /**
  * Converte a resposta do clima atual para WeatherSnapshot.
+ * Quando nao esta chovendo agora mas o forecast preve chuva,
+ * herda a precipitacao do forecast para manter consistencia com o POP.
  *
  * @param data Resposta atual da OpenWeatherMap.
  * @param options Opções para herdar métricas adicionais do forecast.
@@ -132,36 +133,40 @@ const getCurrentHourPop = (hourly: HourlyForecast): number | null => {
 const mapCurrentToSnapshot = (
   data: OpenWeatherCurrentResponse,
   options?: MapCurrentToSnapshotOptions
-): WeatherSnapshot => ({
-  description: data.weather[0]?.description ?? 'Sem descricao',
-  temperature: {
-    current: data.main.temp,
-    min: data.main.temp_min,
-    max: data.main.temp_max,
-  },
-  feelsLike: data.main.feels_like,
-  pop: Math.max(
-    options?.inheritedPop ?? 0,
-    (data.rain?.['1h'] ?? data.rain?.['3h'] ?? 0) > 0 ||
-      (data.snow?.['1h'] ?? data.snow?.['3h'] ?? 0) > 0
-      ? 1
-      : 0
-  ),
-  wind: {
-    speed: data.wind.speed,
-    deg: data.wind.deg,
-  },
-  humidity: data.main.humidity,
-  uvIndex: 0,
-  clouds: data.clouds.all,
-  sunrise: data.sys.sunrise,
-  sunset: data.sys.sunset,
-  alerts: [],
-  precipitation: {
-    rain: data.rain?.['1h'] ?? data.rain?.['3h'] ?? 0,
-    snow: data.snow?.['1h'] ?? data.snow?.['3h'] ?? 0,
-  },
-});
+): WeatherSnapshot => {
+  const inheritedPop = options?.inheritedPop ?? 0;
+  const rainVolume = data.rain?.['1h'] ?? data.rain?.['3h'] ?? 0;
+  const snowVolume = data.snow?.['1h'] ?? data.snow?.['3h'] ?? 0;
+  const isRainingNow = rainVolume > 0 || snowVolume > 0;
+  const currentPop = isRainingNow ? 1 : 0;
+  const finalPop = Math.max(inheritedPop, currentPop);
+
+  const precipitation = isRainingNow
+    ? { rain: rainVolume, snow: snowVolume }
+    : options?.inheritedPrecipitation ?? { rain: 0, snow: 0 };
+
+  return {
+    description: data.weather[0]?.description ?? 'Sem descricao',
+    temperature: {
+      current: data.main.temp,
+      min: data.main.temp_min,
+      max: data.main.temp_max,
+    },
+    feelsLike: data.main.feels_like,
+    pop: finalPop,
+    wind: {
+      speed: data.wind.speed,
+      deg: data.wind.deg,
+    },
+    humidity: data.main.humidity,
+    uvIndex: 0,
+    clouds: data.clouds.all,
+    sunrise: data.sys.sunrise,
+    sunset: data.sys.sunset,
+    alerts: [],
+    precipitation,
+  };
+};
 
 /**
  * Atualiza o status de uma chave hourly mantendo imutabilidade.
@@ -225,11 +230,11 @@ export const useWeatherStore = create<WeatherStore>((set, get) => ({
           lon: coordinates.lon,
           signal,
         });
-        const place = reverse[0];
+        const resolvedPlace = reverse[0];
         locationLabel = formatLocationLabel({
-          cityName: place?.name,
-          stateName: place?.state,
-          countryCode: place?.country,
+          cityName: resolvedPlace?.name,
+          stateName: resolvedPlace?.state,
+          countryCode: resolvedPlace?.country,
           fallback: coordinates.label,
         });
       } catch {
@@ -239,22 +244,64 @@ export const useWeatherStore = create<WeatherStore>((set, get) => ({
       const grouped = groupForecastByDay(forecastData);
       const todayKey = toForecastKey(new Date());
       const todaySnapshot = grouped.get(todayKey);
+
       grouped.set(
         todayKey,
         mapCurrentToSnapshot(currentData, {
           inheritedPop: todaySnapshot?.pop,
+          inheritedPrecipitation: todaySnapshot?.precipitation,
         })
       );
 
-      set((state) => ({
-        ...state,
-        forecasts: grouped,
-        isLoading: false,
-        error: null,
-        locationLabel,
-        coordinates: { lat: coordinates.lat, lon: coordinates.lon },
-        lastUpdatedAt: new Date(),
-      }));
+      // Busca Open-Meteo hourly para hoje de forma sincrona
+      // para que o primeiro render ja tenha o POP da hora atual.
+      let todayHourly: HourlyForecast | null = null;
+      try {
+        const hourlyResponse = await fetchHourlyForecast({
+          lat: coordinates.lat,
+          lon: coordinates.lon,
+          date: todayKey,
+          signal,
+          source: 'forecast',
+        });
+        const hourlyCacheKey = buildHourlyCacheKey(
+          coordinates.lat,
+          coordinates.lon,
+          todayKey,
+          'forecast'
+        );
+        todayHourly = mapOpenMeteoToHourly(hourlyResponse, todayKey, hourlyCacheKey);
+
+        const popFromHourly = getCurrentHourPop(todayHourly);
+        if (popFromHourly !== null) {
+          const current = grouped.get(todayKey)!;
+          grouped.set(todayKey, { ...current, pop: popFromHourly });
+        }
+      } catch {
+        // Falha no Open-Meteo nao bloqueia o fluxo principal.
+      }
+
+      set((state) => {
+        const nextState: Partial<WeatherStoreState> = {
+          forecasts: grouped,
+          isLoading: false,
+          error: null,
+          locationLabel,
+          coordinates: { lat: coordinates.lat, lon: coordinates.lon },
+          lastUpdatedAt: new Date(),
+        };
+
+        if (todayHourly) {
+          const newHourlyMap = new Map(state.hourlyForecasts);
+          newHourlyMap.set(todayHourly.cacheKey, todayHourly);
+          const newStatusMap = new Map(state.hourlyStatus);
+          newStatusMap.set(todayHourly.cacheKey, { isLoading: false, error: null });
+          nextState.hourlyForecasts = newHourlyMap;
+          nextState.hourlyStatus = newStatusMap;
+        }
+
+        return { ...state, ...nextState };
+      });
     } catch (error) {
       if (error instanceof Error && error.name === 'AbortError') {
         set((state) => ({
@@ -353,11 +400,8 @@ export const useWeatherStore = create<WeatherStore>((set, get) => ({
           if (dateKey === todayKey) {
             const current = state.forecasts.get(todayKey);
             const popFromHourly = getCurrentHourPop(hourly);
-            const hasCurrentPrecip = Boolean(
-              current?.precipitation.rain || current?.precipitation.snow
-            );
 
-            if (current && popFromHourly !== null && !hasCurrentPrecip) {
+            if (current && popFromHourly !== null) {
               const updated = { ...current, pop: popFromHourly };
               const updatedForecasts = new Map(state.forecasts);
               updatedForecasts.set(todayKey, updated);

@@ -58,12 +58,16 @@ const getMostFrequentDescription = (items: OpenWeatherForecastItem[]): string =>
 
 /**
  * Converte a lista de forecast em snapshots agrupados por dia.
+ * Para o dia de hoje, calcula o POP apenas dos intervalos futuros
+ * para evitar que intervalos passados inflem a probabilidade exibida.
  */
 export const groupForecastByDay = (
   data: OpenWeatherForecastResponse
 ): Map<string, WeatherSnapshot> => {
   const result = new Map<string, WeatherSnapshot>();
   const groups = groupItemsByDay(data.list);
+  const todayKey = format(new Date(), 'yyyy-MM-dd');
+  const nowUnix = Math.floor(Date.now() / 1000);
 
   for (const [dateKey, items] of groups) {
     const midday = getMiddayItem(items);
@@ -77,14 +81,19 @@ export const groupForecastByDay = (
     let rainTotal = 0;
     let snowTotal = 0;
 
+    const isToday = dateKey === todayKey;
+
     for (const item of items) {
       if (item.main.temp_min < tempMin) tempMin = item.main.temp_min;
       if (item.main.temp_max > tempMax) tempMax = item.main.temp_max;
       humiditySum += item.main.humidity;
       cloudsSum += item.clouds.all;
-      if (item.pop > popMax) popMax = item.pop;
       rainTotal += item.rain?.['3h'] ?? 0;
       snowTotal += item.snow?.['3h'] ?? 0;
+
+      if (!isToday || item.dt > nowUnix) {
+        if (item.pop > popMax) popMax = item.pop;
+      }
     }
 
     result.set(dateKey, {

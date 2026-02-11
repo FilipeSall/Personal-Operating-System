@@ -159,7 +159,7 @@ export const buildSecondaryTips = (
       createTip(
         'rain-chance',
         'Chance de chuva',
-        `Chance de chuva ${popPercent}%. Leve guarda-chuva, ele adora um passeio.`,
+        `Chance de chuva ${popPercent}%. Se for sair, calçado fechado e guarda-chuva compacto ajudam.`,
         'rain'
       ),
       usedKinds

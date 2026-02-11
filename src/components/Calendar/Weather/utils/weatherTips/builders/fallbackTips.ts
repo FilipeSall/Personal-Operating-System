@@ -600,7 +600,7 @@ const buildQuickCheckTips = (signals: WeatherTipSignals): WeatherTip[] => {
       createTip(
         'fallback-check-rain-2',
         'Check rápido',
-        `Chance de chuva ${signals.popPercent}%. Capricha na capa, o céu tá de brincadeira.`,
+        'Risco de chuva hoje. Prefira rotas com marquise e leve pano seco na mochila.',
         'generic'
       )
     );

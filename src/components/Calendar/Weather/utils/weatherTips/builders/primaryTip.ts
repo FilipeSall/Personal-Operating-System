@@ -65,7 +65,9 @@ export const buildPrimaryTip = (snapshot: WeatherSnapshot, selectedDate: Date): 
     return createTip(
       'primary-rain',
       'Dica do dia',
-      `Com ${descriptionText}, a chuva está ${chanceLabel === 'confirmada' ? 'confirmada' : `em ${chanceLabel}`}. Leve guarda-chuva para evitar surpresas.`,
+      `Com ${descriptionText}, a previsão indica ${
+        chanceLabel === 'confirmada' ? 'chuva certa' : chanceLabel
+      }. Planeje saídas com abrigo e proteja eletrônicos.`,
       'rain'
     );
   }

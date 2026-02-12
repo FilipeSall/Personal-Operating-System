@@ -15,6 +15,25 @@ import { TodoDetailMetaSection } from './TodoDetailMetaSection';
 import { TodoDetailActions } from './TodoDetailActions';
 import { TodoDetailDeleteModal } from './TodoDetailDeleteModal';
 
+/**
+ * Modal principal de visualização de detalhes de um todo.
+ *
+ * Orquestra todos os subcomponentes para exibir informações completas do todo,
+ * incluindo título, tipo, data, horários, comentários e configurações de repetição.
+ * Oferece ações para editar e excluir o todo, com opções inteligentes de escopo
+ * de exclusão quando o todo é recorrente.
+ *
+ * O modal:
+ * - Sincroniza automaticamente com o estado atual do todo no store
+ * - Calcula dinamicamente as opções de exclusão baseado na distribuição temporal das recorrências
+ * - Renderiza via portal no body do documento
+ * - Fecha ao clicar fora do conteúdo do modal
+ *
+ * @param {TodoDetailModalProps} props - Props do componente
+ * @param {Todo | null} props.todo - Todo a ser exibido no modal. Quando null, o modal não é renderizado
+ * @param {() => void} props.onClose - Função callback executada ao fechar o modal (clique no X, fora do modal, ou após exclusão)
+ * @param {(todo: Todo) => void} props.onEdit - Função callback executada ao clicar em "Editar", recebendo o todo atualizado do store para edição
+ */
 interface TodoDetailModalProps {
   todo: Todo | null;
   onClose: () => void;

@@ -109,17 +109,102 @@ type MapCurrentToSnapshotOptions = {
   inheritedPrecipitation?: { rain: number; snow: number };
 };
 
+type DailyPopFromHourlyOptions = {
+  onlyFutureHours?: boolean;
+};
+
 /**
- * Extrai a probabilidade de chuva da hora atual (Open-Meteo) em formato 0-1.
+ * Agrega a probabilidade de chuva diaria a partir do hourly (Open-Meteo).
+ * Usa o maior valor do dia para manter consistencia com a timeline por hora.
  *
  * @param hourly Dados horarios do Open-Meteo.
+ * @param options Opcoes de agregacao.
+ * @returns Probabilidade diaria em escala 0-1.
  */
-const getCurrentHourPop = (hourly: HourlyForecast): number | null => {
+const getDailyPopFromHourly = (
+  hourly: HourlyForecast,
+  options?: DailyPopFromHourlyOptions
+): number | null => {
+  const onlyFutureHours = options?.onlyFutureHours ?? false;
   const nowHour = new Date().getHours();
-  const point = hourly.points.find((entry) => entry.hour === nowHour);
 
-  if (!point || point.precipProbability == null) return null;
-  return Math.min(Math.max(point.precipProbability / 100, 0), 1);
+  const points = onlyFutureHours
+    ? hourly.points.filter((entry) => entry.hour >= nowHour)
+    : hourly.points;
+  const safePoints = points.length > 0 ? points : hourly.points;
+
+  if (safePoints.length === 0) return null;
+
+  const maxProbability = safePoints.reduce((currentMax, entry) => {
+    return entry.precipProbability > currentMax ? entry.precipProbability : currentMax;
+  }, 0);
+
+  return Math.min(Math.max(maxProbability / 100, 0), 1);
+};
+
+/**
+ * Busca a melhor entrada hourly em cache para uma data/coordenada.
+ * Quando houver mais de uma fonte (forecast/archive), prioriza a mais recente.
+ *
+ * @param hourlyForecasts Cache hourly completo.
+ * @param dateKey Data alvo no formato YYYY-MM-DD.
+ * @param lat Latitude da localizacao atual.
+ * @param lon Longitude da localizacao atual.
+ * @returns Entrada hourly mais recente para a data/coordenada, se existir.
+ */
+const getLatestHourlyForDate = (
+  hourlyForecasts: Map<string, HourlyForecast>,
+  dateKey: string,
+  lat: number,
+  lon: number
+): HourlyForecast | null => {
+  const keyPrefix = `${lat.toFixed(2)}|${lon.toFixed(2)}|${dateKey}|`;
+  let latest: HourlyForecast | null = null;
+
+  hourlyForecasts.forEach((entry, key) => {
+    if (!key.startsWith(keyPrefix)) return;
+    if (!latest || entry.fetchedAt > latest.fetchedAt) {
+      latest = entry;
+    }
+  });
+
+  return latest;
+};
+
+/**
+ * Recalcula o POP diario dos snapshots com base no cache hourly disponivel.
+ *
+ * @param forecasts Snapshots diarios atuais.
+ * @param hourlyForecasts Cache hourly disponível.
+ * @param lat Latitude da localizacao atual.
+ * @param lon Longitude da localizacao atual.
+ * @returns Novo mapa de snapshots com POP sincronizado quando houver hourly.
+ */
+const syncForecastsPopWithHourly = (
+  forecasts: Map<string, WeatherSnapshot>,
+  hourlyForecasts: Map<string, HourlyForecast>,
+  lat: number,
+  lon: number
+): Map<string, WeatherSnapshot> => {
+  const todayKey = toForecastKey(new Date());
+  let updatedForecasts = forecasts;
+
+  forecasts.forEach((snapshot, dateKey) => {
+    const hourly = getLatestHourlyForDate(hourlyForecasts, dateKey, lat, lon);
+    if (!hourly) return;
+
+    const popFromHourly = getDailyPopFromHourly(hourly, {
+      onlyFutureHours: dateKey === todayKey,
+    });
+    if (popFromHourly === null || snapshot.pop === popFromHourly) return;
+
+    if (updatedForecasts === forecasts) {
+      updatedForecasts = new Map(forecasts);
+    }
+    updatedForecasts.set(dateKey, { ...snapshot, pop: popFromHourly });
+  });
+
+  return updatedForecasts;
 };
 
 /**
@@ -254,7 +339,7 @@ export const useWeatherStore = create<WeatherStore>((set, get) => ({
       );
 
       // Busca Open-Meteo hourly para hoje de forma sincrona
-      // para que o primeiro render ja tenha o POP da hora atual.
+      // para que o primeiro render ja tenha POP diario coerente com a timeline.
       let todayHourly: HourlyForecast | null = null;
       try {
         const hourlyResponse = await fetchHourlyForecast({
@@ -272,7 +357,9 @@ export const useWeatherStore = create<WeatherStore>((set, get) => ({
         );
         todayHourly = mapOpenMeteoToHourly(hourlyResponse, todayKey, hourlyCacheKey);
 
-        const popFromHourly = getCurrentHourPop(todayHourly);
+        const popFromHourly = getDailyPopFromHourly(todayHourly, {
+          onlyFutureHours: true,
+        });
         if (popFromHourly !== null) {
           const current = grouped.get(todayKey)!;
           grouped.set(todayKey, { ...current, pop: popFromHourly });
@@ -282,8 +369,26 @@ export const useWeatherStore = create<WeatherStore>((set, get) => ({
       }
 
       set((state) => {
+        let mergedHourlyMap = state.hourlyForecasts;
+        let mergedStatusMap = state.hourlyStatus;
+
+        if (todayHourly) {
+          mergedHourlyMap = new Map(state.hourlyForecasts);
+          mergedHourlyMap.set(todayHourly.cacheKey, todayHourly);
+          mergedStatusMap = new Map(state.hourlyStatus);
+          mergedStatusMap.set(todayHourly.cacheKey, { isLoading: false, error: null });
+          persistHourlyCache(mergedHourlyMap);
+        }
+
+        const syncedForecasts = syncForecastsPopWithHourly(
+          grouped,
+          mergedHourlyMap,
+          coordinates.lat,
+          coordinates.lon
+        );
+
         const nextState: Partial<WeatherStoreState> = {
-          forecasts: grouped,
+          forecasts: syncedForecasts,
           isLoading: false,
           error: null,
           locationLabel,
@@ -292,12 +397,8 @@ export const useWeatherStore = create<WeatherStore>((set, get) => ({
         };
 
         if (todayHourly) {
-          const newHourlyMap = new Map(state.hourlyForecasts);
-          newHourlyMap.set(todayHourly.cacheKey, todayHourly);
-          const newStatusMap = new Map(state.hourlyStatus);
-          newStatusMap.set(todayHourly.cacheKey, { isLoading: false, error: null });
-          nextState.hourlyForecasts = newHourlyMap;
-          nextState.hourlyStatus = newStatusMap;
+          nextState.hourlyForecasts = mergedHourlyMap;
+          nextState.hourlyStatus = mergedStatusMap;
         }
 
         return { ...state, ...nextState };
@@ -347,14 +448,31 @@ export const useWeatherStore = create<WeatherStore>((set, get) => ({
     if (cached && !force) {
       const age = now - cached.fetchedAt;
       if (age < HOURLY_CACHE_TTL_MS) {
-        if (status?.error) {
-          set((state) => ({
-            hourlyStatus: updateHourlyStatus(state.hourlyStatus, cacheKey, {
+        set((state) => {
+          const nextState: Partial<WeatherStoreState> = {};
+
+          if (status?.error) {
+            nextState.hourlyStatus = updateHourlyStatus(state.hourlyStatus, cacheKey, {
               isLoading: false,
               error: null,
-            }),
-          }));
-        }
+            });
+          }
+
+          const current = state.forecasts.get(dateKey);
+          if (current) {
+            const todayKey = toForecastKey(new Date());
+            const popFromHourly = getDailyPopFromHourly(cached, {
+              onlyFutureHours: dateKey === todayKey,
+            });
+            if (popFromHourly !== null && current.pop !== popFromHourly) {
+              const updatedForecasts = new Map(state.forecasts);
+              updatedForecasts.set(dateKey, { ...current, pop: popFromHourly });
+              nextState.forecasts = updatedForecasts;
+            }
+          }
+
+          return nextState;
+        });
         return cached;
       }
     }
@@ -395,18 +513,18 @@ export const useWeatherStore = create<WeatherStore>((set, get) => ({
           hourlyStatus: newStatusMap,
         };
 
-        if (source === 'forecast') {
+        const current = state.forecasts.get(dateKey);
+        if (current) {
           const todayKey = toForecastKey(new Date());
-          if (dateKey === todayKey) {
-            const current = state.forecasts.get(todayKey);
-            const popFromHourly = getCurrentHourPop(hourly);
+          const popFromHourly = getDailyPopFromHourly(hourly, {
+            onlyFutureHours: dateKey === todayKey,
+          });
 
-            if (current && popFromHourly !== null) {
-              const updated = { ...current, pop: popFromHourly };
-              const updatedForecasts = new Map(state.forecasts);
-              updatedForecasts.set(todayKey, updated);
-              nextState.forecasts = updatedForecasts;
-            }
+          if (popFromHourly !== null) {
+            const updated = { ...current, pop: popFromHourly };
+            const updatedForecasts = new Map(state.forecasts);
+            updatedForecasts.set(dateKey, updated);
+            nextState.forecasts = updatedForecasts;
           }
         }
 

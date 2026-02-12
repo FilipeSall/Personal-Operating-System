@@ -86,29 +86,16 @@ const formatSunTimes = (sunrise: number, sunset: number): string => {
 
 /**
  * Formata a chance de chuva em porcentagem.
- * Usa a descricao do clima como verdade sobre o momento atual.
- * A precipitacao pode ser herdada do forecast e nao reflete necessariamente o agora.
  */
-const formatRainChance = (
-  pop: number,
-  description: string
-): string => {
-  const normalized = normalizeText(description);
-  const isRainDescription =
-    normalized.includes('chuva') ||
-    normalized.includes('garoa') ||
-    normalized.includes('tempestade') ||
-    normalized.includes('trovoada');
-
-  if (isRainDescription) {
+const formatRainChance = (pop: number): string => {
+  const popPercent = Math.round(Math.min(Math.max(pop, 0), 1) * 100);
+  if (popPercent === 100) {
     return '100%';
   }
-
-  const popPercent = Math.round(pop * 100);
   if (popPercent > 0) {
     return `~${popPercent}%`;
   }
-  return `${popPercent}%`;
+  return '0%';
 };
 
 /**
@@ -268,23 +255,8 @@ const getFeelsLikeRecommendation = (feelsLike: number): string => {
  * Gera recomendacao baseada na chance de chuva.
  */
 const getRainChanceRecommendation = (
-  pop: number,
-  description: string
+  pop: number
 ): string => {
-  const normalized = normalizeText(description);
-  const isRainDescription =
-    normalized.includes('chuva') ||
-    normalized.includes('garoa') ||
-    normalized.includes('tempestade') ||
-    normalized.includes('trovoada');
-
-  if (isRainDescription) {
-    if (normalized.includes('neve') || normalized.includes('granizo')) {
-      return 'Neve agora. Redobre o cuidado com o piso e use calçado aderente.';
-    }
-    return 'Chovendo agora. Leve capa e evite áreas que acumulam água.';
-  }
-
   if (pop >= 0.6) {
     return 'Chuva provável mais tarde. Ajuste compromissos externos e tenha proteção por perto.';
   }
@@ -443,14 +415,8 @@ export const buildWeatherRows = (snapshot: WeatherSnapshot): WeatherRow[] => {
     {
       id: 'rainChance',
       label: 'Chance de chuva',
-      value: formatRainChance(
-        snapshot.pop,
-        snapshot.description
-      ),
-      recommendation: getRainChanceRecommendation(
-        snapshot.pop,
-        snapshot.description
-      ),
+      value: formatRainChance(snapshot.pop),
+      recommendation: getRainChanceRecommendation(snapshot.pop),
     },
     {
       id: 'wind',

@@ -79,3 +79,6 @@ As dicas agora usam um sistema de **weighted pools** que prioriza automaticament
 - 12/02/2026: Tipos do modal de detalhes migrados para `src/components/Calendar/types/weatherDetailsModal.ts`; funções utilitárias do Weather passaram a documentar `@param`/`@returns` no JSDoc.
 - 12/02/2026: `WEATHER_ICON_MAP` e `WEATHER_GRADIENT_MAP` foram movidos para `src/components/Calendar/consts/weatherDetailsModal.ts`.
 - 12/02/2026: Recomendações do `WeatherDetailsModal` agora trocam para tom de previsão quando a data selecionada é futura (sem frases como "agora/hoje").
+- 12/02/2026: Quando o hourly do Open-Meteo e carregado para uma data com snapshot no Weather, o `pop` diario passa a ser recalculado pelo maior valor horario (hoje considera apenas horas futuras) para alinhar painel de clima e timeline.
+- 12/02/2026: A linha "Chance de chuva" no Weather nao força mais 100% apenas pela descricao textual; agora exibe o percentual do `pop` calculado.
+- 12/02/2026: `fetchWeather` agora reconcilia o `pop` diario com hourly ja cacheado para evitar condição de corrida (hourly chegar antes do forecast e manter `pop` antigo/inflado).

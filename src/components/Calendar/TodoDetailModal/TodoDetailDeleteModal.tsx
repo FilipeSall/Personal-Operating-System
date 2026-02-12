@@ -9,6 +9,20 @@ import {
   modalCloseButton,
 } from '../styles/todo-detail-modal.styles';
 
+/**
+ * Modal de confirmação de exclusão de todo com opções de escopo.
+ *
+ * Exibe um modal que permite ao usuário confirmar a exclusão de um todo,
+ * oferecendo diferentes escopos de exclusão quando o todo é recorrente
+ * (excluir apenas esta ocorrência, todas da semana, todas do mês, ou todas do calendário).
+ *
+ * @param {TodoDetailDeleteModalProps} props - Props do componente
+ * @param {boolean} props.isOpen - Controla se o modal está visível ou oculto
+ * @param {() => void} props.onClose - Função callback executada ao fechar o modal (ao clicar no X ou fora do modal)
+ * @param {(scope: 'single' | 'week' | 'month' | 'all') => void} props.onDelete - Função callback executada ao confirmar a exclusão, recebendo o escopo selecionado pelo usuário
+ * @param {'confirm' | 'scope'} props.mode - Modo de exibição do modal: 'confirm' para confirmação simples (Sim/Não) ou 'scope' para seleção de escopo de exclusão
+ * @param {readonly ('single' | 'week' | 'month' | 'all')[]} props.scopes - Array com os escopos de exclusão disponíveis para o usuário escolher (usado apenas quando mode='scope')
+ */
 type TodoDetailDeleteModalProps = {
   isOpen: boolean;
   onClose: () => void;

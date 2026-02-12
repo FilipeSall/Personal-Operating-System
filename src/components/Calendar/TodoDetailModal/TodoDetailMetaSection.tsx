@@ -12,6 +12,21 @@ import {
 import { DURATION_LABELS, REPEAT_TYPE_LABELS } from '../consts/repeatOptions';
 import { WEEKDAY_LABELS } from '../consts/weekdays';
 
+/**
+ * Seção de metadados do todo no modal de detalhes.
+ *
+ * Exibe informações detalhadas sobre o todo organizadas em linhas:
+ * - Data do todo
+ * - Horário de início e fim
+ * - Horário de pausa (se configurado)
+ * - Comentários adicionais (se existirem)
+ * - Configurações de repetição (tipo, dias da semana, duração) quando o todo é recorrente
+ *
+ * @param {TodoDetailMetaSectionProps} props - Props do componente
+ * @param {Todo} props.todo - Objeto completo do todo contendo todas as informações (horários, comentários, configurações de repetição, etc.)
+ * @param {string} props.formattedDate - Data do todo já formatada para exibição (ex: "15 de fev. de 2026")
+ * @param {boolean} props.hasRepeat - Indica se o todo possui recorrência. Quando true, exibe as informações de repetição (tipo, dias, duração)
+ */
 type TodoDetailMetaSectionProps = {
   todo: Todo;
   formattedDate: string;

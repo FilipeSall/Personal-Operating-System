@@ -1,6 +1,9 @@
 /**
  * Calcula o indice de calor (heat index) combinando temperatura e umidade.
  * Retorna a sensacao termica real quando esta quente e umido.
+ * @param temp Temperatura em °C.
+ * @param humidity Umidade relativa em %.
+ * @returns Índice de calor arredondado.
  */
 export const calculateHeatIndex = (temp: number, humidity: number): number => {
   if (temp < 27) return temp;
@@ -26,6 +29,9 @@ export const calculateHeatIndex = (temp: number, humidity: number): number => {
 
 /**
  * Calcula a sensacao termica com vento frio (wind chill).
+ * @param temp Temperatura em °C.
+ * @param windKmh Velocidade do vento em km/h.
+ * @returns Sensação térmica com efeito do vento.
  */
 export const calculateWindChill = (temp: number, windKmh: number): number => {
   if (temp > 10 || windKmh < 4.8) return temp;

@@ -19,6 +19,8 @@ type WeatherNoForecastCopy = {
 
 /**
  * Normaliza a data para o inicio do dia local.
+ * @param date Data de referência.
+ * @returns Data truncada para o início do dia local.
  */
 const getStartOfDay = (date: Date): Date => {
   return new Date(date.getFullYear(), date.getMonth(), date.getDate());
@@ -26,6 +28,9 @@ const getStartOfDay = (date: Date): Date => {
 
 /**
  * Indica se a data alvo esta antes do dia atual.
+ * @param target Data alvo.
+ * @param now Data/hora atual.
+ * @returns `true` quando a data alvo já passou.
  */
 const isPastLocalDay = (target: Date, now: Date): boolean => {
   const today = getStartOfDay(now);
@@ -35,6 +40,9 @@ const isPastLocalDay = (target: Date, now: Date): boolean => {
 
 /**
  * Indica se a data alvo esta depois do dia atual.
+ * @param target Data alvo.
+ * @param now Data/hora atual.
+ * @returns `true` quando a data alvo é futura.
  */
 const isFutureLocalDay = (target: Date, now: Date): boolean => {
   const today = getStartOfDay(now);
@@ -44,6 +52,7 @@ const isFutureLocalDay = (target: Date, now: Date): boolean => {
 
 /**
  * Seleciona um texto divertido de loading.
+ * @returns Cópia aleatória para estado de loading.
  */
 const getRandomLoadingCopy = (): WeatherLoadingCopy => {
   const options: WeatherLoadingCopy[] = [
@@ -71,6 +80,7 @@ const getRandomLoadingCopy = (): WeatherLoadingCopy => {
 
 /**
  * Seleciona um texto amigável quando não existe previsão para o dia.
+ * @returns Cópia aleatória para estado sem previsão.
  */
 const getRandomNoForecastCopy = (): WeatherNoForecastCopy => {
   const options: WeatherNoForecastCopy[] = [
@@ -98,6 +108,9 @@ const getRandomNoForecastCopy = (): WeatherNoForecastCopy => {
 
 /**
  * Retorna o status que deve ser exibido quando o resumo do clima não pode ser renderizado.
+ * @param state Estado do hook de clima.
+ * @param derived Dados derivados do hook de clima.
+ * @returns Estado de status para UI ou `null` quando houver snapshot válido.
  */
 export function getWeatherStatusState(
   state: WeatherState,

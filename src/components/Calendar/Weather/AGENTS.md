@@ -5,6 +5,13 @@ O Weather organiza a lógica e a visualização em camadas claras, o que facilit
 ## Camadas principais
 - **Weather**: container que usa o hook `useWeather` para fornecer `state`, `derived` e `actions`, e consome o `useWeatherUiStore` para abrir/fechar o modal de detalhes.
 - **WeatherView**: refaz o layout geral, exibe o status ou monta o painel superior (resumo + dica). A lógica de apresentação (como a label de data ou o `updatedAtLabel`) permanece aqui.
+- **WeatherDetailsModal**: usa arquitetura em 4 camadas para o modal de detalhes:
+  - `WeatherDetailsModalView.tsx` como UI declarativa.
+  - `WeatherDetailsModal.logic.ts` para interações (ex.: clique no overlay).
+  - `services/weatherDetailsModalService.ts` para montar o view model dos cards.
+  - `utils/weatherDetailsModalParsers.ts` para parsing/formatadores puros.
+  - tipos compartilhados em `src/components/Calendar/types/weatherDetailsModal.ts`.
+  - constantes visuais (`WEATHER_ICON_MAP`, `WEATHER_GRADIENT_MAP`) em `src/components/Calendar/consts/weatherDetailsModal.ts`.
 - **AGENTS deste fluxo**: atualize este arquivo sempre que o comportamento geral ou o fluxo de renderização mudar.
 
 ## Componentes UI
@@ -14,12 +21,14 @@ O Weather organiza a lógica e a visualização em camadas claras, o que facilit
   - **WeatherTagsRow**: renderiza tags de contexto do clima (sensação térmica, umidade, vento, etc.) com ícones emoji.
 - **WeatherTipPanel**: painel principal de dicas, exibe 4 dicas com paginacao e icones relevantes para cada tipo. Dicas agora usam sistema de weighted pools com detectores de condições compostas (sufoco, vento cortante, etc.).
 - **Botão de detalhes**: fica no rodapé das dicas, oposto aos botões de paginação.
+- **WeatherDetailsModalCard**: componente visual dedicado para renderizar cada card tipado do modal, sem lógica de transformação.
 
 ## Utilitários
 - **getWeatherStatusMessage** (em `utils/`): centraliza a mensagem exibida quando o snapshot não está disponível ou quando há erro.
 - **weatherTips** (em `utils/weatherTips/`): gera 4 dicas com tom profissional e contextual usando sistema de weighted pools. Detecta condições compostas (calor abafado, vento cortante, clima perfeito, etc.) com prioridades claras. Importe sempre de `./weatherTips/buildWeatherTips`.
 - **weatherTags** (em `utils/`) - gera 3 tags de contexto do clima (sensação térmica, umidade, vento, UV, visibilidade). Prioriza sensação térmica, depois umidade extrema, vento significativo e UV alto. Se faltar tag, preenche com versões neutras (ex.: Umidade ok, Calmaria).
 - **weatherViewModel** (em `utils/`): integra dicas e tags no modelo de view.
+- **formatWeatherDetailsRecommendation** (em `utils/`): adapta recomendações do modal para datas futuras, evitando texto no presente.
 
 ## Hourly precipitation timeline (Open-Meteo)
 
@@ -66,3 +75,7 @@ As dicas agora usam um sistema de **weighted pools** que prioriza automaticament
 - 05/02/2026: Dicas principais e recomendações da tabela agora cruzam fatores (UV, calor, vento, chuva, nuvens) para evitar mensagens incoerentes com o contexto.
 - 05/02/2026: Chance de chuva agora considera precipitação atual (ex.: "Chuva agora") e o POP é corrigido quando o clima atual vem com chuva/neve.
 - 05/02/2026: Quando o hourly do Open-Meteo termina, o POP do dia atual pode ser ajustado pela probabilidade da hora atual (se não estiver chovendo agora).
+- 12/02/2026: `WeatherDetailsModalView` foi refatorado para separar `logic`, `service`, `utils` e `UI`, removendo parsing/transformação da camada de renderização.
+- 12/02/2026: Tipos do modal de detalhes migrados para `src/components/Calendar/types/weatherDetailsModal.ts`; funções utilitárias do Weather passaram a documentar `@param`/`@returns` no JSDoc.
+- 12/02/2026: `WEATHER_ICON_MAP` e `WEATHER_GRADIENT_MAP` foram movidos para `src/components/Calendar/consts/weatherDetailsModal.ts`.
+- 12/02/2026: Recomendações do `WeatherDetailsModal` agora trocam para tom de previsão quando a data selecionada é futura (sem frases como "agora/hoje").

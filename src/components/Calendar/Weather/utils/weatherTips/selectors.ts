@@ -3,6 +3,9 @@ import type { TipPool } from './types';
 
 /**
  * Seleciona dicas de pools ponderados, respeitando prioridades.
+ * @param pools Pools de dicas com seus respectivos pesos.
+ * @param maxCount Quantidade máxima de dicas selecionadas.
+ * @returns Lista final de dicas sem duplicatas semânticas.
  */
 export const selectFromWeightedPools = (
   pools: TipPool[],

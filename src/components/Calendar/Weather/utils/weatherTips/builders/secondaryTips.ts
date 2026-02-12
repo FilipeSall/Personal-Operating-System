@@ -5,6 +5,10 @@ import { createTip, pushUniqueTip } from '../tipUtils';
 
 /**
  * Monta uma lista de dicas secundarias a partir dos dados do dia.
+ * @param snapshot Snapshot diário de clima.
+ * @param primaryKind Categoria já ocupada pela dica principal.
+ * @param selectedDate Data selecionada no calendário.
+ * @returns Lista de dicas secundárias candidatas.
  */
 export const buildSecondaryTips = (
   snapshot: WeatherSnapshot,

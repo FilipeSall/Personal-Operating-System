@@ -2,6 +2,8 @@ import type { WeatherTip } from '../../../../../types/weather';
 
 /**
  * Normaliza texto para comparacoes simples.
+ * @param value Texto bruto.
+ * @returns Texto normalizado sem diacríticos e em minúsculas.
  */
 export const normalizeText = (value: string): string => {
   return value
@@ -12,6 +14,8 @@ export const normalizeText = (value: string): string => {
 
 /**
  * Capitaliza a primeira letra de um texto.
+ * @param value Texto de entrada.
+ * @returns Texto com primeira letra em maiúsculo.
  */
 export const capitalizeText = (value: string): string => {
   if (!value) {
@@ -22,6 +26,8 @@ export const capitalizeText = (value: string): string => {
 
 /**
  * Gera um hash simples para textos.
+ * @param value Texto de entrada.
+ * @returns Hash numérico absoluto.
  */
 export const hashText = (value: string): number => {
   let hash = 0;
@@ -34,6 +40,8 @@ export const hashText = (value: string): number => {
 
 /**
  * Cria um gerador pseudo-aleatorio com seed.
+ * @param seed Seed numérica para o gerador.
+ * @returns Função geradora de números pseudo-aleatórios entre 0 e 1.
  */
 export const createSeededRandom = (seed: number): (() => number) => {
   let state = seed;
@@ -48,6 +56,9 @@ export const createSeededRandom = (seed: number): (() => number) => {
 
 /**
  * Embaralha as dicas usando uma seed deterministica.
+ * @param tips Lista de dicas.
+ * @param seed Seed usada no embaralhamento.
+ * @returns Nova lista embaralhada de forma determinística.
  */
 export const shuffleTips = (tips: WeatherTip[], seed: number): WeatherTip[] => {
   const random = createSeededRandom(seed);

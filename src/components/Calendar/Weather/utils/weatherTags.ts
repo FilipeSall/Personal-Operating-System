@@ -12,6 +12,8 @@ type UVTagMode = 'high' | 'always';
 
 /**
  * Gera tags de sensação térmica baseado no "feels like".
+ * @param feelsLike Sensação térmica arredondada em °C.
+ * @returns Tag de sensação térmica ou `null`.
  */
 const buildThermalSensationTag = (feelsLike: number): WeatherTag | null => {
   if (feelsLike < 10) {
@@ -64,7 +66,8 @@ const buildThermalSensationTag = (feelsLike: number): WeatherTag | null => {
 /**
  * Gera tag de umidade baseado no percentual.
  * @param humidity Umidade em percentual (0-100).
- * @param mode "extremes" retorna apenas extremos; "always" inclui neutral.
+ * @param mode Modo de exibição da tag de umidade.
+ * @returns Tag de umidade ou `null`.
  */
 const buildHumidityTag = (humidity: number, mode: HumidityTagMode): WeatherTag | null => {
   if (humidity < 30) {
@@ -107,7 +110,8 @@ const buildHumidityTag = (humidity: number, mode: HumidityTagMode): WeatherTag |
 /**
  * Gera tag de vento baseado na velocidade em km/h.
  * @param windKmh Velocidade do vento em km/h.
- * @param mode "significant" exibe apenas vento relevante; "always" inclui calmaria/brisa.
+ * @param mode Modo de exibição da tag de vento.
+ * @returns Tag de vento ou `null`.
  */
 const buildWindTag = (windKmh: number, mode: WindTagMode): WeatherTag | null => {
   if (windKmh < 5) {
@@ -150,7 +154,8 @@ const buildWindTag = (windKmh: number, mode: WindTagMode): WeatherTag | null => 
 /**
  * Gera tag de UV se índice for alto.
  * @param uvIndex Índice UV (0-11+).
- * @param mode "high" retorna apenas UV alto; "always" inclui níveis baixos/moderados.
+ * @param mode Modo de exibição da tag de UV.
+ * @returns Tag de UV ou `null`.
  */
 const buildUVTag = (uvIndex: number, mode: UVTagMode): WeatherTag | null => {
   if (uvIndex > 0 && uvIndex >= 6) {
@@ -182,6 +187,8 @@ const buildUVTag = (uvIndex: number, mode: UVTagMode): WeatherTag | null => {
 
 /**
  * Gera tag de visibilidade reduzida para neblina/nevoeiro.
+ * @param description Descrição textual do clima.
+ * @returns Tag de visibilidade reduzida ou `null`.
  */
 const buildVisibilityTag = (description: string): WeatherTag | null => {
   const normalized = description
@@ -207,12 +214,16 @@ const buildVisibilityTag = (description: string): WeatherTag | null => {
  * Sempre retorna 3 tags quando possível.
  * Prioridade: sensação térmica > umidade extrema > vento significativo > UV alto > visibilidade.
  * Preenchimento: umidade/wind em modo neutro e UV opcional.
+ * @param snapshot Snapshot diário de clima.
+ * @returns Lista final de até 3 tags contextuais.
  */
 export const buildWeatherTags = (snapshot: WeatherSnapshot): WeatherTag[] => {
   const tags: WeatherTag[] = [];
 
   /**
    * Adiciona a tag se ainda houver espaço e ela não estiver duplicada.
+   * @param tag Tag candidata.
+   * @returns `void`.
    */
   const pushTag = (tag: WeatherTag | null): void => {
     if (!tag || tags.length >= 3) {

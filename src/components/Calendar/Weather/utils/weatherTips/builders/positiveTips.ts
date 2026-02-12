@@ -5,6 +5,9 @@ import { createTip } from '../tipUtils';
 
 /**
  * Dica de clima perfeito para atividades ao ar livre.
+ * @param snapshot Snapshot diário de clima.
+ * @param selectedDate Data selecionada no calendário.
+ * @returns Dica positiva de clima ideal ou `null`.
  */
 export const buildPerfectDayTip = (snapshot: WeatherSnapshot, selectedDate: Date): WeatherTip | null => {
   const temp = Math.round(snapshot.temperature.current);
@@ -34,6 +37,9 @@ export const buildPerfectDayTip = (snapshot: WeatherSnapshot, selectedDate: Date
 
 /**
  * Dica de clima perfeito para exercicios.
+ * @param snapshot Snapshot diário de clima.
+ * @param selectedDate Data selecionada no calendário.
+ * @returns Dica positiva de treino ou `null`.
  */
 export const buildWorkoutTip = (snapshot: WeatherSnapshot, selectedDate: Date): WeatherTip | null => {
   const temp = Math.round(snapshot.temperature.current);

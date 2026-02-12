@@ -5,6 +5,8 @@ import { createTip } from '../tipUtils';
 
 /**
  * Cria dica de "sufoco" quando esta muito quente, umido e sem vento.
+ * @param snapshot Snapshot diário de clima.
+ * @returns Dica composta de calor abafado ou `null`.
  */
 export const buildMiseryTip = (snapshot: WeatherSnapshot): WeatherTip | null => {
   const temp = Math.round(snapshot.temperature.max);
@@ -27,6 +29,8 @@ export const buildMiseryTip = (snapshot: WeatherSnapshot): WeatherTip | null => 
 
 /**
  * Cria dica de vento cortante (frio + vento).
+ * @param snapshot Snapshot diário de clima.
+ * @returns Dica composta de vento gelado ou `null`.
  */
 export const buildWindChillTip = (snapshot: WeatherSnapshot): WeatherTip | null => {
   const temp = Math.round(snapshot.temperature.min);
@@ -48,6 +52,8 @@ export const buildWindChillTip = (snapshot: WeatherSnapshot): WeatherTip | null 
 
 /**
  * Dica de "bad hair day" (umidade + vento + chuva).
+ * @param snapshot Snapshot diário de clima.
+ * @returns Dica composta de cabelo rebelde ou `null`.
  */
 export const buildBadHairDayTip = (snapshot: WeatherSnapshot): WeatherTip | null => {
   const humidity = Math.round(snapshot.humidity);
@@ -68,6 +74,8 @@ export const buildBadHairDayTip = (snapshot: WeatherSnapshot): WeatherTip | null
 
 /**
  * Dica de frio enganador.
+ * @param snapshot Snapshot diário de clima.
+ * @returns Dica composta de frio aparente ou `null`.
  */
 export const buildDeceptiveColdTip = (snapshot: WeatherSnapshot): WeatherTip | null => {
   const temp = Math.round(snapshot.temperature.current);

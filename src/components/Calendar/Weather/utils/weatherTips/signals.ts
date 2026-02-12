@@ -6,6 +6,9 @@ const SUN_WINDOW_MINUTES = 45;
 
 /**
  * Verifica se duas datas sao do mesmo dia (fuso local).
+ * @param left Data da esquerda.
+ * @param right Data da direita.
+ * @returns `true` quando ambas caem no mesmo dia local.
  */
 export function isSameLocalDay(left: Date, right: Date): boolean {
   return left.getFullYear() === right.getFullYear() &&
@@ -15,6 +18,9 @@ export function isSameLocalDay(left: Date, right: Date): boolean {
 
 /**
  * Indica se a data alvo e futura em relacao ao dia atual (fuso local).
+ * @param target Data alvo.
+ * @param now Data/hora atual.
+ * @returns `true` quando a data alvo está no futuro.
  */
 export function isFutureLocalDay(target: Date, now: Date): boolean {
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
@@ -24,6 +30,9 @@ export function isFutureLocalDay(target: Date, now: Date): boolean {
 
 /**
  * Gera sinais do periodo do dia e proximidade de nascer/por do sol.
+ * @param snapshot Snapshot diário de clima.
+ * @param now Data/hora de referência.
+ * @returns Sinais de luz natural e janelas próximas ao nascer/pôr do sol.
  */
 export function buildDaylightSignals(snapshot: WeatherSnapshot, now: Date): DaylightSignals {
   const sunrise = new Date(snapshot.sunrise * 1000);
@@ -48,6 +57,9 @@ export function buildDaylightSignals(snapshot: WeatherSnapshot, now: Date): Dayl
 
 /**
  * Resume sinais do clima e do dia para variar dicas de rotina.
+ * @param snapshot Snapshot diário de clima.
+ * @param selectedDate Data selecionada no calendário.
+ * @returns Sinais agregados para builders de dicas.
  */
 export function buildWeatherTipSignals(
   snapshot: WeatherSnapshot,

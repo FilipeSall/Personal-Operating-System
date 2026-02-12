@@ -3,6 +3,8 @@ import { createTip } from '../tipUtils';
 
 /**
  * Cria a dica de alertas quando houver avisos oficiais.
+ * @param alerts Lista de alertas oficiais recebidos.
+ * @returns Dica de alerta ou `null` quando não houver alertas.
  */
 export const buildAlertTip = (alerts: string[]): WeatherTip | null => {
   if (alerts.length === 0) {

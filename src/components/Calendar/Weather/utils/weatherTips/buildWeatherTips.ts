@@ -14,6 +14,10 @@ import { shuffleTips } from './text';
 
 /**
  * Monta a lista final com 4 dicas, usando sistema de prioridades.
+ * @param input Snapshot e data selecionada para geração das dicas.
+ * @param input.snapshot Snapshot diário de clima.
+ * @param input.selectedDate Data selecionada no calendário.
+ * @returns Lista final de dicas ordenadas para exibição.
  */
 export const buildWeatherTips = ({ snapshot, selectedDate }: WeatherTipsInput): WeatherTip[] => {
   const now = new Date();

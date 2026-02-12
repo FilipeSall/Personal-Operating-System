@@ -5,6 +5,9 @@ import { createTip } from '../tipUtils';
 
 /**
  * Gera dicas coringa para completar a lista.
+ * @param snapshot Snapshot diário de clima.
+ * @param selectedDate Data selecionada no calendário.
+ * @returns Lista de dicas coringa.
  */
 export const buildFallbackTips = (snapshot: WeatherSnapshot, selectedDate: Date): WeatherTip[] => {
   const tips: WeatherTip[] = [];
@@ -59,6 +62,8 @@ export const buildFallbackTips = (snapshot: WeatherSnapshot, selectedDate: Date)
 
 /**
  * Gera dicas de rotina com base no clima e no dia da semana.
+ * @param signals Sinais consolidados do clima/dia.
+ * @returns Dicas de rotina.
  */
 const buildRoutineTips = (signals: WeatherTipSignals): WeatherTip[] => {
   const tips: WeatherTip[] = [];
@@ -477,6 +482,8 @@ const buildRoutineTips = (signals: WeatherTipSignals): WeatherTip[] => {
 
 /**
  * Gera dicas curtas de check rapido baseadas no clima.
+ * @param signals Sinais consolidados do clima/dia.
+ * @returns Dicas rápidas de checagem.
  */
 const buildQuickCheckTips = (signals: WeatherTipSignals): WeatherTip[] => {
   const tips: WeatherTip[] = [];

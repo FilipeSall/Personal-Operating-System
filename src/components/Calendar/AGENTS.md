@@ -4,6 +4,7 @@
 - Subcomponentes ficam em pastas proprias (ex.: `CalendarGrid/`, `AddTodoModal/`, `CalendarDayCell/`).
 - Separar logica (hooks) da UI (views).
 - Utilitarios ficam em `src/components/Calendar/utils`.
+- Tipos locais do fluxo Calendar ficam em `src/components/Calendar/types`.
 - Constantes ficam em `src/components/Calendar/consts`.
 - Hooks ficam em `src/components/Calendar/hooks`.
 - Funcoes devem ter JSDoc em TypeScript.

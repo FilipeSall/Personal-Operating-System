@@ -5,6 +5,9 @@ import { buildDaylightSignals, isSameLocalDay } from '../signals';
 
 /**
  * Cria a dica principal usando a descricao e cruzando dados do dia.
+ * @param snapshot Snapshot diário de clima.
+ * @param selectedDate Data selecionada no calendário.
+ * @returns Dica principal do dia.
  */
 export const buildPrimaryTip = (snapshot: WeatherSnapshot, selectedDate: Date): WeatherTip => {
   const normalized = normalizeText(snapshot.description);

@@ -19,6 +19,8 @@ export type WeatherViewModel = {
 
 /**
  * Formata o horario da ultima atualizacao do clima.
+ * @param lastUpdatedAt Data/hora da última atualização.
+ * @returns Horário formatado ou `null` quando ausente.
  */
 export const formatUpdatedAtLabel = (lastUpdatedAt: Date | null): string | null => {
   if (!lastUpdatedAt) {
@@ -29,6 +31,8 @@ export const formatUpdatedAtLabel = (lastUpdatedAt: Date | null): string | null 
 
 /**
  * Formata a data selecionada no calendario.
+ * @param selectedDate Data selecionada no calendário.
+ * @returns Data curta formatada para a UI.
  */
 export const formatSelectedDateLabel = (selectedDate: Date): string => {
   return format(selectedDate, "d 'de' MMM", { locale: ptBR });
@@ -36,6 +40,8 @@ export const formatSelectedDateLabel = (selectedDate: Date): string => {
 
 /**
  * Localiza a linha de resumo dentro das métricas do clima.
+ * @param rows Linhas de métricas do clima.
+ * @returns Linha de resumo, quando existir.
  */
 export const getSummaryRow = (rows: WeatherRow[]): WeatherRow | undefined => {
   return rows.find((row) => row.id === 'summary');
@@ -47,6 +53,8 @@ type WeatherSummaryTexts = {
 
 /**
  * Gera os textos de descricao e recomendacao com valores padrao.
+ * @param summaryRow Linha de resumo opcional.
+ * @returns Estrutura de textos para descrição.
  */
 export const getSummaryTexts = (summaryRow?: WeatherRow): WeatherSummaryTexts => {
   return {
@@ -56,6 +64,8 @@ export const getSummaryTexts = (summaryRow?: WeatherRow): WeatherSummaryTexts =>
 
 /**
  * Calcula o valor exibido na temperatura principal.
+ * @param snapshot Snapshot diário de clima.
+ * @returns Temperatura arredondada ou `null` sem snapshot.
  */
 export const getTemperatureValue = (snapshot: WeatherSnapshot | null): number | null => {
   if (!snapshot) {
@@ -67,6 +77,10 @@ export const getTemperatureValue = (snapshot: WeatherSnapshot | null): number | 
 
 /**
  * Monta o modelo de dados usado pela view do clima.
+ * @param input Estado e derivados do hook de clima.
+ * @param input.state Estado base do clima.
+ * @param input.derived Dados derivados do clima.
+ * @returns View model pronto para consumo da `WeatherView`.
  */
 export const buildWeatherViewModel = ({
   state,

@@ -3,6 +3,19 @@ import type { WeatherTipSignals } from '../types';
 import { buildWeatherTipSignals } from '../signals';
 import { createTip } from '../tipUtils';
 
+const ACTIONABLE_RAIN_POP_MIN = 40;
+
+/**
+ * Define quando vale mostrar dicas operacionais de chuva.
+ * Evita alertas de chuva para riscos baixos (ex.: POP muito baixo).
+ *
+ * @param signals Sinais consolidados do clima/dia.
+ * @returns `true` quando a chance de chuva justifica ação prática.
+ */
+const hasActionableRainRisk = (signals: WeatherTipSignals): boolean => {
+  return signals.isRainy && signals.popPercent >= ACTIONABLE_RAIN_POP_MIN;
+};
+
 /**
  * Gera dicas coringa para completar a lista.
  * @param snapshot Snapshot diário de clima.
@@ -40,7 +53,7 @@ export const buildFallbackTips = (snapshot: WeatherSnapshot, selectedDate: Date)
 
   const isWeatherImpactful = signals.isStorm ||
     signals.isSnowy ||
-    signals.isRainy ||
+    hasActionableRainRisk(signals) ||
     signals.isWindy;
   const balanceMessage = isWeatherImpactful
     ? `Sensação de ${feelsLike}°C. O clima pede atenção; adapte o ritmo e combine com as condições do dia.`
@@ -93,7 +106,7 @@ const buildRoutineTips = (signals: WeatherTipSignals): WeatherTip[] => {
       return tips;
     }
 
-    if (signals.isRainy) {
+    if (hasActionableRainRisk(signals)) {
       tips.push(
         createTip(
           'fallback-routine-future-rain-1',
@@ -211,7 +224,7 @@ const buildRoutineTips = (signals: WeatherTipSignals): WeatherTip[] => {
       return tips;
     }
 
-    if (signals.isRainy) {
+    if (hasActionableRainRisk(signals)) {
       tips.push(
         createTip(
           'fallback-routine-weekend-rain-1',
@@ -358,7 +371,7 @@ const buildRoutineTips = (signals: WeatherTipSignals): WeatherTip[] => {
     return tips;
   }
 
-  if (signals.isRainy) {
+  if (hasActionableRainRisk(signals)) {
     tips.push(
       createTip(
         'fallback-routine-weekday-rain-1',
@@ -512,7 +525,7 @@ const buildQuickCheckTips = (signals: WeatherTipSignals): WeatherTip[] => {
     return tips;
   }
 
-  if (signals.isFuture && signals.isRainy) {
+  if (signals.isFuture && hasActionableRainRisk(signals)) {
     tips.push(
       createTip(
         'fallback-check-future-rain-1',
@@ -596,7 +609,7 @@ const buildQuickCheckTips = (signals: WeatherTipSignals): WeatherTip[] => {
     return tips;
   }
 
-  if (signals.isRainy) {
+  if (hasActionableRainRisk(signals)) {
     tips.push(
       createTip(
         'fallback-check-rain-1',

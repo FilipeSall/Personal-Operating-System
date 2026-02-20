@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { format, isSameDay, addDays } from 'date-fns';
 import { useShallow } from 'zustand/react/shallow';
 import { useCalendarStore } from '../../../store/useCalendarStore';
@@ -32,18 +32,16 @@ export type CalendarSidebarActions = Record<string, never>;
  * Hook que prepara o conteúdo do painel lateral do calendário.
  */
 export const useCalendarSidebar = () => {
-  const [hourTick, setHourTick] = useState(0);
   const { selectedDate, todos } = useCalendarStore(
     useShallow((state) => ({
       selectedDate: state.selectedDate,
       todos: state.todos,
     }))
   );
-  const { forecasts, coordinates, fetchWeather } = useWeatherStore(
+  const { forecasts, coordinates } = useWeatherStore(
     useShallow((state) => ({
       forecasts: state.forecasts,
       coordinates: state.coordinates,
-      fetchWeather: state.fetchWeather,
     }))
   );
 
@@ -102,7 +100,7 @@ export const useCalendarSidebar = () => {
       currentPopPercent,
       isHourlyLoading
     );
-  }, [tasks, theme.tone, selectedDate, hourlyData, currentPopPercent, isHourlyLoading, hourTick]);
+  }, [tasks, theme.tone, selectedDate, hourlyData, currentPopPercent, isHourlyLoading]);
   const nextDayTimeline = useMemo(() => {
     return buildHourlyTimeline(
       nextDayTasks,
@@ -113,50 +111,6 @@ export const useCalendarSidebar = () => {
       isNextDayHourlyLoading
     );
   }, [nextDate, nextDayTasks, nextTheme.tone, nextDayHourlyData, isNextDayHourlyLoading]);
-
-  useEffect(() => {
-    const now = new Date();
-    const msToNextMinute =
-      (60 - now.getSeconds()) * 1000 - now.getMilliseconds();
-    let intervalId: number | null = null;
-
-    const timeoutId = window.setTimeout(() => {
-      setHourTick((value) => value + 1);
-      intervalId = window.setInterval(() => {
-        setHourTick((value) => value + 1);
-      }, 60 * 1000);
-    }, msToNextMinute);
-
-    return () => {
-      window.clearTimeout(timeoutId);
-      if (intervalId !== null) {
-        window.clearInterval(intervalId);
-      }
-    };
-  }, []);
-
-  useEffect(() => {
-    const now = new Date();
-    const msToNextHour =
-      (60 - now.getMinutes()) * 60 * 1000 -
-      now.getSeconds() * 1000 -
-      now.getMilliseconds();
-    let intervalId: number | null = null;
-
-    const timeoutId = window.setTimeout(() => {
-      fetchWeather({ force: true });
-      intervalId = window.setInterval(() => {
-        fetchWeather({ force: true });
-      }, 60 * 60 * 1000);
-    }, msToNextHour);
-
-    return () => {
-      window.clearTimeout(timeoutId);
-      if (intervalId !== null) {
-        window.clearInterval(intervalId);
-      }
-    };
-  }, [fetchWeather]);
 
   const dateLabel = useMemo(() => formatSidebarDateLabel(selectedDate), [selectedDate]);
   const isToday = useMemo(() => isSameDay(selectedDate, new Date()), [selectedDate]);

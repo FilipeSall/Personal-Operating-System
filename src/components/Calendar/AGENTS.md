@@ -44,6 +44,7 @@
 - Evitar spam: nao refazer requests quando cache estiver fresco, usar debounce e cancelar chamadas anteriores.
 - Quando um hourly e recebido para uma data que existe no mapa de `forecasts`, o store atualiza o `pop` diario dessa data com base no maior `precipProbability` horario (no dia atual considera apenas horas futuras).
 - O `fetchWeather` tambem sincroniza o `pop` com hourly ja em cache para cobrir cenarios em que o hourly chega antes do forecast diario.
+- O refresh automatico do clima foi centralizado no hook `useWeather` (a cada hora cheia local). O `CalendarSidebar` nao agenda mais refresh proprio.
 
 ## Weather (Clima)
 

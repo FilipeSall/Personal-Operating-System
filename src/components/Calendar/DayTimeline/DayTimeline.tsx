@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { useShallow } from 'zustand/react/shallow';
@@ -51,29 +51,7 @@ export const DayTimeline = () => {
     return new Map(hourlyData.points.map((point) => [point.hour, point]));
   }, [hourlyData]);
 
-  const [hourTick, setHourTick] = useState(0);
-  const currentHour = useMemo(() => new Date().getHours(), [hourTick]);
-
-  useEffect(() => {
-    const now = new Date();
-    const msToNextMinute =
-      (60 - now.getSeconds()) * 1000 - now.getMilliseconds();
-    let intervalId: number | null = null;
-
-    const timeoutId = window.setTimeout(() => {
-      setHourTick((value) => value + 1);
-      intervalId = window.setInterval(() => {
-        setHourTick((value) => value + 1);
-      }, 60 * 1000);
-    }, msToNextMinute);
-
-    return () => {
-      window.clearTimeout(timeoutId);
-      if (intervalId !== null) {
-        window.clearInterval(intervalId);
-      }
-    };
-  }, []);
+  const currentHour = new Date().getHours();
 
   const slots: TimelineSlotData[] = useMemo(() => {
     return Array.from({ length: 24 }, (_, hour) => {

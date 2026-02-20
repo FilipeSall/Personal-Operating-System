@@ -83,3 +83,4 @@ As dicas agora usam um sistema de **weighted pools** que prioriza automaticament
 - 12/02/2026: A linha "Chance de chuva" no Weather nao força mais 100% apenas pela descricao textual; agora exibe o percentual do `pop` calculado.
 - 12/02/2026: `fetchWeather` agora reconcilia o `pop` diario com hourly ja cacheado para evitar condição de corrida (hourly chegar antes do forecast e manter `pop` antigo/inflado).
 - 12/02/2026: Dicas fallback de chuva (Rotina/Check rápido) agora só disparam com risco acionável (`pop >= 40%`), evitando alerta de chuva em cenários de POP baixo.
+- 20/02/2026: O refresh automatico do clima foi centralizado no `useWeather`, alinhado com a proxima hora cheia local (HH:00), com repeticao horaria global para o fluxo de clima.

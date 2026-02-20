@@ -1,6 +1,7 @@
 import { useEffect, useMemo } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 import { buildWeatherRows } from '../utils/weatherMetrics';
+import { getMillisecondsUntilNextHour } from '../utils/weatherRefresh';
 import { useWeatherStore } from '../../../store/useWeatherStore';
 import { useCalendarStore } from '../../../store/useCalendarStore';
 import { toForecastKey } from '../../../utils/forecastGrouper';
@@ -49,6 +50,23 @@ export const useWeather = () => {
     }
     const id = setTimeout(() => fetchWeather(), 100);
     return () => clearTimeout(id);
+  }, [fetchWeather]);
+
+  useEffect(() => {
+    let intervalId: number | null = null;
+    const timeoutId = window.setTimeout(() => {
+      void fetchWeather({ force: true });
+      intervalId = window.setInterval(() => {
+        void fetchWeather({ force: true });
+      }, 60 * 60 * 1000);
+    }, getMillisecondsUntilNextHour());
+
+    return () => {
+      window.clearTimeout(timeoutId);
+      if (intervalId !== null) {
+        window.clearInterval(intervalId);
+      }
+    };
   }, [fetchWeather]);
 
   /**
